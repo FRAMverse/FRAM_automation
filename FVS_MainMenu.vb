@@ -46,7 +46,7 @@ Public Class FVS_MainMenu
 
         End
 
-   End Sub
+    End Sub
 
    Private Sub OpenDB_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles OpenDB.Click
 

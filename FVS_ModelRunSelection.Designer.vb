@@ -19,12 +19,13 @@ Partial Class FVS_ModelRunSelection
    'Do not modify it using the code editor.
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
-        Me.RSTitle = New System.Windows.Forms.Label
-        Me.CmdCancel = New System.Windows.Forms.Button
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.TransferButton = New System.Windows.Forms.Button
-        Me.ListBox1 = New System.Windows.Forms.ListBox
-        Me.btn_DeleteMulti = New System.Windows.Forms.Button
+        Me.RSTitle = New System.Windows.Forms.Label()
+        Me.CmdCancel = New System.Windows.Forms.Button()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.TransferButton = New System.Windows.Forms.Button()
+        Me.ListBox1 = New System.Windows.Forms.ListBox()
+        Me.btn_DeleteMulti = New System.Windows.Forms.Button()
+        Me.SelectionButton = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'RSTitle
@@ -33,7 +34,7 @@ Partial Class FVS_ModelRunSelection
         Me.RSTitle.Font = New System.Drawing.Font("Microsoft Sans Serif", 16.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.RSTitle.Location = New System.Drawing.Point(359, 9)
         Me.RSTitle.Name = "RSTitle"
-        Me.RSTitle.Size = New System.Drawing.Size(305, 26)
+        Me.RSTitle.Size = New System.Drawing.Size(387, 32)
         Me.RSTitle.TabIndex = 0
         Me.RSTitle.Text = "FRAM Model Run Selection"
         '
@@ -54,7 +55,7 @@ Partial Class FVS_ModelRunSelection
         Me.Label2.Font = New System.Drawing.Font("Courier New", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.Location = New System.Drawing.Point(30, 77)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(432, 16)
+        Me.Label2.Size = New System.Drawing.Size(539, 20)
         Me.Label2.TabIndex = 4
         Me.Label2.Text = "Index Species  Title                      Description"
         '
@@ -74,10 +75,10 @@ Partial Class FVS_ModelRunSelection
         Me.ListBox1.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.ListBox1.Font = New System.Drawing.Font("Courier New", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.ItemHeight = 17
+        Me.ListBox1.ItemHeight = 22
         Me.ListBox1.Location = New System.Drawing.Point(23, 96)
         Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(1069, 565)
+        Me.ListBox1.Size = New System.Drawing.Size(1069, 554)
         Me.ListBox1.TabIndex = 6
         '
         'btn_DeleteMulti
@@ -92,12 +93,25 @@ Partial Class FVS_ModelRunSelection
         Me.btn_DeleteMulti.UseVisualStyleBackColor = False
         Me.btn_DeleteMulti.Visible = False
         '
+        'SelectionButton
+        '
+        Me.SelectionButton.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.SelectionButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.SelectionButton.Location = New System.Drawing.Point(173, 690)
+        Me.SelectionButton.Name = "SelectionButton"
+        Me.SelectionButton.Size = New System.Drawing.Size(264, 49)
+        Me.SelectionButton.TabIndex = 8
+        Me.SelectionButton.Text = "Model Selection Done"
+        Me.SelectionButton.UseVisualStyleBackColor = False
+        Me.SelectionButton.Visible = False
+        '
         'FVS_ModelRunSelection
         '
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.AutoScroll = True
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1135, 770)
+        Me.Controls.Add(Me.SelectionButton)
         Me.Controls.Add(Me.btn_DeleteMulti)
         Me.Controls.Add(Me.ListBox1)
         Me.Controls.Add(Me.TransferButton)
@@ -111,10 +125,11 @@ Partial Class FVS_ModelRunSelection
         Me.PerformLayout()
 
     End Sub
-   Friend WithEvents RSTitle As System.Windows.Forms.Label
+    Friend WithEvents RSTitle As System.Windows.Forms.Label
    Friend WithEvents CmdCancel As System.Windows.Forms.Button
    Friend WithEvents Label2 As System.Windows.Forms.Label
    Friend WithEvents TransferButton As System.Windows.Forms.Button
    Friend WithEvents ListBox1 As System.Windows.Forms.ListBox
    Friend WithEvents btn_DeleteMulti As System.Windows.Forms.Button
+    Friend WithEvents SelectionButton As Button
 End Class

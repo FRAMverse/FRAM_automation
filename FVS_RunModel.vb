@@ -80,45 +80,46 @@ Public Class FVS_RunModel
         'ReplaceQuotaCheck.Visible = False
 
    End Sub
+    Private Sub SelectTAMMButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SelectTAMMButton.Click
 
-   Private Sub SelectTAMMButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SelectTAMMButton.Click
+        Dim OpenTAMMspreadsheet As New OpenFileDialog()
+        Dim TAMMSpreadSheetName As String
 
-      Dim OpenTAMMspreadsheet As New OpenFileDialog()
-      Dim TAMMSpreadSheetName As String
+        TAMMSpreadSheet = ""
+        OpenTAMMspreadsheet.Filter = "TAMM Spreadsheets (*.xls*)|*.xls*|All files (*.*)|*.*"
+        OpenTAMMspreadsheet.FilterIndex = 1
+        OpenTAMMspreadsheet.RestoreDirectory = True
 
-      TAMMSpreadSheet = ""
-      OpenTAMMspreadsheet.Filter = "TAMM Spreadsheets (*.xls*)|*.xls*|All files (*.*)|*.*"
-      OpenTAMMspreadsheet.FilterIndex = 1
-      OpenTAMMspreadsheet.RestoreDirectory = True
+        If OpenTAMMspreadsheet.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            Try
+                TAMMSpreadSheet = OpenTAMMspreadsheet.FileName
+                TAMMSpreadSheetPath = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).DirectoryName
+            Catch Ex As Exception
+                MessageBox.Show("Cannot read file selected. Original error: " & Ex.Message)
+            End Try
+        End If
 
-      If OpenTAMMspreadsheet.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-         Try
-            TAMMSpreadSheet = OpenTAMMspreadsheet.FileName
-            TAMMSpreadSheetPath = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).DirectoryName
-         Catch Ex As Exception
-            MessageBox.Show("Cannot read file selected. Original error: " & Ex.Message)
-         End Try
-      End If
+        If TAMMSpreadSheet = "" Then Exit Sub
 
-      If TAMMSpreadSheet = "" Then Exit Sub
+        TAMMSpreadSheetName = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).Name
+        TammNameLabel.Text = TAMMSpreadSheetName
 
-      TAMMSpreadSheetName = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).Name
-      TammNameLabel.Text = TAMMSpreadSheetName
+    End Sub
 
-   End Sub
-
-   Private Sub RunModelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RunModelButton.Click
+    Private Sub RunModelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RunModelButton.Click
       Dim result
 
-      'PPPPPP------------------------------------------------------------------------------------------------------------
-      '- Pete 12/13 Code for Executing an integrated update system for external S:L Ratio based EncounterRateAdjustments
+ 
+
+        'PPPPPP------------------------------------------------------------------------------------------------------------
+        '- Pete 12/13 Code for Executing an integrated update system for external S:L Ratio based EncounterRateAdjustments
         '- Outer flank to original RunModelButtonClick code...
 
-      FinalUpdatePass = False 'This should always be false unless set to true during S:L Ratio Update
+        FinalUpdatePass = False 'This should always be false unless set to true during S:L Ratio Update
       Dim iters As Integer = 1
         Dim c As Integer = 1 'Allows RunModelButton_Click to execute as normal (for coho or non-update Chinook runs)
 
-      
+        'COLLIN LOOK HERE! REALLY WANT TO MOVE THIS TO THE RESPONSE-TO-CHECKED FUNCTION
         If ChinookSizeLimitCheck.Checked = True Or SpeciesName = "COHO" Then
             SizeLimitFix = False
         Else
@@ -344,7 +345,7 @@ Public Class FVS_RunModel
                 '****************Begin PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
                 If SpeciesName = "COHO" Then
 
-
+                    'COLLIN LOOK HERE! REALLY WANT TO MOVE THIS TO THE RESPONSE-TO-CHECKED FUNCTION
                     If MSFBiasCorrectionCheckBox.Checked = True Then
                         MSFBiasFlag = False
                     Else
@@ -685,4 +686,11 @@ Public Class FVS_RunModel
             T4CohortFlag2 = False
         End If
     End Sub
+
+    Private Sub ModelRunMulti_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ModelRunMulti.Click
+        Me.Visible = False
+        FVS_RunModelMulti.ShowDialog()
+        Me.BringToFront()
+    End Sub
+
 End Class

@@ -77,30 +77,30 @@ Public Class FVS_ModelRunSelection
          MsgBox("ERROR - You selected a blank line" & vbCrLf & "Please try again!", MsgBoxStyle.OkOnly)
          Exit Sub
       End If
-      If RecordsetSelectionType = 1 Then
-         RunIDSelect = RunID(ListIndex)
-         RunIDNameSelect = RunIDName(ListIndex)
-         SelectSpeciesName = ListBox1.SelectedItem.ToString.Substring(6, 7)
-         'SelectSpeciesName = ListBox1.Items(ListBox1.SelectedIndex).ToString.Substring(6, 7)
-         '- Get Base Period and Recordset Varaiables
-         Call GetRunVariables(RunBasePeriodID(ListIndex), RunIDSelect)
-         Me.Close()
-         FVS_MainMenu.Visible = True
-      ElseIf RecordsetSelectionType = 2 Then
+        If RecordsetSelectionType = 1 Then
+            RunIDSelect = RunID(ListIndex)
+            RunIDNameSelect = RunIDName(ListIndex)
+            SelectSpeciesName = ListBox1.SelectedItem.ToString.Substring(6, 7)
+            'SelectSpeciesName = ListBox1.Items(ListBox1.SelectedIndex).ToString.Substring(6, 7)
+            '- Get Base Period and Recordset Varaiables
+            Call GetRunVariables(RunBasePeriodID(ListIndex), RunIDSelect)
+            Me.Close()
+            FVS_MainMenu.Visible = True
+        ElseIf RecordsetSelectionType = 2 Then
 
-         If RunIDSelect = RunID(ListIndex) Then
-            Result = MsgBox("ERROR- Can't DELETE RecordSet when CURRENTLY in use!!" & vbCrLf & "SELECT another Recordset first before Delete", MsgBoxStyle.OkOnly)
-            RecordsetSelectionType = 9
+            If RunIDSelect = RunID(ListIndex) Then
+                Result = MsgBox("ERROR- Can't DELETE RecordSet when CURRENTLY in use!!" & vbCrLf & "SELECT another Recordset first before Delete", MsgBoxStyle.OkOnly)
+                RecordsetSelectionType = 9
+                Me.Close()
+                FVS_FramUtils.Visible = True
+                Exit Sub
+            End If
+            RunIDDelete = RunID(ListIndex)
+            'RunIDNameSelect = RunIDName(ListIndex)
             Me.Close()
             FVS_FramUtils.Visible = True
-            Exit Sub
-         End If
-         RunIDDelete = RunID(ListIndex)
-         'RunIDNameSelect = RunIDName(ListIndex)
-         Me.Close()
-         FVS_FramUtils.Visible = True
 
-        ElseIf RecordsetSelectionType = 3 Or RecordsetSelectionType = 11 Then
+        ElseIf RecordsetSelectionType = 3 Or RecordsetSelectionType = 11 Or RecordsetSelectionType = 99 Then
             Exit Sub
             'SelectSpeciesName = Trim(ListBox1.SelectedItem.ToString.Substring(6, 7))
             'RunIDTransfer = RunID(ListIndex)
@@ -112,22 +112,26 @@ Public Class FVS_ModelRunSelection
    End Sub
 
    Private Sub CmdCancel_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles CmdCancel.Click
-      If RecordsetSelectionType = 1 Then
-         Me.Close()
-         FVS_MainMenu.Visible = True
-      ElseIf RecordsetSelectionType = 2 Then
-         RecordsetSelectionType = 9
-         Me.Close()
-         FVS_FramUtils.Visible = True
-      ElseIf RecordsetSelectionType = 3 Then
-         RecordsetSelectionType = 9
-         Me.Close()
+        If RecordsetSelectionType = 1 Then
+            Me.Close()
+            FVS_MainMenu.Visible = True
+        ElseIf RecordsetSelectionType = 2 Then
+            RecordsetSelectionType = 9
+            Me.Close()
+            FVS_FramUtils.Visible = True
+        ElseIf RecordsetSelectionType = 3 Then
+            RecordsetSelectionType = 9
+            Me.Close()
             FVS_FramUtils.Visible = True
         ElseIf RecordsetSelectionType = 11 Then
             RecordsetSelectionType = 9
             Me.Close()
             FVS_FramUtils.Visible = True
-      End If
+        ElseIf RecordsetSelectionType = 99 Then
+            RecordsetSelectionType = 9
+            Me.Close()
+            FVS_RunModelMulti.Visible = True
+        End If
    End Sub
 
    Private Sub FVS_ModelRunSelection_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -145,14 +149,14 @@ Public Class FVS_ModelRunSelection
          End If
       End If
 
-      If RecordsetSelectionType = 1 Then
-         RSTitle.Text = "FRAM Model Run Selection"
-         ListBox1.SelectionMode = SelectionMode.One
-         TransferButton.Visible = False
-      ElseIf RecordsetSelectionType = 2 Then
-         RSTitle.Text = "FRAM Model Run DELETE Selection"
-         ListBox1.SelectionMode = SelectionMode.One
-         TransferButton.Visible = False
+        If RecordsetSelectionType = 1 Then
+            RSTitle.Text = "FRAM Model Run Selection"
+            ListBox1.SelectionMode = SelectionMode.One
+            TransferButton.Visible = False
+        ElseIf RecordsetSelectionType = 2 Then
+            RSTitle.Text = "FRAM Model Run DELETE Selection"
+            ListBox1.SelectionMode = SelectionMode.One
+            TransferButton.Visible = False
         ElseIf RecordsetSelectionType = 3 Then
             RSTitle.Text = "Model Run TRANSFER Selections"
             ListBox1.SelectionMode = SelectionMode.MultiExtended
@@ -161,7 +165,11 @@ Public Class FVS_ModelRunSelection
             RSTitle.Text = "Base Period TRANSFER Selections"
             ListBox1.SelectionMode = SelectionMode.MultiExtended
             TransferButton.Visible = True
-      End If
+        ElseIf RecordsetSelectionType = 99 Then
+            RSTitle.Text = "Multi-Run Selections"
+            ListBox1.SelectionMode = SelectionMode.MultiExtended
+            SelectionButton.Visible = True
+        End If
       Me.BringToFront()
       FillRunList()
    End Sub
@@ -1324,20 +1332,33 @@ SkipCalcArrays:
 
     End Sub
 
-   Private Sub TransferButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles TransferButton.Click
+    Private Sub TransferButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles TransferButton.Click
 
-      Dim Num As Integer
-      NumTransferID = ListBox1.SelectedItems.Count
-      ReDim RunIDTransfer(NumTransferID)
-      For Num = 0 To NumTransferID - 1
-         RunIDTransfer(Num) = CInt(ListBox1.SelectedItems(Num).ToString.Substring(0, 5))
-      Next
-      Me.Close()
-      FVS_FramUtils.Visible = True
+        Dim Num As Integer
+        NumTransferID = ListBox1.SelectedItems.Count
+        ReDim RunIDTransfer(NumTransferID)
+        For Num = 0 To NumTransferID - 1
+            RunIDTransfer(Num) = CInt(ListBox1.SelectedItems(Num).ToString.Substring(0, 5))
+        Next
+        Me.Close()
+        FVS_FramUtils.Visible = True
 
-   End Sub
+    End Sub
 
-   Private Sub btn_DeleteMulti_Click(sender As System.Object, e As System.EventArgs) Handles btn_DeleteMulti.Click
+    Private Sub SelectionButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SelectionButton.Click
+
+        Dim Num As Integer
+        NumMultirunID = ListBox1.SelectedItems.Count
+        ReDim RunIDMultirun(NumMultirunID)
+        For Num = 0 To NumMultirunID - 1
+            RunIDMultirun(Num) = CInt(ListBox1.SelectedItems(Num).ToString.Substring(0, 5))
+        Next
+        Me.Close()
+        FVS_RunModelMulti.Visible = True
+
+    End Sub
+
+    Private Sub btn_DeleteMulti_Click(sender As System.Object, e As System.EventArgs) Handles btn_DeleteMulti.Click
       Me.Close()
       FVS_MultipleRunDeletion.ShowDialog()
       RecordsetSelectionType = 9

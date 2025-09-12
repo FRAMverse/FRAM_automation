@@ -385,7 +385,7 @@ Module FramCalcs
             GoTo SkipWBOpen
          End If
       Next
-      xlWorkBook = xlApp.Workbooks.Open(TAMMSpreadSheet)
+        xlWorkBook = xlApp.Workbooks.Open(TAMMSpreadSheet)
         xlApp.WindowState = Excel.XlWindowState.xlMinimized
         xlApp.Application.Interactive = False
 SkipWBOpen:

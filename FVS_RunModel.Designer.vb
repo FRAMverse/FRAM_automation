@@ -22,40 +22,41 @@ Partial Class FVS_RunModel
    'Do not modify it using the code editor.
    <System.Diagnostics.DebuggerStepThrough()> _
    Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FVS_RunModel))
-        Me.ModelRunTitleLabel = New System.Windows.Forms.Label
-        Me.RecordSetNameLabel = New System.Windows.Forms.Label
-        Me.DatabaseNameLabel = New System.Windows.Forms.Label
-        Me.RecordSetTextLabel = New System.Windows.Forms.Label
-        Me.DatabaseTextLabel = New System.Windows.Forms.Label
-        Me.TammTextLabel = New System.Windows.Forms.Label
-        Me.TammNameLabel = New System.Windows.Forms.Label
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
-        Me.SelectTAMMButton = New System.Windows.Forms.Button
-        Me.OldTammCheck = New System.Windows.Forms.CheckBox
-        Me.TammFwsCheck = New System.Windows.Forms.CheckBox
-        Me.ChinookBYCheck = New System.Windows.Forms.CheckBox
-        Me.RunModelButton = New System.Windows.Forms.Button
-        Me.CancelRunButton = New System.Windows.Forms.Button
-        Me.RunProgressLabel = New System.Windows.Forms.Label
-        Me.MRProgressBar = New System.Windows.Forms.ProgressBar
-        Me.MSFBiasCorrectionCheckBox = New System.Windows.Forms.CheckBox
-        Me.ChinookSizeLimitCheck = New System.Windows.Forms.CheckBox
-        Me.Button2 = New System.Windows.Forms.Button
-        Me.OldCohort = New System.Windows.Forms.CheckBox
-        Me.chkCoastalIterations = New System.Windows.Forms.CheckBox
+        Me.ModelRunTitleLabel = New System.Windows.Forms.Label()
+        Me.RecordSetNameLabel = New System.Windows.Forms.Label()
+        Me.DatabaseNameLabel = New System.Windows.Forms.Label()
+        Me.RecordSetTextLabel = New System.Windows.Forms.Label()
+        Me.DatabaseTextLabel = New System.Windows.Forms.Label()
+        Me.TammTextLabel = New System.Windows.Forms.Label()
+        Me.TammNameLabel = New System.Windows.Forms.Label()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.SelectTAMMButton = New System.Windows.Forms.Button()
+        Me.OldTammCheck = New System.Windows.Forms.CheckBox()
+        Me.TammFwsCheck = New System.Windows.Forms.CheckBox()
+        Me.ChinookBYCheck = New System.Windows.Forms.CheckBox()
+        Me.RunModelButton = New System.Windows.Forms.Button()
+        Me.CancelRunButton = New System.Windows.Forms.Button()
+        Me.RunProgressLabel = New System.Windows.Forms.Label()
+        Me.MRProgressBar = New System.Windows.Forms.ProgressBar()
+        Me.MSFBiasCorrectionCheckBox = New System.Windows.Forms.CheckBox()
+        Me.ChinookSizeLimitCheck = New System.Windows.Forms.CheckBox()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.OldCohort = New System.Windows.Forms.CheckBox()
+        Me.chkCoastalIterations = New System.Windows.Forms.CheckBox()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.chkTS4 = New System.Windows.Forms.CheckBox
+        Me.chkTS4 = New System.Windows.Forms.CheckBox()
+        Me.ModelRunMulti = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'ModelRunTitleLabel
         '
         Me.ModelRunTitleLabel.AutoSize = True
         Me.ModelRunTitleLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 13.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ModelRunTitleLabel.Location = New System.Drawing.Point(286, 40)
+        Me.ModelRunTitleLabel.Location = New System.Drawing.Point(229, 32)
         Me.ModelRunTitleLabel.Name = "ModelRunTitleLabel"
-        Me.ModelRunTitleLabel.Size = New System.Drawing.Size(247, 24)
+        Me.ModelRunTitleLabel.Size = New System.Drawing.Size(310, 29)
         Me.ModelRunTitleLabel.TabIndex = 0
         Me.ModelRunTitleLabel.Text = "Model Run Specifications"
         '
@@ -64,9 +65,9 @@ Partial Class FVS_RunModel
         Me.RecordSetNameLabel.AutoSize = True
         Me.RecordSetNameLabel.BackColor = System.Drawing.Color.Yellow
         Me.RecordSetNameLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RecordSetNameLabel.Location = New System.Drawing.Point(245, 143)
+        Me.RecordSetNameLabel.Location = New System.Drawing.Point(196, 114)
         Me.RecordSetNameLabel.Name = "RecordSetNameLabel"
-        Me.RecordSetNameLabel.Size = New System.Drawing.Size(121, 17)
+        Me.RecordSetNameLabel.Size = New System.Drawing.Size(140, 20)
         Me.RecordSetNameLabel.TabIndex = 19
         Me.RecordSetNameLabel.Text = "recordset name"
         '
@@ -75,9 +76,9 @@ Partial Class FVS_RunModel
         Me.DatabaseNameLabel.AutoSize = True
         Me.DatabaseNameLabel.BackColor = System.Drawing.Color.Yellow
         Me.DatabaseNameLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DatabaseNameLabel.Location = New System.Drawing.Point(245, 109)
+        Me.DatabaseNameLabel.Location = New System.Drawing.Point(196, 87)
         Me.DatabaseNameLabel.Name = "DatabaseNameLabel"
-        Me.DatabaseNameLabel.Size = New System.Drawing.Size(119, 17)
+        Me.DatabaseNameLabel.Size = New System.Drawing.Size(136, 20)
         Me.DatabaseNameLabel.TabIndex = 18
         Me.DatabaseNameLabel.Text = "database name"
         '
@@ -85,9 +86,9 @@ Partial Class FVS_RunModel
         '
         Me.RecordSetTextLabel.AutoSize = True
         Me.RecordSetTextLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RecordSetTextLabel.Location = New System.Drawing.Point(142, 143)
+        Me.RecordSetTextLabel.Location = New System.Drawing.Point(113, 114)
         Me.RecordSetTextLabel.Name = "RecordSetTextLabel"
-        Me.RecordSetTextLabel.Size = New System.Drawing.Size(84, 17)
+        Me.RecordSetTextLabel.Size = New System.Drawing.Size(97, 20)
         Me.RecordSetTextLabel.TabIndex = 17
         Me.RecordSetTextLabel.Text = "RecordSet"
         '
@@ -96,9 +97,9 @@ Partial Class FVS_RunModel
         Me.DatabaseTextLabel.AccessibleRole = System.Windows.Forms.AccessibleRole.None
         Me.DatabaseTextLabel.AutoSize = True
         Me.DatabaseTextLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DatabaseTextLabel.Location = New System.Drawing.Point(140, 109)
+        Me.DatabaseTextLabel.Location = New System.Drawing.Point(112, 87)
         Me.DatabaseTextLabel.Name = "DatabaseTextLabel"
-        Me.DatabaseTextLabel.Size = New System.Drawing.Size(77, 17)
+        Me.DatabaseTextLabel.Size = New System.Drawing.Size(89, 20)
         Me.DatabaseTextLabel.TabIndex = 16
         Me.DatabaseTextLabel.Text = "Database"
         '
@@ -106,9 +107,9 @@ Partial Class FVS_RunModel
         '
         Me.TammTextLabel.AutoSize = True
         Me.TammTextLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TammTextLabel.Location = New System.Drawing.Point(243, 185)
+        Me.TammTextLabel.Location = New System.Drawing.Point(194, 148)
         Me.TammTextLabel.Name = "TammTextLabel"
-        Me.TammTextLabel.Size = New System.Drawing.Size(149, 17)
+        Me.TammTextLabel.Size = New System.Drawing.Size(173, 20)
         Me.TammTextLabel.TabIndex = 20
         Me.TammTextLabel.Text = "TAMM Spreadsheet"
         '
@@ -117,9 +118,9 @@ Partial Class FVS_RunModel
         Me.TammNameLabel.AutoSize = True
         Me.TammNameLabel.BackColor = System.Drawing.Color.Yellow
         Me.TammNameLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TammNameLabel.Location = New System.Drawing.Point(422, 185)
+        Me.TammNameLabel.Location = New System.Drawing.Point(337, 148)
         Me.TammNameLabel.Name = "TammNameLabel"
-        Me.TammNameLabel.Size = New System.Drawing.Size(142, 17)
+        Me.TammNameLabel.Size = New System.Drawing.Size(163, 20)
         Me.TammNameLabel.TabIndex = 21
         Me.TammNameLabel.Text = "spreadsheet name"
         '
@@ -143,9 +144,9 @@ Partial Class FVS_RunModel
         Me.OldTammCheck.AutoSize = True
         Me.OldTammCheck.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.OldTammCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.OldTammCheck.Location = New System.Drawing.Point(246, 245)
+        Me.OldTammCheck.Location = New System.Drawing.Point(197, 196)
         Me.OldTammCheck.Name = "OldTammCheck"
-        Me.OldTammCheck.Size = New System.Drawing.Size(401, 21)
+        Me.OldTammCheck.Size = New System.Drawing.Size(468, 24)
         Me.OldTammCheck.TabIndex = 24
         Me.OldTammCheck.Text = "Old Chinook TAMM Format (10+11 Sport Combined)"
         Me.OldTammCheck.UseVisualStyleBackColor = False
@@ -155,9 +156,9 @@ Partial Class FVS_RunModel
         Me.TammFwsCheck.AutoSize = True
         Me.TammFwsCheck.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.TammFwsCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TammFwsCheck.Location = New System.Drawing.Point(246, 272)
+        Me.TammFwsCheck.Location = New System.Drawing.Point(197, 218)
         Me.TammFwsCheck.Name = "TammFwsCheck"
-        Me.TammFwsCheck.Size = New System.Drawing.Size(315, 21)
+        Me.TammFwsCheck.Size = New System.Drawing.Size(370, 24)
         Me.TammFwsCheck.TabIndex = 25
         Me.TammFwsCheck.Text = "Use Chinook TAMM FWS (No Iterations)"
         Me.TammFwsCheck.UseVisualStyleBackColor = False
@@ -167,9 +168,9 @@ Partial Class FVS_RunModel
         Me.ChinookBYCheck.AutoSize = True
         Me.ChinookBYCheck.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.ChinookBYCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChinookBYCheck.Location = New System.Drawing.Point(246, 326)
+        Me.ChinookBYCheck.Location = New System.Drawing.Point(197, 261)
         Me.ChinookBYCheck.Name = "ChinookBYCheck"
-        Me.ChinookBYCheck.Size = New System.Drawing.Size(263, 21)
+        Me.ChinookBYCheck.Size = New System.Drawing.Size(304, 24)
         Me.ChinookBYCheck.TabIndex = 26
         Me.ChinookBYCheck.Text = "Chinook Brood Year AEQ Report"
         Me.ChinookBYCheck.UseVisualStyleBackColor = False
@@ -201,9 +202,9 @@ Partial Class FVS_RunModel
         Me.RunProgressLabel.AutoSize = True
         Me.RunProgressLabel.BackColor = System.Drawing.Color.Yellow
         Me.RunProgressLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.RunProgressLabel.Location = New System.Drawing.Point(377, 460)
+        Me.RunProgressLabel.Location = New System.Drawing.Point(301, 368)
         Me.RunProgressLabel.Name = "RunProgressLabel"
-        Me.RunProgressLabel.Size = New System.Drawing.Size(106, 20)
+        Me.RunProgressLabel.Size = New System.Drawing.Size(130, 25)
         Me.RunProgressLabel.TabIndex = 29
         Me.RunProgressLabel.Text = "Run Progress"
         '
@@ -221,9 +222,9 @@ Partial Class FVS_RunModel
         Me.MSFBiasCorrectionCheckBox.AutoSize = True
         Me.MSFBiasCorrectionCheckBox.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.MSFBiasCorrectionCheckBox.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MSFBiasCorrectionCheckBox.Location = New System.Drawing.Point(246, 299)
+        Me.MSFBiasCorrectionCheckBox.Location = New System.Drawing.Point(197, 239)
         Me.MSFBiasCorrectionCheckBox.Name = "MSFBiasCorrectionCheckBox"
-        Me.MSFBiasCorrectionCheckBox.Size = New System.Drawing.Size(317, 21)
+        Me.MSFBiasCorrectionCheckBox.Size = New System.Drawing.Size(377, 24)
         Me.MSFBiasCorrectionCheckBox.TabIndex = 31
         Me.MSFBiasCorrectionCheckBox.Text = "Run w/o MSF Bias Correction for COHO "
         Me.MSFBiasCorrectionCheckBox.UseVisualStyleBackColor = False
@@ -233,9 +234,9 @@ Partial Class FVS_RunModel
         Me.ChinookSizeLimitCheck.AutoSize = True
         Me.ChinookSizeLimitCheck.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.ChinookSizeLimitCheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ChinookSizeLimitCheck.Location = New System.Drawing.Point(246, 353)
+        Me.ChinookSizeLimitCheck.Location = New System.Drawing.Point(197, 282)
         Me.ChinookSizeLimitCheck.Name = "ChinookSizeLimitCheck"
-        Me.ChinookSizeLimitCheck.Size = New System.Drawing.Size(160, 22)
+        Me.ChinookSizeLimitCheck.Size = New System.Drawing.Size(195, 28)
         Me.ChinookSizeLimitCheck.TabIndex = 32
         Me.ChinookSizeLimitCheck.Text = "No Size Limit Fix "
         Me.ToolTip1.SetToolTip(Me.ChinookSizeLimitCheck, "select if you do not wish to apply a size limit correction")
@@ -250,8 +251,8 @@ Partial Class FVS_RunModel
         Me.Button2.Size = New System.Drawing.Size(155, 57)
         Me.Button2.TabIndex = 34
         Me.Button2.Text = "S:L Ratio Update "
-        Me.ToolTip1.SetToolTip(Me.Button2, "Only use in conjunction with ""No Size Limit Fix"" option as S:L ratios are otherwi" & _
-                "se automatically updated.")
+        Me.ToolTip1.SetToolTip(Me.Button2, "Only use in conjunction with ""No Size Limit Fix"" option as S:L ratios are otherwi" &
+        "se automatically updated.")
         Me.Button2.UseVisualStyleBackColor = False
         '
         'OldCohort
@@ -259,9 +260,9 @@ Partial Class FVS_RunModel
         Me.OldCohort.AutoSize = True
         Me.OldCohort.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.OldCohort.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.OldCohort.Location = New System.Drawing.Point(246, 381)
+        Me.OldCohort.Location = New System.Drawing.Point(197, 305)
         Me.OldCohort.Name = "OldCohort"
-        Me.OldCohort.Size = New System.Drawing.Size(254, 21)
+        Me.OldCohort.Size = New System.Drawing.Size(293, 24)
         Me.OldCohort.TabIndex = 35
         Me.OldCohort.Text = "Cohort T4 pre 2012 Processing"
         Me.OldCohort.UseVisualStyleBackColor = False
@@ -271,9 +272,9 @@ Partial Class FVS_RunModel
         Me.chkCoastalIterations.AutoSize = True
         Me.chkCoastalIterations.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.chkCoastalIterations.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkCoastalIterations.Location = New System.Drawing.Point(246, 218)
+        Me.chkCoastalIterations.Location = New System.Drawing.Point(197, 174)
         Me.chkCoastalIterations.Name = "chkCoastalIterations"
-        Me.chkCoastalIterations.Size = New System.Drawing.Size(188, 21)
+        Me.chkCoastalIterations.Size = New System.Drawing.Size(219, 24)
         Me.chkCoastalIterations.TabIndex = 36
         Me.chkCoastalIterations.Text = "Run Coastal Iterations"
         Me.chkCoastalIterations.UseVisualStyleBackColor = False
@@ -287,13 +288,26 @@ Partial Class FVS_RunModel
         Me.chkTS4.AutoSize = True
         Me.chkTS4.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.chkTS4.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkTS4.Location = New System.Drawing.Point(246, 399)
+        Me.chkTS4.Location = New System.Drawing.Point(197, 326)
         Me.chkTS4.Name = "chkTS4"
-        Me.chkTS4.Size = New System.Drawing.Size(205, 20)
+        Me.chkTS4.Size = New System.Drawing.Size(254, 24)
         Me.chkTS4.TabIndex = 37
         Me.chkTS4.Text = "Don't reuse T1 when A5=0"
         Me.ToolTip1.SetToolTip(Me.chkTS4, resources.GetString("chkTS4.ToolTip"))
         Me.chkTS4.UseVisualStyleBackColor = False
+        '
+        'ModelRunMulti
+        '
+        Me.ModelRunMulti.BackColor = System.Drawing.Color.DeepSkyBlue
+        Me.ModelRunMulti.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ModelRunMulti.Location = New System.Drawing.Point(715, 596)
+        Me.ModelRunMulti.Name = "ModelRunMulti"
+        Me.ModelRunMulti.Size = New System.Drawing.Size(155, 57)
+        Me.ModelRunMulti.TabIndex = 38
+        Me.ModelRunMulti.Text = "Run Multiple"
+        Me.ToolTip1.SetToolTip(Me.ModelRunMulti, "Only use in conjunction with ""No Size Limit Fix"" option as S:L ratios are otherwi" &
+        "se automatically updated.")
+        Me.ModelRunMulti.UseVisualStyleBackColor = False
         '
         'FVS_RunModel
         '
@@ -301,6 +315,7 @@ Partial Class FVS_RunModel
         Me.AutoScroll = True
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(882, 678)
+        Me.Controls.Add(Me.ModelRunMulti)
         Me.Controls.Add(Me.chkTS4)
         Me.Controls.Add(Me.chkCoastalIterations)
         Me.Controls.Add(Me.OldCohort)
@@ -353,4 +368,5 @@ Partial Class FVS_RunModel
     Friend WithEvents chkCoastalIterations As System.Windows.Forms.CheckBox
     Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip
     Friend WithEvents chkTS4 As System.Windows.Forms.CheckBox
+    Friend WithEvents ModelRunMulti As Button
 End Class

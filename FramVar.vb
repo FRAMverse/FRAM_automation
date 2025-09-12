@@ -30,9 +30,14 @@ Public Module FramVar
    '- Run Selection Variables
    Public RunIDSelect As Integer
    Public RunIDDelete As Integer
-   Public RunIDTransfer() As Integer
-   Public NumTransferID As Integer
-   Public NewRunID As Integer
+    Public RunIDTransfer() As Integer
+    Public RunIDMultirun(0) As Integer 'Int array of run ids selected for a multi-run
+    Public RunIDNameMultirun(0) As String 'Str array of run id names for a multi-run
+    Public TAMMsMultirun(0) As String 'str array of tamm names selected for a multi-run. "none" will signify no TAMM
+    Public TAMMsMultirunPaths(0) As String 'str array of tamm paths (associated with TAMMsMultirun) for a multi-run. "none" will signify no TAMM.
+    Public NumTransferID As Integer
+    Public NumMultirunID As Integer '# of runs selected for multirun
+    Public NewRunID As Integer
    Public RunIDNameSelect As String
    Public RunIDTitleSelect As String
    Public RunIDCommentsSelect As String
