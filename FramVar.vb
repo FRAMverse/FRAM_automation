@@ -25,20 +25,15 @@ Public Module FramVar
    Public FramDB As New OleDb.OleDbConnection
     Public TransDB As New OleDb.OleDbConnection
     Public TransBP As New OleDb.OleDbConnection
-   Public StockRecruitDA As New System.Data.OleDb.OleDbDataAdapter
+    Public StockRecruitDA As New System.Data.OleDb.OleDbDataAdapter
 
-   '- Run Selection Variables
-   Public RunIDSelect As Integer
+    '- Run Selection Variables
+    Public RunIDSelect As Integer
    Public RunIDDelete As Integer
     Public RunIDTransfer() As Integer
-    Public RunIDMultirun(0) As Integer 'Int array of run ids selected for a multi-run
-    Public RunIDNameMultirun(0) As String 'Str array of run id names for a multi-run
-    Public TAMMsMultirun(0) As String 'str array of tamm names selected for a multi-run. "none" will signify no TAMM
-    Public TAMMsMultirunPaths(0) As String 'str array of tamm paths (associated with TAMMsMultirun) for a multi-run. "none" will signify no TAMM.
     Public NumTransferID As Integer
-    Public NumMultirunID As Integer '# of runs selected for multirun
     Public NewRunID As Integer
-   Public RunIDNameSelect As String
+    Public RunIDNameSelect As String
    Public RunIDTitleSelect As String
    Public RunIDCommentsSelect As String
    Public RunIDCreationDateSelect As DateTime
@@ -61,9 +56,16 @@ Public Module FramVar
     Public CoastalIter As String
     Public FRAMVers As String
 
+    '- Supporting multi-runs
+    Public RunIDMultirun(0) As Integer 'Int array of run ids selected for a multi-run
+    Public RunIDNameMultirun(0) As String 'Str array of run id names for a multi-run
+    Public TAMMsMultirun(0) As String 'str array of tamm names selected for a multi-run. "none" will signify no TAMM
+    Public TAMMsMultirunPaths(0) As String 'str array of tamm paths (associated with TAMMsMultirun) for a multi-run. "none" will signify no TAMM.
+    Public NumMultirunID As Integer '# of runs selected for multirun
 
-   '- Input Edit Change Variables
-   Public ChangeAnyInput As Boolean
+
+    '- Input Edit Change Variables
+    Public ChangeAnyInput As Boolean
    Public ChangeBackFram As Boolean
    Public ChangeFishScalers As Boolean
    Public ChangeNonRetention As Boolean

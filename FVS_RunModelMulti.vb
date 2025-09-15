@@ -11,6 +11,17 @@ Public Class FVS_RunModelMulti
     Private RunNamesArr(0) As String 'storing runnames for error checking
     Private RunPossible As Boolean = True ' to prevent model running if any selected run is missing from database
     Private NumRepeats As Integer = 1
+    Private RunsWithNegEsc As New List(Of Integer)
+    'our run settings sometimes get overwritten in-loop
+    'these are our multi-run versions that won't get overwitten
+    Private AllrunsT4CohortFlag As Boolean = False
+    Private AllrunsT4CohortFlag2 As Boolean = False
+    Private AllrunsOptionChinookBYAEQ As Integer = 0
+    Private AllrunsOptionUseTAMMfws As Boolean = False
+    Private AllrunsOptionOldTAMMformat As Boolean = False
+    Private AllrunsCoastalIterations As Boolean = False
+
+    'Creating multirun values for 
 
     'Dim SelectedRuns As List(Of String)
 
@@ -18,6 +29,15 @@ Public Class FVS_RunModelMulti
         'UseTAMMFlag = 0
         Dim cmd1 As New OleDb.OleDbCommand()
 
+        ' set the checkbox variables to default state unless checked
+        AllrunsT4CohortFlag = False
+        AllrunsT4CohortFlag2 = False
+        AllrunsOptionChinookBYAEQ = 0
+        AllrunsOptionUseTAMMfws = False
+        AllrunsOptionOldTAMMformat = False
+        AllrunsCoastalIterations = False
+
+        'default to no visibility
         CurrentStepLabel.Visible = False
         EstimatedRunTimeLabel.Visible = False
         BatchProgressBar.Visible = False
@@ -38,7 +58,7 @@ Public Class FVS_RunModelMulti
 
 
 
-        ' Handle blocking off checklists based on species
+        ' Handle invisible-ifying checklists based on species
         If SpeciesName = "COHO" Then
             ChinookBYCheck.Visible = False
             ChinookBYCheck.Enabled = False
@@ -407,66 +427,68 @@ Public Class FVS_RunModelMulti
 
     Private Sub chkCoastalIterations_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkCoastalIterations.CheckedChanged
         If chkCoastalIterations.Checked = True Then
-            CoastalIterations = True
+            AllrunsCoastalIterations = True
             ReDim FisheryQuotaCompare(NumFish, NumSteps)
         Else
-            CoastalIterations = False
+            AllrunsCoastalIterations = False
         End If
     End Sub
     Private Sub OldTammCheck_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles OldTammCheck.CheckedChanged
         If OldTammCheck.Checked = True Then
-            OptionOldTAMMformat = True
+            AllrunsOptionOldTAMMformat = True
         Else
-            OptionOldTAMMformat = False
+            AllrunsOptionOldTAMMformat = False
         End If
     End Sub
     Private Sub TammFwsCheck_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles TammFwsCheck.CheckedChanged
         If TammFwsCheck.Checked = True Then
-            OptionUseTAMMfws = True
+            AllrunsOptionUseTAMMfws = True
         Else
-            OptionUseTAMMfws = False
+            AllrunsOptionUseTAMMfws = False
         End If
     End Sub
 
     Private Sub MSFBiasCorrectionCheckBox_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MSFBiasCorrectionCheckBox.CheckedChanged
-        If MSFBiasCorrectionCheckBox.Checked = True Then
-            MSFBiasFlag = False
-        Else
-            MSFBiasFlag = True
-        End If
+        'Handled in-loop. MSFBiasFlag is a global var and may get modified in calculations. Directly checking MSFBiasCorrectionCheckbox each time avoids initial runs overwriting following ones.
+        'If MSFBiasCorrectionCheckBox.Checked = True Then
+        'MSFBiasFlag = False
+        'Else
+        '   MSFBiasFlag = True
+        'End If
     End Sub
 
     Private Sub ChinookBYCheck_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ChinookBYCheck.CheckedChanged
         If ChinookBYCheck.Checked = True Then
-            OptionChinookBYAEQ = 1
+            AllrunsOptionChinookBYAEQ = 1
         Else
-            OptionChinookBYAEQ = 0
+            AllrunsOptionChinookBYAEQ = 0
         End If
     End Sub
     Private Sub ChinookSizeLimitCheck_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ChinookSizeLimitCheck.CheckedChanged
-        If ChinookSizeLimitCheck.Checked = True Then
-            SizeLimitFix = False
-        Else
-            SizeLimitFix = True
-        End If
+        'Handled in loop, as SizeLimitFix gets modified in run. Checkbox will act as permanent record of across-run values. 
+        'If ChinookSizeLimitCheck.Checked = True Then
+        ' SizeLimitFix = False
+        ' Else
+        ' SizeLimitFix = True
+        ' End If
     End Sub
 
     Private Sub OldCohort_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OldCohort.CheckedChanged
         'will not place time 1 cohort into time 4 for stocks with a missing abundance of age-1 - time 4 age will be zero
 
         If OldCohort.Checked = True Then
-            T4CohortFlag = True
+            AllrunsT4CohortFlag = True
         Else
-            T4CohortFlag = False
+            AllrunsT4CohortFlag = False
         End If
     End Sub
 
     Private Sub chkTS4_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkTS4.CheckedChanged
         'when T4CohortFlag2 = True then time 1 cohort will not be recycled in time 4 (for stocks missing age-1 abundance) when age 5 = 0
         If chkTS4.Checked = True Then
-            T4CohortFlag2 = True
+            AllrunsT4CohortFlag2 = True
         Else
-            T4CohortFlag2 = False
+            AllrunsT4CohortFlag2 = False
         End If
     End Sub
 
@@ -484,8 +506,19 @@ Public Class FVS_RunModelMulti
         EstimatedRunTimeLabel.Visible = True
         BatchProgressBar.Visible = True
 
+        Dim haveTamms As Boolean = False
+        For Each item In TAMMsMultirun
+            If item <> "none" Then
+                haveTamms = True
+                Exit For
+            End If
+        Next
 
-        result = MsgBox("For ALL runs: Do You Want to SAVE TAMM Tranfer Values into TAMM SpreadSheet?", MsgBoxStyle.YesNo)
+        If haveTamms Then
+            result = MsgBox("For ALL runs: Do You Want to SAVE TAMM Tranfer Values into TAMM SpreadSheet?", MsgBoxStyle.YesNo)
+        Else
+            result = False
+        End If
         If result = vbYes Then
             TammTransferSave = True
         Else
@@ -530,6 +563,23 @@ Public Class FVS_RunModelMulti
 
 
             For iRepeat As Integer = 1 To NumRepeats
+
+                'Set each of the run settings based on the "Allruns" versions.
+                'Necessary in case running the model changes those (as it does for at least SizeLimitFix
+                T4CohortFlag = AllrunsT4CohortFlag
+                T4CohortFlag2 = AllrunsT4CohortFlag2
+                OptionChinookBYAEQ = AllrunsOptionChinookBYAEQ
+                OptionUseTAMMfws = AllrunsOptionUseTAMMfws
+                OptionOldTAMMformat = AllrunsOptionOldTAMMformat
+                CoastalIterations = AllrunsCoastalIterations
+
+                If ChinookSizeLimitCheck.Checked = True Or SpeciesName = "COHO" Then
+                    SizeLimitFix = False
+                Else
+                    SizeLimitFix = True
+                End If
+
+
 
                 CurrentStepLabel.Text = "Run " & iRun + 1 & " of " & NumMultirunID & ": " & RunIDNameSelect & " (RunID " & RunIDSelect & ") - Repeat " & iRepeat & " Of " & NumRepeats
                 Me.Refresh()
@@ -740,6 +790,12 @@ Public Class FVS_RunModelMulti
 
                         '****************Begin PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
                         If SpeciesName = "COHO" Then
+                            If MSFBiasCorrectionCheckBox.Checked = True Then
+                                MSFBiasFlag = False
+                            Else
+                                MSFBiasFlag = True
+                            End If
+
                             If MSFBiasFlag = True Then
                                 If RunIDNameSelect.Substring(0, 3) <> "bc-" Then
                                     RunIDNameSelect = "bc-" & RunIDNameSelect
@@ -784,12 +840,7 @@ Public Class FVS_RunModelMulti
                 UpdateRunEncounterRateAdjustment = False
                 RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
                 'PPPPPP---(end of closing Pete 12/13 Block)------------------------------------------------------------------------
-                If AnyNegativeEscapement = 1 Then
-                    If msgFlag = False Then
-                        MsgBox("You have negative escapements. Please check the PopStat report!")
-                    End If
-                End If
-                AnyNegativeEscapement = 0
+
 
                 'provide a warning when a sublegal nonretention input does not result in mortality (due to small size limit in net)
 
@@ -854,6 +905,13 @@ Public Class FVS_RunModelMulti
                 'add garbage collection and closure stuff here
                 Application.DoEvents()
             Next
+            If AnyNegativeEscapement = 1 Then
+                'If msgFlag = False Then
+                ' MsgBox("You have negative escapements. Please check the PopStat report!")
+                RunsWithNegEsc.Add(RunIDSelect)
+                'End If
+                AnyNegativeEscapement = 0
+            End If
         Next
 
         Dim endTime = DateTime.Now
@@ -866,9 +924,23 @@ Public Class FVS_RunModelMulti
         CancelRunButton.Visible = False
         RunAllButton.Visible = False
 
+
         Me.Refresh()
 
-        'MsgBox("Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes.")
+        If RunsWithNegEsc.Count > 0 Then
+
+            Dim RunsArr(RunsWithNegEsc.Count - 1) As String
+            For i As Integer = 0 To RunsWithNegEsc.Count - 1
+                RunsArr(i) = RunsWithNegEsc(i).ToString()
+            Next
+
+            MsgBox("Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes." &
+                    vbNewLine & vbNewLine & " WARNING: The following runs had negative escapements. Please check the Popstat Reports!" &
+                       vbNewLine & "Run IDs:" & String.Join(", ", RunsArr))
+        Else
+            MsgBox("Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes.")
+        End If
+
 
     End Sub
 

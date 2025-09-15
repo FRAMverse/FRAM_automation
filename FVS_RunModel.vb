@@ -119,13 +119,13 @@ Public Class FVS_RunModel
       Dim iters As Integer = 1
         Dim c As Integer = 1 'Allows RunModelButton_Click to execute as normal (for coho or non-update Chinook runs)
 
-        'COLLIN LOOK HERE! REALLY WANT TO MOVE THIS TO THE RESPONSE-TO-CHECKED FUNCTION
+
         If ChinookSizeLimitCheck.Checked = True Or SpeciesName = "COHO" Then
             SizeLimitFix = False
         Else
             SizeLimitFix = True
-
         End If
+
         If TAMMSpreadSheet <> "" Then
             TAMMName = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).Name
         Else
