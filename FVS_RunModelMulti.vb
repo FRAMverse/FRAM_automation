@@ -12,6 +12,9 @@ Public Class FVS_RunModelMulti
     Private RunPossible As Boolean = True ' to prevent model running if any selected run is missing from database
     Private NumRepeats As Integer = 1
     Private RunsWithNegEsc As New List(Of Integer)
+
+    Private BasePeriodIDMultirun(0) As Integer
+
     'our run settings sometimes get overwritten in-loop
     'these are our multi-run versions that won't get overwitten
     Private AllrunsT4CohortFlag As Boolean = False
@@ -179,11 +182,14 @@ Public Class FVS_RunModelMulti
         FramDB.Open()
 
         ReDim RunIDNameMultirun(NumMultirunID - 1)
+        ReDim BasePeriodIDMultirun(NumMultirunID - 1)
 
         For i As Integer = 1 To NumMultirunID
             'reminder that indexing starts at 0!!
             Dim drd1 As OleDb.OleDbDataReader ' for getting run names
             Dim cmd1 As New OleDb.OleDbCommand() ' for getting run names
+            Dim drd2 As OleDb.OleDbDataReader ' for getting base period IDs
+            Dim cmd2 As New OleDb.OleDbCommand() ' for getting base period IDs
 
             'Add runID
             Dim RunIDLab As New Windows.Forms.Label()
@@ -209,8 +215,15 @@ Public Class FVS_RunModelMulti
                 MissingRun = True
             End If
             RunIDNameMultirun(i - 1) = RunNameLab.Text
-
             MultirunPanel.Controls.Add(RunNameLab, 1, i)
+
+            ' Find base period ids for GetRunVariables later
+            cmd2.Connection = FramDB
+            cmd2.CommandText = "SELECT BasePeriodID FROM RunID WHERE RunID = " & RunIDMultirun(i - 1)
+            drd2 = cmd2.ExecuteReader
+            While drd2.Read
+                BasePeriodIDMultirun(i - 1) = Convert.ToString(drd2(0))
+            End While
 
             'populate TAMM names
 
@@ -517,7 +530,7 @@ Public Class FVS_RunModelMulti
         If haveTamms Then
             result = MsgBox("For ALL runs: Do You Want to SAVE TAMM Tranfer Values into TAMM SpreadSheet?", MsgBoxStyle.YesNo)
         Else
-            result = False
+            result = vbNo
         End If
         If result = vbYes Then
             TammTransferSave = True
@@ -561,8 +574,16 @@ Public Class FVS_RunModelMulti
             RunIDSelect = RunIDMultirun(iRun)
             RunIDNameSelect = RunIDNameMultirun(iRun)
 
+            FVS_ModelRunSelection.GetRunVariables(BaseNum:=BasePeriodIDMultirun(iRun),
+                                                  RunNum:=RunIDSelect)
+
 
             For iRepeat As Integer = 1 To NumRepeats
+
+                'Reset warning flags, as they otherwise remain triggered across multiple runs
+
+                msgFlag = False
+
 
                 'Set each of the run settings based on the "Allruns" versions.
                 'Necessary in case running the model changes those (as it does for at least SizeLimitFix

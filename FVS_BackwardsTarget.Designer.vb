@@ -22,20 +22,20 @@ Partial Class FVS_BackwardsTarget
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.BFTargetGrid = New System.Windows.Forms.DataGridView
-        Me.BTOKButton = New System.Windows.Forms.Button
-        Me.BTCancelButton = New System.Windows.Forms.Button
-        Me.BTEscapementButton = New System.Windows.Forms.Button
-        Me.BTFillSSButton = New System.Windows.Forms.Button
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog
-        Me.RecordSetNameLabel = New System.Windows.Forms.Label
-        Me.DatabaseNameLabel = New System.Windows.Forms.Label
-        Me.RecordSetTextLabel = New System.Windows.Forms.Label
-        Me.DatabaseTextLabel = New System.Windows.Forms.Label
-        Me.BTCatchButton = New System.Windows.Forms.Button
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.BFTargetGrid = New System.Windows.Forms.DataGridView()
+        Me.BTOKButton = New System.Windows.Forms.Button()
+        Me.BTCancelButton = New System.Windows.Forms.Button()
+        Me.BTEscapementButton = New System.Windows.Forms.Button()
+        Me.BTFillSSButton = New System.Windows.Forms.Button()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.RecordSetNameLabel = New System.Windows.Forms.Label()
+        Me.DatabaseNameLabel = New System.Windows.Forms.Label()
+        Me.RecordSetTextLabel = New System.Windows.Forms.Label()
+        Me.DatabaseTextLabel = New System.Windows.Forms.Label()
+        Me.BTCatchButton = New System.Windows.Forms.Button()
         CType(Me.BFTargetGrid, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -45,23 +45,24 @@ Partial Class FVS_BackwardsTarget
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 13.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.Location = New System.Drawing.Point(216, 25)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(402, 24)
+        Me.Label1.Size = New System.Drawing.Size(504, 29)
         Me.Label1.TabIndex = 0
         Me.Label1.Text = "Target Escapements for Backwards FRAM"
         '
         'BFTargetGrid
         '
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.BFTargetGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.BFTargetGrid.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.BFTargetGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.BFTargetGrid.Location = New System.Drawing.Point(44, 74)
         Me.BFTargetGrid.Name = "BFTargetGrid"
+        Me.BFTargetGrid.RowHeadersWidth = 51
         Me.BFTargetGrid.RowTemplate.Height = 24
         Me.BFTargetGrid.Size = New System.Drawing.Size(935, 607)
         Me.BFTargetGrid.TabIndex = 1
@@ -116,7 +117,7 @@ Partial Class FVS_BackwardsTarget
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.Location = New System.Drawing.Point(43, 768)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(456, 20)
+        Me.Label2.Size = New System.Drawing.Size(553, 25)
         Me.Label2.TabIndex = 6
         Me.Label2.Text = "FLAGS: 0=Don't Use, 1=Exact Value, 2=Split into M/UM" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
         '
@@ -131,7 +132,7 @@ Partial Class FVS_BackwardsTarget
         Me.RecordSetNameLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.RecordSetNameLabel.Location = New System.Drawing.Point(128, 834)
         Me.RecordSetNameLabel.Name = "RecordSetNameLabel"
-        Me.RecordSetNameLabel.Size = New System.Drawing.Size(121, 17)
+        Me.RecordSetNameLabel.Size = New System.Drawing.Size(140, 20)
         Me.RecordSetNameLabel.TabIndex = 19
         Me.RecordSetNameLabel.Text = "recordset name"
         '
@@ -142,7 +143,7 @@ Partial Class FVS_BackwardsTarget
         Me.DatabaseNameLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.2!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.DatabaseNameLabel.Location = New System.Drawing.Point(128, 800)
         Me.DatabaseNameLabel.Name = "DatabaseNameLabel"
-        Me.DatabaseNameLabel.Size = New System.Drawing.Size(119, 17)
+        Me.DatabaseNameLabel.Size = New System.Drawing.Size(136, 20)
         Me.DatabaseNameLabel.TabIndex = 18
         Me.DatabaseNameLabel.Text = "database name"
         '
@@ -152,7 +153,7 @@ Partial Class FVS_BackwardsTarget
         Me.RecordSetTextLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 7.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.RecordSetTextLabel.Location = New System.Drawing.Point(45, 834)
         Me.RecordSetTextLabel.Name = "RecordSetTextLabel"
-        Me.RecordSetTextLabel.Size = New System.Drawing.Size(67, 13)
+        Me.RecordSetTextLabel.Size = New System.Drawing.Size(81, 16)
         Me.RecordSetTextLabel.TabIndex = 17
         Me.RecordSetTextLabel.Text = "RecordSet"
         '
@@ -162,7 +163,7 @@ Partial Class FVS_BackwardsTarget
         Me.DatabaseTextLabel.Font = New System.Drawing.Font("Microsoft Sans Serif", 7.8!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.DatabaseTextLabel.Location = New System.Drawing.Point(45, 800)
         Me.DatabaseTextLabel.Name = "DatabaseTextLabel"
-        Me.DatabaseTextLabel.Size = New System.Drawing.Size(61, 13)
+        Me.DatabaseTextLabel.Size = New System.Drawing.Size(75, 16)
         Me.DatabaseTextLabel.TabIndex = 16
         Me.DatabaseTextLabel.Text = "Database"
         '
@@ -183,7 +184,7 @@ Partial Class FVS_BackwardsTarget
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
         Me.AutoScroll = True
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(255, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1004, 701)
+        Me.ClientSize = New System.Drawing.Size(1219, 876)
         Me.Controls.Add(Me.BTCatchButton)
         Me.Controls.Add(Me.RecordSetNameLabel)
         Me.Controls.Add(Me.DatabaseNameLabel)
@@ -204,7 +205,7 @@ Partial Class FVS_BackwardsTarget
         Me.PerformLayout()
 
     End Sub
-   Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents Label1 As System.Windows.Forms.Label
    Friend WithEvents BFTargetGrid As System.Windows.Forms.DataGridView
    Friend WithEvents BTOKButton As System.Windows.Forms.Button
    Friend WithEvents BTCancelButton As System.Windows.Forms.Button
