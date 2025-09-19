@@ -1676,5 +1676,4 @@ C:\Repos\FRAM_automation\obj\Debug\FramVS.vbproj.Up2Date
 C:\Repos\FRAM_automation\obj\Debug\FramVS.exe
 C:\Repos\FRAM_automation\obj\Debug\FramVS.xml
 C:\Repos\FRAM_automation\obj\Debug\FramVS.pdb
-C:\Repos\FRAM_automation\obj\Debug\FramVS.FVS_ModelRunMulti.resources
 C:\Repos\FRAM_automation\obj\Debug\FramVS.FVS_RunModelMulti.resources

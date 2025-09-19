@@ -134,12 +134,6 @@
     <Compile Include="FVS_BPTransfer.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FVS_ModelRunMulti.Designer.vb">
-      <DependentUpon>FVS_ModelRunMulti.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FVS_ModelRunMulti.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="FVS_MultiDelete.Designer.vb">
       <DependentUpon>FVS_MultiDelete.vb</DependentUpon>
     </Compile>
@@ -412,9 +406,6 @@
     <EmbeddedResource Include="FVS_BPTransfer.resx">
       <DependentUpon>FVS_BPTransfer.vb</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FVS_ModelRunMulti.resx">
-      <DependentUpon>FVS_ModelRunMulti.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FVS_MultiDelete.resx">
       <DependentUpon>FVS_MultiDelete.vb</DependentUpon>

@@ -12,6 +12,7 @@ Public Class FVS_RunModelMulti
     Private RunPossible As Boolean = True ' to prevent model running if any selected run is missing from database
     Private NumRepeats As Integer = 1
     Private RunsWithNegEsc As New List(Of Integer)
+    Private ErrorMessagesMultirun As String = "" 'storing error messages for later
 
     Private BasePeriodIDMultirun(0) As Integer
 
@@ -884,11 +885,13 @@ Public Class FVS_RunModelMulti
                             If NonRetentionFlag(Fish, TStep) = 3 Then
                                 If Fish >= 36 And InStr(FisheryTitle(Fish), "Sport") > 0 Then
                                     If FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) / 2 + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep)) > 1 Then
-                                        MsgBox("Sublegal nonretention input For fishery " & Fish & " does Not produce a mortality. Consider modeling fishery As 'Total Encounters'")
+                                        'MsgBox("Sublegal nonretention input For fishery " & Fish & " does not produce a mortality. Consider modeling fishery As 'Total Encounters'")
+                                        ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input For fishery " & Fish & " does Not produce a mortality. Consider modeling fishery As 'Total Encounters'"
                                     End If
                                 Else
                                     If Math.Abs(FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep))) > 1 Then
-                                        MsgBox("Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'")
+                                        'MsgBox("Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'")
+                                        ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'"
                                     End If
                                 End If
                             End If
@@ -948,6 +951,14 @@ Public Class FVS_RunModelMulti
 
         Me.Refresh()
 
+        Dim FinishedMessage As String = "Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes."
+
+        If ErrorMessagesMultirun.Length > 0 Then
+            FinishedMessage = FinishedMessage &
+            vbNewLine & vbNewLine & "One or more runs had subelegal nonretention input for one or more fisheries without producing mortalities. See '" & Path.GetFileNameWithoutExtension(FVSdatabasename) & $"_batch_run_log_*.txt' file."
+        End If
+
+
         If RunsWithNegEsc.Count > 0 Then
 
             Dim RunsArr(RunsWithNegEsc.Count - 1) As String
@@ -955,13 +966,45 @@ Public Class FVS_RunModelMulti
                 RunsArr(i) = RunsWithNegEsc(i).ToString()
             Next
 
-            MsgBox("Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes." &
-                    vbNewLine & vbNewLine & " WARNING: The following runs had negative escapements. Please check the Popstat Reports!" &
-                       vbNewLine & "Run IDs:" & String.Join(", ", RunsArr))
-        Else
-            MsgBox("Multi-run Done! Duration: " & Math.Round(duration.TotalMinutes, 2) & " minutes.")
+            'add to messagebox
+            FinishedMessage = FinishedMessage &
+            vbNewLine & vbNewLine & " WARNING: The following runs had negative escapements. Please check the Popstat Reports!" &
+                       vbNewLine & "Run IDs:" & String.Join(", ", RunsArr)
+
+            'add to messages that go to text file
+            ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & vbNewLine & "---------------------------------" & vbNewLine &
+                vbNewLine & " WARNING: The following runs had negative escapements. Please check the Popstat Reports!" &
+                       vbNewLine & "Run IDs:" & String.Join(", ", RunsArr)
+
         End If
 
+        'Save error/warning messages to a text file
+        ' full path of database is FVSdatabasename. Want to use everything but the filename, replace with text file name.
+        ' Path.GetDirectoryName(FVSdatabasename) does that.
+
+        Dim NoMessages As Boolean = ErrorMessagesMultirun.Length = 0
+
+        Dim RunsAsStr(NumMultirunID - 1) As String
+        For i As Integer = 0 To NumMultirunID - 1
+            RunsAsStr(i) = RunIDMultirun(i).ToString()
+        Next
+
+        Dim textLog As String = "BATCH RUN" & vbNewLine &
+            DateTime.Now.ToString() & vbNewLine &
+            FVSdatabasename & vbNewLine &
+            "RunIds: " & String.Join(", ", RunsAsStr) & vbNewLine &
+            "Each run " & NumRepeats.ToString() & " time(s)" & vbNewLine & vbNewLine &
+            "---------------------------------" &
+            vbNewLine & ErrorMessagesMultirun
+
+        If NoMessages Then
+            textLog = textLog & vbNewLine & vbNewLine & "No warnings or errors caught during looping!"
+        End If
+
+        Dim errorFileName As String = Path.GetDirectoryName(FVSdatabasename) & "/" & Path.GetFileNameWithoutExtension(FVSdatabasename) & $"_batch_run_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
+        File.WriteAllText(errorFileName, textLog)
+
+        MsgBox(FinishedMessage)
 
     End Sub
 
