@@ -690,7 +690,7 @@ Public Class FVS_RunModel
     Private Sub ModelRunMulti_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ModelRunMulti.Click
         Me.Visible = False
         FVS_RunModelMulti.ShowDialog()
-        Me.BringToFront()
+        'Me.BringToFront()
     End Sub
 
 End Class
