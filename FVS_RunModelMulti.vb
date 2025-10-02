@@ -6,6 +6,7 @@ Imports System.Text.RegularExpressions
 Imports System.Media
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar
 Imports System.Threading.Tasks
+Imports System.Linq
 
 Public Class FVS_RunModelMulti
     Private MultirunPanel As TableLayoutPanel 'creating outside of Subs so that it can be accessed by multiple functions
@@ -165,15 +166,21 @@ Public Class FVS_RunModelMulti
         With MultirunPanel.ColumnStyles
             .Clear()
             .Add(New ColumnStyle(SizeType.Percent, 10))  ' RunID only needs a little space
-            .Add(New ColumnStyle(SizeType.Percent, 30))  ' Run Name needs more space
-            .Add(New ColumnStyle(SizeType.Percent, 30))  ' Tamm File needs more space
+            .Add(New ColumnStyle(SizeType.Percent, 25))  ' Run Name needs more space
+            .Add(New ColumnStyle(SizeType.Percent, 35))  ' Tamm File needs more space
             .Add(New ColumnStyle(SizeType.Percent, 15))  ' Button column
             .Add(New ColumnStyle(SizeType.Percent, 15))  ' button column
+
+
         End With
 
 
         '   Adding headers
         Dim headers() As String = {"Run ID", "Run Name", "TAMM File", "Add TAMM", "Remove TAMM"}
+        If ShowButtons <> True Then
+            headers = {"Run ID", "Run Name", "TAMM File", "", ""}
+        End If
+
         For col As Integer = 0 To headers.Length - 1
             Dim headerLabel As New Windows.Forms.Label()
             With headerLabel
@@ -197,18 +204,11 @@ Public Class FVS_RunModelMulti
         ReDim RunIDNameMultirun(NumMultirunID - 1)
         ReDim BasePeriodIDMultirun(NumMultirunID - 1)
 
-        Dim RunNameLabsAll As List(Of String)
-        Dim BasePeriodIdAll As List(Of String)
-        Dim RunIDAll As List(Of Integer)
-
-
-
+        MultirunPanel.SuspendLayout()
 
         For i As Integer = 1 To NumMultirunID
             'reminder that indexing starts at 0!!
-            Dim drd1 As OleDb.OleDbDataReader ' for getting run names
             Dim cmd1 As New OleDb.OleDbCommand() ' for getting run names
-            Dim drd2 As OleDb.OleDbDataReader ' for getting base period IDs
             Dim cmd2 As New OleDb.OleDbCommand() ' for getting base period IDs
 
             'Add runID
@@ -216,6 +216,8 @@ Public Class FVS_RunModelMulti
             With RunIDLab
                 .Text = RunIDMultirun(i - 1)
                 .TextAlign = ContentAlignment.MiddleCenter
+                .AutoSize = False
+                .Width = 300
             End With
             MultirunPanel.Controls.Add(RunIDLab, 0, i)
 
@@ -224,13 +226,16 @@ Public Class FVS_RunModelMulti
             With RunNameLab
                 .Text = "-"
                 .TextAlign = ContentAlignment.MiddleLeft
+                .AutoSize = False
+                .Width = 300
             End With
             cmd1.Connection = FramDB
             cmd1.CommandText = "SELECT RunName FROM RunID WHERE RunID = " & RunIDMultirun(i - 1)
-            drd1 = cmd1.ExecuteReader
-            While drd1.Read
-                RunNameLab.Text = Convert.ToString(drd1(0))
-            End While
+            Using drd1 = cmd1.ExecuteReader
+                While drd1.Read
+                    RunNameLab.Text = Convert.ToString(drd1(0))
+                End While
+            End Using
             If RunNameLab.Text = "-" Then
                 MissingRun = True
             End If
@@ -240,10 +245,13 @@ Public Class FVS_RunModelMulti
             ' Find base period ids for GetRunVariables later
             cmd2.Connection = FramDB
             cmd2.CommandText = "SELECT BasePeriodID FROM RunID WHERE RunID = " & RunIDMultirun(i - 1)
-            drd2 = cmd2.ExecuteReader
-            While drd2.Read
-                BasePeriodIDMultirun(i - 1) = Convert.ToString(drd2(0))
-            End While
+            Using drd2 = cmd2.ExecuteReader
+                While drd2.Read
+                    BasePeriodIDMultirun(i - 1) = Convert.ToString(drd2(0))
+                End While
+            End Using
+
+
 
             'populate TAMM names
 
@@ -251,6 +259,8 @@ Public Class FVS_RunModelMulti
             With TammLab
                 .Text = TAMMsMultirun(i - 1)
                 .TextAlign = ContentAlignment.MiddleLeft
+                .AutoSize = False
+                .Width = 300
             End With
             MultirunPanel.Controls.Add(TammLab, 2, i)
 
@@ -297,8 +307,10 @@ Public Class FVS_RunModelMulti
         Next
         FramDB.Close()
 
+        MultirunPanel.ResumeLayout()
+
         If MissingRun Then
-            MsgBox("One Or more TAMMs identify a run Not present in this database. Check TAMM filenames Or database choice. Table populated")
+            MsgBox("One or more TAMMs identify a run not present in this database. Check TAMM filenames Or database choice. Table populated")
             RunPossible = False
         Else
             RunPossible = True
@@ -318,12 +330,12 @@ Public Class FVS_RunModelMulti
         ' I went with defining all the TAMM buttons as i, and then all the tamm removal buttons as i + NumMultirunID
         '  NOTE!!! The tags start at 1! Not 0!
         'For simplicity, parse out the scenarios: convert 
-        If clickedButton.Tag < 1 + NumMultirunID Then
-            RemovalFlag = False
-            i = clickedButton.Tag
+        If clickedButton.Tag <1 + NumMultirunID Then
+            RemovalFlag= False
+            i= clickedButton.Tag
         Else
-            RemovalFlag = True
-            i = clickedButton.Tag - NumMultirunID
+            RemovalFlag= True
+            i= clickedButton.Tag - NumMultirunID
         End If
 
 
@@ -368,6 +380,8 @@ Public Class FVS_RunModelMulti
         With TammLab
             .Text = TAMMsMultirun(i - 1)
             .TextAlign = ContentAlignment.MiddleLeft
+            .AutoSize = False
+            .Width = 300
         End With
         ReplaceCellContent(2, i, TammLab)
     End Sub
@@ -409,6 +423,9 @@ Public Class FVS_RunModelMulti
         If Directory.Exists(TammFolderTextbox.Text) Then 'is directory
 
             Dim TempTammFiles() As String = Directory.GetFiles(TammFolderTextbox.Text, "*.xlsx")
+            ' Don't want temp files
+            TempTammFiles = TempTammFiles.Where(Function(s) Not s.StartsWith("~")).ToArray()
+
             'Populate # of runs, TAMM info
             NumMultirunID = TempTammFiles.Length
 

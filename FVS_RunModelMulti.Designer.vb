@@ -264,6 +264,7 @@ Partial Class FVS_RunModelMulti
         Me.Panel1.AutoScroll = True
         Me.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(242, Byte), Integer), CType(CType(240, Byte), Integer), CType(CType(239, Byte), Integer))
         Me.Panel1.Location = New System.Drawing.Point(23, 212)
+        Me.Panel1.Margin = New System.Windows.Forms.Padding(0)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(991, 523)
         Me.Panel1.TabIndex = 56
