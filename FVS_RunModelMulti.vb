@@ -5,6 +5,8 @@ Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Media
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement.ToolBar
+Imports System.Threading.Tasks
+Imports System.Linq
 
 Public Class FVS_RunModelMulti
     Private MultirunPanel As TableLayoutPanel 'creating outside of Subs so that it can be accessed by multiple functions
@@ -30,6 +32,17 @@ Public Class FVS_RunModelMulti
     'Dim SelectedRuns As List(Of String)
 
     Private Sub FVS_ModelRunMulti_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+        'RunAllButton.DialogResult = DialogResult.None
+
+        Dim connectionString As String = FramDB.ConnectionString
+        Dim filePath As String = connectionString.Replace("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=", "")
+
+        Dim fileInfo As New System.IO.FileInfo(filePath)
+        Dim fileSizeInMB As Long = fileInfo.Length / 1024 / 1024
+        databaseSizeLabel.Text = Math.Round(fileSizeInMB, 1) & " MB"
+
+
         'UseTAMMFlag = 0
         Dim cmd1 As New OleDb.OleDbCommand()
 
@@ -153,15 +166,21 @@ Public Class FVS_RunModelMulti
         With MultirunPanel.ColumnStyles
             .Clear()
             .Add(New ColumnStyle(SizeType.Percent, 10))  ' RunID only needs a little space
-            .Add(New ColumnStyle(SizeType.Percent, 30))  ' Run Name needs more space
-            .Add(New ColumnStyle(SizeType.Percent, 30))  ' Tamm File needs more space
+            .Add(New ColumnStyle(SizeType.Percent, 25))  ' Run Name needs more space
+            .Add(New ColumnStyle(SizeType.Percent, 35))  ' Tamm File needs more space
             .Add(New ColumnStyle(SizeType.Percent, 15))  ' Button column
             .Add(New ColumnStyle(SizeType.Percent, 15))  ' button column
+
+
         End With
 
 
         '   Adding headers
         Dim headers() As String = {"Run ID", "Run Name", "TAMM File", "Add TAMM", "Remove TAMM"}
+        If ShowButtons <> True Then
+            headers = {"Run ID", "Run Name", "TAMM File", "", ""}
+        End If
+
         For col As Integer = 0 To headers.Length - 1
             Dim headerLabel As New Windows.Forms.Label()
             With headerLabel
@@ -185,11 +204,11 @@ Public Class FVS_RunModelMulti
         ReDim RunIDNameMultirun(NumMultirunID - 1)
         ReDim BasePeriodIDMultirun(NumMultirunID - 1)
 
+        MultirunPanel.SuspendLayout()
+
         For i As Integer = 1 To NumMultirunID
             'reminder that indexing starts at 0!!
-            Dim drd1 As OleDb.OleDbDataReader ' for getting run names
             Dim cmd1 As New OleDb.OleDbCommand() ' for getting run names
-            Dim drd2 As OleDb.OleDbDataReader ' for getting base period IDs
             Dim cmd2 As New OleDb.OleDbCommand() ' for getting base period IDs
 
             'Add runID
@@ -197,6 +216,8 @@ Public Class FVS_RunModelMulti
             With RunIDLab
                 .Text = RunIDMultirun(i - 1)
                 .TextAlign = ContentAlignment.MiddleCenter
+                .AutoSize = False
+                .Width = 300
             End With
             MultirunPanel.Controls.Add(RunIDLab, 0, i)
 
@@ -205,13 +226,16 @@ Public Class FVS_RunModelMulti
             With RunNameLab
                 .Text = "-"
                 .TextAlign = ContentAlignment.MiddleLeft
+                .AutoSize = False
+                .Width = 300
             End With
             cmd1.Connection = FramDB
             cmd1.CommandText = "SELECT RunName FROM RunID WHERE RunID = " & RunIDMultirun(i - 1)
-            drd1 = cmd1.ExecuteReader
-            While drd1.Read
-                RunNameLab.Text = Convert.ToString(drd1(0))
-            End While
+            Using drd1 = cmd1.ExecuteReader
+                While drd1.Read
+                    RunNameLab.Text = Convert.ToString(drd1(0))
+                End While
+            End Using
             If RunNameLab.Text = "-" Then
                 MissingRun = True
             End If
@@ -221,10 +245,13 @@ Public Class FVS_RunModelMulti
             ' Find base period ids for GetRunVariables later
             cmd2.Connection = FramDB
             cmd2.CommandText = "SELECT BasePeriodID FROM RunID WHERE RunID = " & RunIDMultirun(i - 1)
-            drd2 = cmd2.ExecuteReader
-            While drd2.Read
-                BasePeriodIDMultirun(i - 1) = Convert.ToString(drd2(0))
-            End While
+            Using drd2 = cmd2.ExecuteReader
+                While drd2.Read
+                    BasePeriodIDMultirun(i - 1) = Convert.ToString(drd2(0))
+                End While
+            End Using
+
+
 
             'populate TAMM names
 
@@ -232,6 +259,8 @@ Public Class FVS_RunModelMulti
             With TammLab
                 .Text = TAMMsMultirun(i - 1)
                 .TextAlign = ContentAlignment.MiddleLeft
+                .AutoSize = False
+                .Width = 300
             End With
             MultirunPanel.Controls.Add(TammLab, 2, i)
 
@@ -278,8 +307,10 @@ Public Class FVS_RunModelMulti
         Next
         FramDB.Close()
 
+        MultirunPanel.ResumeLayout()
+
         If MissingRun Then
-            MsgBox("One or more TAMMs identify a run not present in this database. Check TAMM filenames or database choice. Table populated")
+            MsgBox("One or more TAMMs identify a run not present in this database. Check TAMM filenames Or database choice. Table populated")
             RunPossible = False
         Else
             RunPossible = True
@@ -299,12 +330,12 @@ Public Class FVS_RunModelMulti
         ' I went with defining all the TAMM buttons as i, and then all the tamm removal buttons as i + NumMultirunID
         '  NOTE!!! The tags start at 1! Not 0!
         'For simplicity, parse out the scenarios: convert 
-        If clickedButton.Tag < 1 + NumMultirunID Then
-            RemovalFlag = False
-            i = clickedButton.Tag
+        If clickedButton.Tag <1 + NumMultirunID Then
+            RemovalFlag= False
+            i= clickedButton.Tag
         Else
-            RemovalFlag = True
-            i = clickedButton.Tag - NumMultirunID
+            RemovalFlag= True
+            i= clickedButton.Tag - NumMultirunID
         End If
 
 
@@ -327,7 +358,7 @@ Public Class FVS_RunModelMulti
                     TAMMSpreadSheet = OpenTAMMspreadsheet.FileName
                     TAMMSpreadSheetPath = My.Computer.FileSystem.GetFileInfo(TAMMSpreadSheet).DirectoryName
                 Catch Ex As Exception
-                    MessageBox.Show("Cannot read file selected. Original error: " & Ex.Message)
+                    MessageBox.Show("Cannot read file selected. Original Error: " & Ex.Message)
                 End Try
             End If
 
@@ -349,6 +380,8 @@ Public Class FVS_RunModelMulti
         With TammLab
             .Text = TAMMsMultirun(i - 1)
             .TextAlign = ContentAlignment.MiddleLeft
+            .AutoSize = False
+            .Width = 300
         End With
         ReplaceCellContent(2, i, TammLab)
     End Sub
@@ -390,6 +423,9 @@ Public Class FVS_RunModelMulti
         If Directory.Exists(TammFolderTextbox.Text) Then 'is directory
 
             Dim TempTammFiles() As String = Directory.GetFiles(TammFolderTextbox.Text, "*.xlsx")
+            ' Don't want temp files
+            TempTammFiles = TempTammFiles.Where(Function(s) Not s.StartsWith("~")).ToArray()
+
             'Populate # of runs, TAMM info
             NumMultirunID = TempTammFiles.Length
 
@@ -512,9 +548,32 @@ Public Class FVS_RunModelMulti
     End Sub
 
 
-    Private Sub RunAllButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RunAllButton.Click
+    Private Async Sub RunAllButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RunAllButton.Click
+
+        Dim connectionString As String = FramDB.ConnectionString
+        Dim filePath As String = connectionString.Replace("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=", "")
+        Dim lockPath As String = Regex.Replace(filePath, "\.mdb$", ".ldb")
+
+        ' Handle warning about database connections!
+        Dim msgResult As MsgBoxResult
+        Dim lockText As String
+        If File.Exists(lockPath) Then 'lock file exists, suggesting connection
+            lockText = "There DOES APPEAR TO BE AN OPEN CONNECTION. Recommend closing connection!"
+        Else
+            lockText = "There does NOT appear to be an open connection -- current status is SAFE. Recommend not connecting while this batch is running."
+        End If
+
+        msgResult = MsgBox("WARNING: Multi-run process may need to compact FRAM database as it goes, which is only possible if there are no open connections with it." &
+                           vbNewLine & vbNewLine & lockText &
+                           vbNewLine & vbNewLine & "Connection-based issues can also arise if the database is on a synced folder. Strongly recommend ensuring it is not (or syncing is paused) before running." &
+                           vbNewLine & vbNewLine & " Continue batch run?", MsgBoxStyle.OkCancel)
+        If msgResult = MsgBoxResult.Cancel Then
+            Exit Sub '
+        End If
 
         Dim result
+
+        RunAllButton.Enabled = False
 
         CurrentStepLabel.Visible = True
         EstimatedRunTimeLabel.Visible = True
@@ -557,6 +616,17 @@ Public Class FVS_RunModelMulti
 
 
         For iRun As Integer = 0 To NumMultirunID - 1
+
+
+            Dim fileInfo As New System.IO.FileInfo(filePath)
+            Dim fileSizeInMB As Long = fileInfo.Length / 1024 / 1024
+
+            databaseSizeLabel.Text = Math.Round(fileSizeInMB, 1) & " MB"
+
+            If fileSizeInMB > 1700 Then
+                ' Do compaction
+                CompactDatabase()
+            End If
 
             'Handle setting run-specific info: runID, TAMM if present.
             If TAMMsMultirun(iRun) = "none" Then
@@ -620,287 +690,290 @@ Public Class FVS_RunModelMulti
                 FRAMVers = FramVersion
 
 
+                Await Task.Run(Sub()
 
-                '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                If SizeLimitFix = True Then
-                    'automatically updates Sublegal/Legal ratios (make sure table SLRatio table in FRAMDb is updated) and then performs
-                    'size limit corrected algorithms to deal with size limit changes (make sure SizeLimit table is up to date)
-                    'This is done in 5 steps
-                    '1. Set size limit to base period (or original pre-change) size limit
-                    '2. Run calculations to update Sublegal/legal ratios
-                    '3. Re-set size limits to new size limits
-                    '4. Run FRAM with size limit corrected algorithms 
+                                   '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                   If SizeLimitFix = True Then
+                                       'automatically updates Sublegal/Legal ratios (make sure table SLRatio table in FRAMDb is updated) and then performs
+                                       'size limit corrected algorithms to deal with size limit changes (make sure SizeLimit table is up to date)
+                                       'This is done in 5 steps
+                                       '1. Set size limit to base period (or original pre-change) size limit
+                                       '2. Run calculations to update Sublegal/legal ratios
+                                       '3. Re-set size limits to new size limits
+                                       '4. Run FRAM with size limit corrected algorithms 
 
-                    ReDim NewSizeLimit(NumFish + 1, NumSteps + 1)
+                                       ReDim NewSizeLimit(NumFish + 1, NumSteps + 1)
 
-                    If RunIDNameSelect.Substring(0, 4) <> "SLC-" Then
-                        RunIDNameSelect = "SLC-" & RunIDNameSelect
-                    End If
+                                       If RunIDNameSelect.Substring(0, 4) <> "SLC-" Then
+                                           RunIDNameSelect = "SLC-" & RunIDNameSelect
+                                       End If
 
 
 
-                    SizeLimitFix = False 'first set to false to not trigger size limit calcualtions before sublegal/legal ratios are updated
+                                       SizeLimitFix = False 'first set to false to not trigger size limit calcualtions before sublegal/legal ratios are updated
 
-                    'first save new size limits
-                    For Fish As Integer = 1 To NumFish
-                        For TStep As Integer = 1 To NumSteps
-                            NewSizeLimit(Fish, TStep) = MinSizeLimit(Fish, TStep)
-                        Next
-                    Next
+                                       'first save new size limits
+                                       For Fish As Integer = 1 To NumFish
+                                           For TStep As Integer = 1 To NumSteps
+                                               NewSizeLimit(Fish, TStep) = MinSizeLimit(Fish, TStep)
+                                           Next
+                                       Next
 
 
 
-                    'STEP 1: Sets size limit to base period size limit
-                    For Fish As Integer = 1 To NumFish
-                        For TStep As Integer = 1 To NumSteps
-                            MinSizeLimit(Fish, TStep) = ChinookBaseSizeLimit(Fish, TStep)
-                        Next
-                    Next
+                                       'STEP 1: Sets size limit to base period size limit
+                                       For Fish As Integer = 1 To NumFish
+                                           For TStep As Integer = 1 To NumSteps
+                                               MinSizeLimit(Fish, TStep) = ChinookBaseSizeLimit(Fish, TStep)
+                                           Next
+                                       Next
 
-                    'STEP 2: S:L Update Run
-                    'Does not ask to load in from spreadsheet
+                                       'STEP 2: S:L Update Run
+                                       'Does not ask to load in from spreadsheet
 
-                    UpdateRunEncounterRateAdjustment = True
-                    WhoUpdated = Environment.UserName
+                                       UpdateRunEncounterRateAdjustment = True
+                                       WhoUpdated = Environment.UserName
 
 
-                    If UpdateRunEncounterRateAdjustment = True Then
-                        'set limit on outer loop iterations (3 is plenty for convergence, but we'll do 4 to be overachievers)
-                        iters = 4
-                    End If
+                                       If UpdateRunEncounterRateAdjustment = True Then
+                                           'set limit on outer loop iterations (3 is plenty for convergence, but we'll do 4 to be overachievers)
+                                           iters = 4
+                                       End If
 
-                    Do While c <= iters
+                                       Do While c <= iters
 
-                        '- Set Chinook Tamm Run Option
-                        TammChinookRunFlag = 0
+                                           '- Set Chinook Tamm Run Option
+                                           TammChinookRunFlag = 0
 
-                        If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
-                            TammChinookRunFlag = 1
-                        ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
-                            TammChinookRunFlag = 2
-                        ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
-                            TammChinookRunFlag = 3
-                        End If
+                                           If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
+                                               TammChinookRunFlag = 1
+                                           ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
+                                               TammChinookRunFlag = 2
+                                           ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
+                                               TammChinookRunFlag = 3
+                                           End If
 
-                        FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
+                                           FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
 
 
-                        '- Check for TAMM Selection
-                        If FinalUpdatePass = True Then ' only ask to transfer on the final iteration
-                            If TAMMSpreadSheet <> "" Then
-                                RunTAMMIter = 1
-                            End If
-                        End If
-                        ' MRProgressBar.Visible = True
+                                           '- Check for TAMM Selection
+                                           If FinalUpdatePass = True Then ' only ask to transfer on the final iteration
+                                               If TAMMSpreadSheet <> "" Then
+                                                   RunTAMMIter = 1
+                                               End If
+                                           End If
+                                           ' MRProgressBar.Visible = True
 
-                        '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
+                                           '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
 
-                        Call RunCalcs()
+                                           Call RunCalcs()
 
 
-                        'PPPPPP------------------------------------------------------------------------------------------------------------
-                        '- Closing flank of Pete 12/13 SL Ratio Code 
-                        If UpdateRunEncounterRateAdjustment = True And c < iters Then 'don't enter ExternalSubCalcs on last pass
-                            ' RunProgressLabel.Text = " Loading Kfat For SLratio update pass #" & c & " ..."
-                            ' RunProgressLabel.Refresh()
-                            Call ExternalSubCalcs(c, iters)
-                        End If
-                        c = c + 1
-                    Loop
+                                           'PPPPPP------------------------------------------------------------------------------------------------------------
+                                           '- Closing flank of Pete 12/13 SL Ratio Code 
+                                           If UpdateRunEncounterRateAdjustment = True And c < iters Then 'don't enter ExternalSubCalcs on last pass
+                                               ' RunProgressLabel.Text = " Loading Kfat For SLratio update pass #" & c & " ..."
+                                               ' RunProgressLabel.Refresh()
+                                               Call ExternalSubCalcs(c, iters)
+                                           End If
+                                           c = c + 1
+                                       Loop
 
-                    '- Set the UpdateRunEncounterRateAdjustment back to False
-                    '(should always be false except when set to true during update runs)
-                    UpdateRunEncounterRateAdjustment = False
-                    RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
+                                       '- Set the UpdateRunEncounterRateAdjustment back to False
+                                       '(should always be false except when set to true during update runs)
+                                       UpdateRunEncounterRateAdjustment = False
+                                       RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
 
-                    ' STEP 3: Set size limits back to what they're supposed to be
-                    For Fish As Integer = 1 To NumFish
-                        For TStep As Integer = 1 To NumSteps
-                            MinSizeLimit(Fish, TStep) = NewSizeLimit(Fish, TStep)
-                        Next
-                    Next
+                                       ' STEP 3: Set size limits back to what they're supposed to be
+                                       For Fish As Integer = 1 To NumFish
+                                           For TStep As Integer = 1 To NumSteps
+                                               MinSizeLimit(Fish, TStep) = NewSizeLimit(Fish, TStep)
+                                           Next
+                                       Next
 
 
-                    'STEP 4: Run model with size limit corrected algorithems keeping total encounters constant
-                    UpdateRunEncounterRateAdjustment = False
-                    RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
+                                       'STEP 4: Run model with size limit corrected algorithems keeping total encounters constant
+                                       UpdateRunEncounterRateAdjustment = False
+                                       RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
 
-                    SizeLimitFix = True
+                                       SizeLimitFix = True
 
-                    TammChinookRunFlag = 0
+                                       TammChinookRunFlag = 0
 
-                    If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
-                        TammChinookRunFlag = 1
-                    ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
-                        TammChinookRunFlag = 2
-                    ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
-                        TammChinookRunFlag = 3
-                    End If
+                                       If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
+                                           TammChinookRunFlag = 1
+                                       ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
+                                           TammChinookRunFlag = 2
+                                       ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
+                                           TammChinookRunFlag = 3
+                                       End If
 
-                    FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
+                                       FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
 
-                    'tag111
-                    ' - Check for TAMM Selection
-                    If TAMMSpreadSheet <> "" Then
-                        RunTAMMIter = 1
-                    End If
-                    '  MRProgressBar.Visible = True
-                    FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
-                    '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
+                                       'tag111
+                                       ' - Check for TAMM Selection
+                                       If TAMMSpreadSheet <> "" Then
+                                           RunTAMMIter = 1
+                                       End If
+                                       '  MRProgressBar.Visible = True
+                                       FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
+                                       '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
 
-                    Call RunCalcs()
+                                       Call RunCalcs()
 
 
 
-                    SizeLimitFix = False
+                                       SizeLimitFix = False
 
 
-                    'ChangeAnyInput = True
-                    'ChangeFishScalers = True
-                    'ChangeNonRetention = True
-                    'ChangeSizeLimit = True
+                                       'ChangeAnyInput = True
+                                       'ChangeFishScalers = True
+                                       'ChangeNonRetention = True
+                                       'ChangeSizeLimit = True
 
 
-                Else 'Auto SizeLimitFix = False @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                    ' run without size limit fix or perform Sublegal/Legal ratio update (if selected) without size limit fix
+                                   Else 'Auto SizeLimitFix = False @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                       ' run without size limit fix or perform Sublegal/Legal ratio update (if selected) without size limit fix
 
-                    If RunIDNameSelect.Substring(0, 4) = "SLC-" Then
-                        RunIDNameSelect = RunIDNameSelect.Substring(4, RunIDNameSelect.Length - 4)
-                    End If
+                                       If RunIDNameSelect.Substring(0, 4) = "SLC-" Then
+                                           RunIDNameSelect = RunIDNameSelect.Substring(4, RunIDNameSelect.Length - 4)
+                                       End If
 
 
 
-                    If UpdateRunEncounterRateAdjustment = True Then
+                                       If UpdateRunEncounterRateAdjustment = True Then
 
-                        'set limit on outer loop iterations (3 is plenty for convergence, but we'll do 4 to be overachievers)
-                        iters = 4
-                    End If
+                                           'set limit on outer loop iterations (3 is plenty for convergence, but we'll do 4 to be overachievers)
+                                           iters = 4
+                                       End If
 
-                    Do While c <= iters
-                        'PPPPPP--(end of leading Pete 12/13 Block, more at end of loop)-------------------------------------------------
+                                       Do While c <= iters
+                                           'PPPPPP--(end of leading Pete 12/13 Block, more at end of loop)-------------------------------------------------
 
 
-                        '- Set Chinook Tamm Run Option
-                        TammChinookRunFlag = 0
-                        If SpeciesName = "CHINOOK" Then
-                            If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
-                                TammChinookRunFlag = 1
-                            ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
-                                TammChinookRunFlag = 2
-                            ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
-                                TammChinookRunFlag = 3
-                            End If
-                            'If SizeLimitFix = True Then
-                            '    If RunIDNameSelect.Substring(0, 4) <> "SLC-" Then
-                            '        RunIDNameSelect = "SLC-" & RunIDNameSelect
-                            '    End If
-                            'ElseIf SizeLimitFix = False Then
-                            '    If RunIDNameSelect.Substring(0, 4) = "SLC-" Then
-                            '        RunIDNameSelect = RunIDNameSelect.Substring(4, RunIDNameSelect.Length - 4)
-                            '    End If
-                            'End If
-                            FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
-                        End If
-
-                        '- Check for TAMM Selection
-                        If TAMMSpreadSheet <> "" Then
-                            RunTAMMIter = 1
-
-                        End If
-                        '  MRProgressBar.Visible = True
-
-
-                        '****************Begin PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
-                        If SpeciesName = "COHO" Then
-                            If MSFBiasCorrectionCheckBox.Checked = True Then
-                                MSFBiasFlag = False
-                            Else
-                                MSFBiasFlag = True
-                            End If
-
-                            If MSFBiasFlag = True Then
-                                If RunIDNameSelect.Substring(0, 3) <> "bc-" Then
-                                    RunIDNameSelect = "bc-" & RunIDNameSelect
-                                End If
-                            ElseIf MSFBiasFlag = False Then
-                                If RunIDNameSelect.Substring(0, 3) = "bc-" Then
-                                    RunIDNameSelect = RunIDNameSelect.Substring(3, RunIDNameSelect.Length - 3)
-                                End If
-                            End If
-
-                            If CoastalIterations = True Then
-                                CoastalIter = "Yes"
-                            Else
-                                CoastalIter = "No"
-                            End If
-                        End If
-
-
-
-                        FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
-                        '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
-
-
-                        Call RunCalcs() 'run with size limit corrected algorithms
-
-
-                        'PPPPPP------------------------------------------------------------------------------------------------------------
-                        '- Closing flank of Pete 12/13 SL Ratio Code 
-                        If UpdateRunEncounterRateAdjustment = True And c < iters Then 'don't enter ExternalSubCalcs on last pass
-                            'RunProgressLabel.Text = " Loading Kfat For SLratio update pass #" & c & " ..."
-                            'RunProgressLabel.Refresh()
-                            Call ExternalSubCalcs(c, iters)
-                        End If
-                        c = c + 1
-                    Loop
-
-
-
-                End If 'Auto SizeLimitFix = True@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                '- Set the UpdateRunEncounterRateAdjustment back to False
-                '(should always be false except when set to true during update runs)
-                UpdateRunEncounterRateAdjustment = False
-                RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
-                'PPPPPP---(end of closing Pete 12/13 Block)------------------------------------------------------------------------
-
-
-                'provide a warning when a sublegal nonretention input does not result in mortality (due to small size limit in net)
-
-                If SpeciesName = "CHINOOK" Then
-                    ReDim FTNonRetention(NumFish, NumSteps)
-                    For Fish = 1 To NumFish
-                        For TStep = 1 To NumSteps
-                            For Stk = 1 To NumStk
-                                For Age = 1 To MaxAge
-                                    FTNonRetention(Fish, TStep) += NonRetention(Stk, Age, Fish, TStep) / ModelStockProportion(Fish)
-                                Next Age
-                            Next Stk
-                        Next TStep
-                    Next Fish
-                    For Fish = 1 To NumFish
-                        For TStep = 1 To NumSteps
-                            If Fish = 2 And TStep = 3 Then
-                                Jim = 1
-                            End If
-                            If NonRetentionFlag(Fish, TStep) = 3 Then
-                                If Fish >= 36 And InStr(FisheryTitle(Fish), "Sport") > 0 Then
-                                    If FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) / 2 + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep)) > 1 Then
-                                        'MsgBox("Sublegal nonretention input For fishery " & Fish & " does not produce a mortality. Consider modeling fishery As 'Total Encounters'")
-                                        ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input For fishery " & Fish & " does Not produce a mortality. Consider modeling fishery As 'Total Encounters'"
-                                    End If
-                                Else
-                                    If Math.Abs(FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep))) > 1 Then
-                                        'MsgBox("Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'")
-                                        ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'"
-                                    End If
-                                End If
-                            End If
-                        Next
-                    Next
-                End If
-
+                                           '- Set Chinook Tamm Run Option
+                                           TammChinookRunFlag = 0
+                                           If SpeciesName = "CHINOOK" Then
+                                               If OptionOldTAMMformat = True And OptionUseTAMMfws = False Then
+                                                   TammChinookRunFlag = 1
+                                               ElseIf OptionOldTAMMformat = False And OptionUseTAMMfws = True Then
+                                                   TammChinookRunFlag = 2
+                                               ElseIf OptionOldTAMMformat = True And OptionUseTAMMfws = True Then
+                                                   TammChinookRunFlag = 3
+                                               End If
+                                               'If SizeLimitFix = True Then
+                                               '    If RunIDNameSelect.Substring(0, 4) <> "SLC-" Then
+                                               '        RunIDNameSelect = "SLC-" & RunIDNameSelect
+                                               '    End If
+                                               'ElseIf SizeLimitFix = False Then
+                                               '    If RunIDNameSelect.Substring(0, 4) = "SLC-" Then
+                                               '        RunIDNameSelect = RunIDNameSelect.Substring(4, RunIDNameSelect.Length - 4)
+                                               '    End If
+                                               'End If
+                                               FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
+                                           End If
+
+                                           '- Check for TAMM Selection
+                                           If TAMMSpreadSheet <> "" Then
+                                               RunTAMMIter = 1
+
+                                           End If
+                                           '  MRProgressBar.Visible = True
+
+
+                                           '****************Begin PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
+                                           If SpeciesName = "COHO" Then
+                                               If MSFBiasCorrectionCheckBox.Checked = True Then
+                                                   MSFBiasFlag = False
+                                               Else
+                                                   MSFBiasFlag = True
+                                               End If
+
+                                               If MSFBiasFlag = True Then
+                                                   If RunIDNameSelect.Substring(0, 3) <> "bc-" Then
+                                                       RunIDNameSelect = "bc-" & RunIDNameSelect
+                                                   End If
+                                               ElseIf MSFBiasFlag = False Then
+                                                   If RunIDNameSelect.Substring(0, 3) = "bc-" Then
+                                                       RunIDNameSelect = RunIDNameSelect.Substring(3, RunIDNameSelect.Length - 3)
+                                                   End If
+                                               End If
+
+                                               If CoastalIterations = True Then
+                                                   CoastalIter = "Yes"
+                                               Else
+                                                   CoastalIter = "No"
+                                               End If
+                                           End If
+
+
+
+                                           FVS_MainMenu.RecordSetNameLabel.Text = RunIDNameSelect
+                                           '****************End PETE-2/27/13-Code for adding Delineation to Model Run Name if Bias Correction Is Applied
+
+
+                                           Call RunCalcs() 'run with size limit corrected algorithms
+
+
+                                           'PPPPPP------------------------------------------------------------------------------------------------------------
+                                           '- Closing flank of Pete 12/13 SL Ratio Code 
+                                           If UpdateRunEncounterRateAdjustment = True And c < iters Then 'don't enter ExternalSubCalcs on last pass
+                                               'RunProgressLabel.Text = " Loading Kfat For SLratio update pass #" & c & " ..."
+                                               'RunProgressLabel.Refresh()
+                                               Call ExternalSubCalcs(c, iters)
+                                           End If
+                                           c = c + 1
+                                       Loop
+
+
+
+                                   End If 'Auto SizeLimitFix = True@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                   '- Set the UpdateRunEncounterRateAdjustment back to False
+                                   '(should always be false except when set to true during update runs)
+                                   UpdateRunEncounterRateAdjustment = False
+                                   RunTAMMIter = 0 'This Needs to be zero OR things will get goofy on sequential runs.
+                                   'PPPPPP---(end of closing Pete 12/13 Block)------------------------------------------------------------------------
+
+
+                                   'provide a warning when a sublegal nonretention input does not result in mortality (due to small size limit in net)
+
+                                   If SpeciesName = "CHINOOK" Then
+                                       ReDim FTNonRetention(NumFish, NumSteps)
+                                       For Fish = 1 To NumFish
+                                           For TStep = 1 To NumSteps
+                                               For Stk = 1 To NumStk
+                                                   For Age = 1 To MaxAge
+                                                       FTNonRetention(Fish, TStep) += NonRetention(Stk, Age, Fish, TStep) / ModelStockProportion(Fish)
+                                                   Next Age
+                                               Next Stk
+                                           Next TStep
+                                       Next Fish
+                                       For Fish = 1 To NumFish
+                                           For TStep = 1 To NumSteps
+                                               If Fish = 2 And TStep = 3 Then
+                                                   Jim = 1
+                                               End If
+                                               If NonRetentionFlag(Fish, TStep) = 3 Then
+                                                   If Fish >= 36 And InStr(FisheryTitle(Fish), "Sport") > 0 Then
+                                                       If FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) / 2 + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep)) > 1 Then
+                                                           'MsgBox("Sublegal nonretention input For fishery " & Fish & " does not produce a mortality. Consider modeling fishery As 'Total Encounters'")
+                                                           ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input For fishery " & Fish & " does Not produce a mortality. Consider modeling fishery As 'Total Encounters'"
+                                                       End If
+                                                   Else
+                                                       If Math.Abs(FTNonRetention(Fish, TStep) - (NonRetentionInput(Fish, TStep, 1) * ShakerMortRate(Fish, TStep) + NonRetentionInput(Fish, TStep, 2) * ShakerMortRate(Fish, TStep))) > 1 Then
+                                                           'MsgBox("Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'")
+                                                           ErrorMessagesMultirun = ErrorMessagesMultirun & vbNewLine & "Run " & RunIDSelect & ": Sublegal nonretention input for fishery " & Fish & " does not produce a mortality. Consider modeling fishery as 'Total Encounters'"
+                                                       End If
+                                                   End If
+                                               End If
+                                           Next
+                                       Next
+                                   End If
+                               End Sub)
                 ' saving results
                 SaveModelRunInputs()
+
+
 
                 ' Close out the current TAMM so we can use another one
                 ' I DON'T LIKE THIS APPROACH
@@ -920,7 +993,7 @@ Public Class FVS_RunModelMulti
                 Dim midTime = DateTime.Now
                 Dim midduration = midTime - startTime
                 Dim expectedMinutes = midduration.TotalSeconds / (iRun * NumRepeats + iRepeat) _ 'seconds per item
-                    * (totalIterations - (iRun * NumRepeats + iRepeat)) / 60 ' times # of remaining items, translate to minutes
+ * (totalIterations - (iRun * NumRepeats + iRepeat)) / 60 ' times # of remaining items, translate to minutes
 
                 EstimatedRunTimeLabel.Text = (iRun * NumRepeats + iRepeat) & "/" & totalIterations & " completed  |  Time remaining: ~" & Math.Round(expectedMinutes, 1) & " minutes"
 
@@ -1001,6 +1074,8 @@ Public Class FVS_RunModelMulti
             textLog = textLog & vbNewLine & vbNewLine & "No warnings or errors caught during looping!"
         End If
 
+        RunAllButton.Enabled = True
+
         Dim errorFileName As String = Path.GetDirectoryName(FVSdatabasename) & "/" & Path.GetFileNameWithoutExtension(FVSdatabasename) & $"_batch_run_log_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
         File.WriteAllText(errorFileName, textLog)
 
@@ -1014,7 +1089,7 @@ Public Class FVS_RunModelMulti
         FVS_MainMenu.Visible = True
     End Sub
 
-    Private Sub ReturnButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles RunAllButton.Click
+    Private Sub ReturnButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReturnButton.Click
         Me.Close()
         FVS_MainMenu.Visible = True
     End Sub

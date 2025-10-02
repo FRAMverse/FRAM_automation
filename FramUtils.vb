@@ -1,202 +1,205 @@
 Imports System.IO.File
 Imports System.Data.OleDb
+Imports System.IO
+Imports JRO
+Imports System.Text.RegularExpressions
 
 Module FramUtils
 
-   Public Sub Resize_Form(ByVal Loadform As Form)
-      Dim cControl As Control
-      Dim i_i As Integer
-      Dim Boldness As Boolean
+    Public Sub Resize_Form(ByVal Loadform As Form)
+        Dim cControl As Control
+        Dim i_i As Integer
+        Dim Boldness As Boolean
 
-      '- Don't ReSize if Screen Bounds are the same as Development Screen
-      If (Screen.PrimaryScreen.Bounds.Height = 1024) And (Screen.PrimaryScreen.Bounds.Width = 1280) Then
-         Exit Sub
-      End If
+        '- Don't ReSize if Screen Bounds are the same as Development Screen
+        If (Screen.PrimaryScreen.Bounds.Height = 1024) And (Screen.PrimaryScreen.Bounds.Width = 1280) Then
+            Exit Sub
+        End If
 
-      With Loadform
-         For i_i = 0 To .Controls.Count - 1
-            If TypeOf .Controls(i_i) Is ComboBox Then ' cannot change Height 
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+        With Loadform
+            For i_i = 0 To .Controls.Count - 1
+                If TypeOf .Controls(i_i) Is ComboBox Then ' cannot change Height 
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
 
-            ElseIf TypeOf .Controls(i_i) Is Panel Then
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
-               .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
-               'Do the same for Panel's Children
-               For Each cControl In .Controls(i_i).Controls
+                ElseIf TypeOf .Controls(i_i) Is Panel Then
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+                    .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
+                    'Do the same for Panel's Children
+                    For Each cControl In .Controls(i_i).Controls
 
-                  cControl.Left = cControl.Left / FormWidth * Loadform.Width
-                  cControl.Top = cControl.Top / FormHeight * Loadform.Height
-                  cControl.Width = cControl.Width / FormWidth * Loadform.Width
-                  cControl.Height = cControl.Height / FormHeight * Loadform.Height
-                  cControl.Font = New Font(cControl.Font.Name, cControl.Font.Size / FormWidth * Loadform.Width)
+                        cControl.Left = cControl.Left / FormWidth * Loadform.Width
+                        cControl.Top = cControl.Top / FormHeight * Loadform.Height
+                        cControl.Width = cControl.Width / FormWidth * Loadform.Width
+                        cControl.Height = cControl.Height / FormHeight * Loadform.Height
+                        cControl.Font = New Font(cControl.Font.Name, cControl.Font.Size / FormWidth * Loadform.Width)
 
-                  If TypeOf cControl Is PictureBox Then 'Make it stretch
-                     cControl.BackgroundImageLayout = ImageLayout.Stretch
-                  End If
+                        If TypeOf cControl Is PictureBox Then 'Make it stretch
+                            cControl.BackgroundImageLayout = ImageLayout.Stretch
+                        End If
 
-               Next
-            ElseIf TypeOf .Controls(i_i) Is System.Windows.Forms.TabControl Then
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
-               .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
+                    Next
+                ElseIf TypeOf .Controls(i_i) Is System.Windows.Forms.TabControl Then
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+                    .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
 
-            ElseIf TypeOf .Controls(i_i) Is GroupBox Then
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
-               .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
+                ElseIf TypeOf .Controls(i_i) Is GroupBox Then
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+                    .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
 
-            ElseIf TypeOf .Controls(i_i) Is DataGridView Then
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               Jim = .Controls(i_i).Width
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
-               Jim = .Controls(i_i).Width
-               .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
+                ElseIf TypeOf .Controls(i_i) Is DataGridView Then
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    Jim = .Controls(i_i).Width
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+                    Jim = .Controls(i_i).Width
+                    .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
 
-            Else
-               .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
-               .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
-               .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
-               .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
-            End If
+                Else
+                    .Controls(i_i).Left = .Controls(i_i).Left / FormWidth * Loadform.Width
+                    .Controls(i_i).Top = .Controls(i_i).Top / FormHeight * Loadform.Height
+                    .Controls(i_i).Width = .Controls(i_i).Width / FormWidth * Loadform.Width
+                    .Controls(i_i).Height = .Controls(i_i).Height / FormHeight * Loadform.Height
+                End If
 
-            If .Controls(i_i).Font.Bold = True Then
-               Boldness = True
-            Else
-               Boldness = False
-            End If
-            If Boldness = True Then
-               .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormWidth * Loadform.Width, FontStyle.Bold)
-            Else
-               .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormWidth * Loadform.Width, FontStyle.Regular)
-            End If
-            'If FormHeight > Loadform.Height Then
-            '   If Boldness = True Then
-            '      .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormHeight * Loadform.Height, FontStyle.Bold)
-            '   Else
-            '      .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormHeight * Loadform.Height, FontStyle.Regular)
-            '   End If
-            'End If
-         Next i_i
-      End With
+                If .Controls(i_i).Font.Bold = True Then
+                    Boldness = True
+                Else
+                    Boldness = False
+                End If
+                If Boldness = True Then
+                    .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormWidth * Loadform.Width, FontStyle.Bold)
+                Else
+                    .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormWidth * Loadform.Width, FontStyle.Regular)
+                End If
+                'If FormHeight > Loadform.Height Then
+                '   If Boldness = True Then
+                '      .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormHeight * Loadform.Height, FontStyle.Bold)
+                '   Else
+                '      .Controls(i_i).Font = New Font(.Controls(i_i).Font.Name, .Controls(i_i).Font.Size / FormHeight * Loadform.Height, FontStyle.Regular)
+                '   End If
+                'End If
+            Next i_i
+        End With
 
-   End Sub
+    End Sub
 
 
-   Sub ReDimBaseArrays()
-      '- ReDim Base Arrays
-      ReDim BaseCohortSize(NumStk, MaxAge)
-      ReDim BaseExploitationRate(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim AnyBaseRate(NumFish, NumSteps)
-      ReDim BaseSubLegalRate(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MaturationRate(NumStk, MaxAge, NumSteps)
-      ReDim AEQ(NumStk, MaxAge, NumSteps)
-      ReDim StockFishRateScalers(NumStk, NumFish, NumSteps)
-      ReDim ModelStockProportion(NumFish)
-      '- ModelStockProportion only applies to CHINOOK
-      If SpeciesName = "COHO" Then
-         For Fish = 1 To NumFish
-            ModelStockProportion(Fish) = 1
-         Next
-      End If
-      ReDim ShakerMortRate(NumFish, NumSteps)
-      ReDim EncounterRateAdjustment(MaxAge, NumFish, NumSteps)
-      '- All EncounterRateAdjustments are ONE unless specified differently
-      For Age = 0 To MaxAge
-         For Fish = 0 To NumFish
-            For TStep = 0 To NumSteps
-               EncounterRateAdjustment(Age, Fish, TStep) = 1
+    Sub ReDimBaseArrays()
+        '- ReDim Base Arrays
+        ReDim BaseCohortSize(NumStk, MaxAge)
+        ReDim BaseExploitationRate(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim AnyBaseRate(NumFish, NumSteps)
+        ReDim BaseSubLegalRate(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MaturationRate(NumStk, MaxAge, NumSteps)
+        ReDim AEQ(NumStk, MaxAge, NumSteps)
+        ReDim StockFishRateScalers(NumStk, NumFish, NumSteps)
+        ReDim ModelStockProportion(NumFish)
+        '- ModelStockProportion only applies to CHINOOK
+        If SpeciesName = "COHO" Then
+            For Fish = 1 To NumFish
+                ModelStockProportion(Fish) = 1
             Next
-         Next
-      Next
-      ReDim NaturalMortality(MaxAge, NumSteps)
-      ReDim IncidentalRate(NumFish, NumSteps)
-      ReDim TerminalFisheryFlag(NumFish, NumSteps)
-      ReDim VonBertL(NumStk, 1)
-      ReDim VonBertT(NumStk, 1)
-      ReDim VonBertK(NumStk, 1)
-      ReDim VonBertCV(NumStk, MaxAge, 1)
-      '- ReDim Stock Arrays
-      ReDim StockID(NumStk)
-      ReDim ProductionRegion(NumStk)
-      ReDim ManagementUnit(NumStk)
-      ReDim StockName(NumStk)
-      ReDim StockTitle(NumStk)
-      '- ReDim Fishery Arrays
-      ReDim FisheryID(NumFish)
-      ReDim FisheryName(NumFish)
-      ReDim FisheryTitle(NumFish)
-      ReDim ChinookBaseEncounterAdjustment(NumFish, NumSteps)
-      ReDim ChinookBaseSizeLimit(NumFish, NumSteps)
-      '- ReDim Time Step Arrays
-      ReDim TimeStepID(NumSteps)
-      ReDim TimeStepName(NumSteps)
-      ReDim TimeStepTitle(NumSteps)
-      ReDim MidTimeStep(NumSteps)
-   End Sub
+        End If
+        ReDim ShakerMortRate(NumFish, NumSteps)
+        ReDim EncounterRateAdjustment(MaxAge, NumFish, NumSteps)
+        '- All EncounterRateAdjustments are ONE unless specified differently
+        For Age = 0 To MaxAge
+            For Fish = 0 To NumFish
+                For TStep = 0 To NumSteps
+                    EncounterRateAdjustment(Age, Fish, TStep) = 1
+                Next
+            Next
+        Next
+        ReDim NaturalMortality(MaxAge, NumSteps)
+        ReDim IncidentalRate(NumFish, NumSteps)
+        ReDim TerminalFisheryFlag(NumFish, NumSteps)
+        ReDim VonBertL(NumStk, 1)
+        ReDim VonBertT(NumStk, 1)
+        ReDim VonBertK(NumStk, 1)
+        ReDim VonBertCV(NumStk, MaxAge, 1)
+        '- ReDim Stock Arrays
+        ReDim StockID(NumStk)
+        ReDim ProductionRegion(NumStk)
+        ReDim ManagementUnit(NumStk)
+        ReDim StockName(NumStk)
+        ReDim StockTitle(NumStk)
+        '- ReDim Fishery Arrays
+        ReDim FisheryID(NumFish)
+        ReDim FisheryName(NumFish)
+        ReDim FisheryTitle(NumFish)
+        ReDim ChinookBaseEncounterAdjustment(NumFish, NumSteps)
+        ReDim ChinookBaseSizeLimit(NumFish, NumSteps)
+        '- ReDim Time Step Arrays
+        ReDim TimeStepID(NumSteps)
+        ReDim TimeStepName(NumSteps)
+        ReDim TimeStepTitle(NumSteps)
+        ReDim MidTimeStep(NumSteps)
+    End Sub
 
-   Sub ReDimCalcArrays()
-      '- ReDim Calculation Arrays
-      ReDim LandedCatch(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim NonRetention(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim Shakers(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim DropOff(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim Encounters(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MSFLandedCatch(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MSFNonRetention(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MSFShakers(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MSFDropOff(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim MSFEncounters(NumStk, MaxAge, NumFish, NumSteps)
-      ReDim Cohort(NumStk, MaxAge, 4, NumSteps)
-      ReDim Escape(NumStk, MaxAge, NumSteps)
-      ReDim TotalLandedCatch(NumFish * 2, NumSteps)
-      ReDim TotalNonRetention(NumFish, NumSteps)
-      ReDim TotalEncounters(NumFish, NumSteps)
-      ReDim TotalShakers(NumFish, NumSteps)
-      ReDim TotalDropOff(NumFish, NumSteps)
-      ReDim CohoTime4Cohort(NumStk)
-      '- ReDim Input Variables
-      ReDim StockRecruit(NumStk, MaxAge, 2)
-      ReDim FisheryScaler(NumFish, NumSteps)
-      ReDim FisheryQuota(NumFish, NumSteps)
-      ReDim MSFFisheryScaler(NumFish, NumSteps)
-      ReDim MSFFisheryQuota(NumFish, NumSteps)
-      ReDim FisheryFlag(NumFish, NumSteps)
-      ReDim NonRetentionFlag(NumFish, NumSteps)
-      ReDim NonRetentionInput(NumFish, NumSteps, 4)
-      ReDim MarkSelectiveMortRate(NumFish, NumSteps)
-      ReDim MarkSelectiveMarkMisID(NumFish, NumSteps)
-      ReDim MarkSelectiveUnMarkMisID(NumFish, NumSteps)
-      ReDim MarkSelectiveIncRate(NumFish, NumSteps)
-      ReDim MinSizeLimit(NumFish, NumSteps)
-      ReDim MaxSizeLimit(NumFish, NumSteps)
-      ReDim PropLegCatch(NumStk, MaxAge)
-      ReDim PropSubPop(NumStk, MaxAge)
-      ReDim CNRShakers(NumStk, MaxAge)
-      ReDim PSCMaxER(17)
+    Sub ReDimCalcArrays()
+        '- ReDim Calculation Arrays
+        ReDim LandedCatch(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim NonRetention(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim Shakers(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim DropOff(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim Encounters(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MSFLandedCatch(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MSFNonRetention(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MSFShakers(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MSFDropOff(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim MSFEncounters(NumStk, MaxAge, NumFish, NumSteps)
+        ReDim Cohort(NumStk, MaxAge, 4, NumSteps)
+        ReDim Escape(NumStk, MaxAge, NumSteps)
+        ReDim TotalLandedCatch(NumFish * 2, NumSteps)
+        ReDim TotalNonRetention(NumFish, NumSteps)
+        ReDim TotalEncounters(NumFish, NumSteps)
+        ReDim TotalShakers(NumFish, NumSteps)
+        ReDim TotalDropOff(NumFish, NumSteps)
+        ReDim CohoTime4Cohort(NumStk)
+        '- ReDim Input Variables
+        ReDim StockRecruit(NumStk, MaxAge, 2)
+        ReDim FisheryScaler(NumFish, NumSteps)
+        ReDim FisheryQuota(NumFish, NumSteps)
+        ReDim MSFFisheryScaler(NumFish, NumSteps)
+        ReDim MSFFisheryQuota(NumFish, NumSteps)
+        ReDim FisheryFlag(NumFish, NumSteps)
+        ReDim NonRetentionFlag(NumFish, NumSteps)
+        ReDim NonRetentionInput(NumFish, NumSteps, 4)
+        ReDim MarkSelectiveMortRate(NumFish, NumSteps)
+        ReDim MarkSelectiveMarkMisID(NumFish, NumSteps)
+        ReDim MarkSelectiveUnMarkMisID(NumFish, NumSteps)
+        ReDim MarkSelectiveIncRate(NumFish, NumSteps)
+        ReDim MinSizeLimit(NumFish, NumSteps)
+        ReDim MaxSizeLimit(NumFish, NumSteps)
+        ReDim PropLegCatch(NumStk, MaxAge)
+        ReDim PropSubPop(NumStk, MaxAge)
+        ReDim CNRShakers(NumStk, MaxAge)
+        ReDim PSCMaxER(17)
         ReDim BackwardsTarget(NumStk)
         ReDim BackwardsComment(NumStk * 2)
         ReDim FisheryComment(NumFish, NumSteps)
         ReDim NonRetentionComment(NumFish, NumSteps)
-      '=============================================
-      'Pete 12/13 ReDim Code for External Sublegals vars
-      ReDim TargetRatio(NumFish, MaxAge, NumSteps)
-      ReDim RunEncounterRateAdjustment(NumFish, MaxAge, NumSteps)
-      ReDim UpdWhen(NumFish, MaxAge, NumSteps)
-      ReDim UpdBy(NumFish, MaxAge, NumSteps)
-      ReDim Kfat(NumFish, MaxAge, NumSteps)
+        '=============================================
+        'Pete 12/13 ReDim Code for External Sublegals vars
+        ReDim TargetRatio(NumFish, MaxAge, NumSteps)
+        ReDim RunEncounterRateAdjustment(NumFish, MaxAge, NumSteps)
+        ReDim UpdWhen(NumFish, MaxAge, NumSteps)
+        ReDim UpdBy(NumFish, MaxAge, NumSteps)
+        ReDim Kfat(NumFish, MaxAge, NumSteps)
         ReDim Kfat2(NumFish, MaxAge, NumSteps)
 
 
-      If SpeciesName = "COHO" Then
-         ReDim BackwardsFlag(NumStk)
-      ElseIf SpeciesName = "CHINOOK" Then
+        If SpeciesName = "COHO" Then
+            ReDim BackwardsFlag(NumStk)
+        ElseIf SpeciesName = "CHINOOK" Then
             If NumStk = 38 Or NumStk > 75 Then
                 ReDim BackwardsChinook(NumStk + NumStk / 2 + 20, MaxAge)
                 ReDim BackwardsFlag(NumStk + NumStk + 20 / 2)
@@ -204,444 +207,444 @@ Module FramUtils
                 ReDim BackwardsChinook(NumStk + 32, MaxAge)
                 ReDim BackwardsFlag(NumStk + 32)
             End If
-      End If
-      ReDim StockFishRateScalers(NumStk, NumFish, NumSteps)
-      '- Default value for Rate Scalers is ONE
-      For Stk = 1 To NumStk
-         For Fish = 1 To NumFish
-            For TStep = 1 To NumSteps
-               StockFishRateScalers(Stk, Fish, TStep) = 1
+        End If
+        ReDim StockFishRateScalers(NumStk, NumFish, NumSteps)
+        '- Default value for Rate Scalers is ONE
+        For Stk = 1 To NumStk
+            For Fish = 1 To NumFish
+                For TStep = 1 To NumSteps
+                    StockFishRateScalers(Stk, Fish, TStep) = 1
+                Next
             Next
-         Next
-      Next
+        Next
 
-      '- Set Edit Change Variables to False
-      ChangeAnyInput = False
-      ChangeBackFram = False
-      ChangeFishScalers = False
-      ChangeNonRetention = False
-      ChangePSCMaxER = False
-      ChangeSizeLimit = False
-      ChangeStockFishScaler = False
-      ChangeStockRecruit = False
+        '- Set Edit Change Variables to False
+        ChangeAnyInput = False
+        ChangeBackFram = False
+        ChangeFishScalers = False
+        ChangeNonRetention = False
+        ChangePSCMaxER = False
+        ChangeSizeLimit = False
+        ChangeStockFishScaler = False
+        ChangeStockRecruit = False
 
-   End Sub
+    End Sub
 
-   Sub ReadOldCommandFile()
+    Sub ReadOldCommandFile()
 
-      Dim TextLine As String
-      '- First ReDim (Zero) All Input and Calculation Arrays
-      '- ReDim Calculation Arrays
-      Call ReDimCalcArrays()
+        Dim TextLine As String
+        '- First ReDim (Zero) All Input and Calculation Arrays
+        '- ReDim Calculation Arrays
+        Call ReDimCalcArrays()
 
-      '- Text File Reader
-      Dim CMDReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(OldCMDFile)
-      CMDReader.TextFieldType = FileIO.FieldType.Delimited
-      CMDReader.SetDelimiters(",")
+        '- Text File Reader
+        Dim CMDReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(OldCMDFile)
+        CMDReader.TextFieldType = FileIO.FieldType.Delimited
+        CMDReader.SetDelimiters(",")
 
-      Dim CurrentRow As String()
-      Dim CurrentField As String
-      Dim CmdStr As String
-      Dim LineNum, LoopLen, FieldNum, Result As Integer
-      Dim RunName, Comments, CMDBasePeriodName, BaseName As String
-      Dim NumComms, RecNum As Integer
+        Dim CurrentRow As String()
+        Dim CurrentField As String
+        Dim CmdStr As String
+        Dim LineNum, LoopLen, FieldNum, Result As Integer
+        Dim RunName, Comments, CMDBasePeriodName, BaseName As String
+        Dim NumComms, RecNum As Integer
 
-      LineNum = 1
-      Comments = ""
-      RunName = ""
+        LineNum = 1
+        Comments = ""
+        RunName = ""
 
-      '- Read CMD Header Information ...
-      '   Species, RunName, Comments, BasePeriod, and Stock Recruits
-      While Not CMDReader.EndOfData
-         Try
-            CurrentRow = CMDReader.ReadFields()
-            LoopLen = CurrentRow.Length
-            FieldNum = 0
-            '- Fields are Line Number Specific
-            Select Case LineNum
-               Case 1
-                  '- SpeciesName
-                  SpeciesName = Trim(CurrentRow(0))
-                  If SpeciesName = "COHO" Then
-                     MsgBox("The Old COHO Command Files and Base Periods" & vbCrLf & "are not supported", MsgBoxStyle.OkOnly)
-                     Exit Sub
-                  End If
-                  If SpeciesName = "NEWCOHO" Then
-                     '- NEWCOHO was used in Previous FRAM Versions
-                     SpeciesName = "COHO"
-                  ElseIf SpeciesName = "CHINOOK" Then
-                     Jim = 1
-                  Else
-                     MsgBox("Species Name not recognized for this Command File!!!", MsgBoxStyle.OkOnly)
-                     Exit Sub
-                  End If
-               Case 2
-                  RunName = My.Computer.FileSystem.GetFileInfo(OldCMDFile).Name
-                  RunIDNameSelect = RunName
-                  '- Use RunName for RunTitle Field when Reading Old CMD File
-                  RunIDTitleSelect = CurrentRow(0)
-                  If RunIDTitleSelect.Length > 100 Then
-                     RunIDTitleSelect = RunIDTitleSelect.Substring(1, 99)
-                  End If
-               Case 3
-                  NumComms = CInt(CurrentRow(0))
-               Case 4 To (NumComms + 3)
-                  For Each CurrentField In CurrentRow
-                     If InStr(CurrentField, "Calibration", CompareMethod.Text) > 0 Then
-                        '- Test for blank Line in Comments Section of Old CMD files
-                        LineNum += 1
-                        GoTo CmdBlankLine
-                     End If
-                     Comments &= CurrentField
-                  Next
-                  RunIDCommentsSelect = Comments
-               Case (NumComms + 4)
+        '- Read CMD Header Information ...
+        '   Species, RunName, Comments, BasePeriod, and Stock Recruits
+        While Not CMDReader.EndOfData
+            Try
+                CurrentRow = CMDReader.ReadFields()
+                LoopLen = CurrentRow.Length
+                FieldNum = 0
+                '- Fields are Line Number Specific
+                Select Case LineNum
+                    Case 1
+                        '- SpeciesName
+                        SpeciesName = Trim(CurrentRow(0))
+                        If SpeciesName = "COHO" Then
+                            MsgBox("The Old COHO Command Files and Base Periods" & vbCrLf & "are not supported", MsgBoxStyle.OkOnly)
+                            Exit Sub
+                        End If
+                        If SpeciesName = "NEWCOHO" Then
+                            '- NEWCOHO was used in Previous FRAM Versions
+                            SpeciesName = "COHO"
+                        ElseIf SpeciesName = "CHINOOK" Then
+                            Jim = 1
+                        Else
+                            MsgBox("Species Name not recognized for this Command File!!!", MsgBoxStyle.OkOnly)
+                            Exit Sub
+                        End If
+                    Case 2
+                        RunName = My.Computer.FileSystem.GetFileInfo(OldCMDFile).Name
+                        RunIDNameSelect = RunName
+                        '- Use RunName for RunTitle Field when Reading Old CMD File
+                        RunIDTitleSelect = CurrentRow(0)
+                        If RunIDTitleSelect.Length > 100 Then
+                            RunIDTitleSelect = RunIDTitleSelect.Substring(1, 99)
+                        End If
+                    Case 3
+                        NumComms = CInt(CurrentRow(0))
+                    Case 4 To (NumComms + 3)
+                        For Each CurrentField In CurrentRow
+                            If InStr(CurrentField, "Calibration", CompareMethod.Text) > 0 Then
+                                '- Test for blank Line in Comments Section of Old CMD files
+                                LineNum += 1
+                                GoTo CmdBlankLine
+                            End If
+                            Comments &= CurrentField
+                        Next
+                        RunIDCommentsSelect = Comments
+                    Case (NumComms + 4)
 
-                  '- BASE PERIOD for this CMD File
+                        '- BASE PERIOD for this CMD File
 
 CmdBlankLine:
-                  CMDBasePeriodName = CurrentRow(0)
-                  '- Get Filename without the extension for comparison
-                  BaseName = My.Computer.FileSystem.GetFileInfo(CMDBasePeriodName).Name
-                  LoopLen = InStr(BaseName, ".OUT", CompareMethod.Text)
-                  If LoopLen <> 0 Then
-                     BaseName = Mid(BaseName, 1, LoopLen - 1)
-                  End If
-                  '- Values from the Associated Base Period File determine
-                  '- the Format and Number of Lines for the remainder of this
-                  '- Command text file.
-                  '- First - Determine if an Existing Base Period Recordset exists
-                  '- Second- Ask if Existing or New Base Period should be used
-                  CmdStr = "SELECT * FROM BaseID WHERE SpeciesName = " & Chr(34) & SpeciesName & Chr(34) & " ORDER BY BasePeriodID"
-                  Dim BPcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                  Dim BaseDA As New System.Data.OleDb.OleDbDataAdapter
-                  BaseDA.SelectCommand = BPcm
-                  Dim BPcb As New OleDb.OleDbCommandBuilder
-                  BPcb = New OleDb.OleDbCommandBuilder(BaseDA)
-                  If FramDataSet.Tables.Contains("BasePeriodIDList") Then
-                     FramDataSet.Tables("BasePeriodIDList").Clear()
-                  End If
-                  BaseDA.Fill(FramDataSet, "BasePeriodIDList")
-                  Dim NumBP As Integer
-                  NumBP = FramDataSet.Tables("BasePeriodIDList").Rows.Count
-                  '- Loop through Table Records for Base Period Match
-                  For RecNum = 0 To NumBP - 1
-                     BasePeriodID = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(1)
-                     BasePeriodName = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(2)
-                     If InStr(BasePeriodName, BaseName, CompareMethod.Text) <> 0 Then
-                        Result = MsgBox("Found Matching Base Period Name in Database" & vbCrLf & _
-                        "DatabaseName=" & BasePeriodName & vbCrLf & _
-                        "NumStks=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(4) & vbCrLf & _
-                        "NumFish=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(5) & vbCrLf & _
-                        "NumSteps=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(6) & vbCrLf & _
-                        "Do You want to use this BasePeriod Version ???", MsgBoxStyle.YesNo)
-                        If Result = vbNo Then
-                           MsgBox("Please Read Selected Base Period File before Reading CMD File", MsgBoxStyle.OkOnly)
-                           BaseDA = Nothing
-                           Exit Sub
+                        CMDBasePeriodName = CurrentRow(0)
+                        '- Get Filename without the extension for comparison
+                        BaseName = My.Computer.FileSystem.GetFileInfo(CMDBasePeriodName).Name
+                        LoopLen = InStr(BaseName, ".OUT", CompareMethod.Text)
+                        If LoopLen <> 0 Then
+                            BaseName = Mid(BaseName, 1, LoopLen - 1)
                         End If
-                        '- Found Correct Existing Base Period File
-                        '- Eventually change this to Call BasePeriodFillArrays
-                        'SpeciesName = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(2)
-                        NumStk = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(4)
-                        NumFish = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(5)
-                        NumSteps = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(6)
-                        NumAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(7)
-                        MinAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(8)
-                        MaxAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(9)
-                        BasePeriodDate = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(10)
-                        BasePeriodComments = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(11)
-                        StockVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(12)
-                        FisheryVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(13)
-                        TimeStepVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(14)
-                        Call ReDimBaseArrays()
-                        Call ReDimCalcArrays()
-                        Exit For
-                     End If
-                  Next
-                  If RecNum = NumBP Then
-                     MsgBox("Can't Find the BASE PERIOD FILE for this CMD File in Database" & _
-                     "Add BASE PERIOD FILE or Change CMD File OUT Name to Existing Name", MsgBoxStyle.OkOnly)
-                     Exit Sub
-                  End If
-                  BaseDA = Nothing
+                        '- Values from the Associated Base Period File determine
+                        '- the Format and Number of Lines for the remainder of this
+                        '- Command text file.
+                        '- First - Determine if an Existing Base Period Recordset exists
+                        '- Second- Ask if Existing or New Base Period should be used
+                        CmdStr = "SELECT * FROM BaseID WHERE SpeciesName = " & Chr(34) & SpeciesName & Chr(34) & " ORDER BY BasePeriodID"
+                        Dim BPcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+                        Dim BaseDA As New System.Data.OleDb.OleDbDataAdapter
+                        BaseDA.SelectCommand = BPcm
+                        Dim BPcb As New OleDb.OleDbCommandBuilder
+                        BPcb = New OleDb.OleDbCommandBuilder(BaseDA)
+                        If FramDataSet.Tables.Contains("BasePeriodIDList") Then
+                            FramDataSet.Tables("BasePeriodIDList").Clear()
+                        End If
+                        BaseDA.Fill(FramDataSet, "BasePeriodIDList")
+                        Dim NumBP As Integer
+                        NumBP = FramDataSet.Tables("BasePeriodIDList").Rows.Count
+                        '- Loop through Table Records for Base Period Match
+                        For RecNum = 0 To NumBP - 1
+                            BasePeriodID = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(1)
+                            BasePeriodName = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(2)
+                            If InStr(BasePeriodName, BaseName, CompareMethod.Text) <> 0 Then
+                                Result = MsgBox("Found Matching Base Period Name in Database" & vbCrLf &
+                                "DatabaseName=" & BasePeriodName & vbCrLf &
+                                "NumStks=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(4) & vbCrLf &
+                                "NumFish=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(5) & vbCrLf &
+                                "NumSteps=" & FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(6) & vbCrLf &
+                                "Do You want to use this BasePeriod Version ???", MsgBoxStyle.YesNo)
+                                If Result = vbNo Then
+                                    MsgBox("Please Read Selected Base Period File before Reading CMD File", MsgBoxStyle.OkOnly)
+                                    BaseDA = Nothing
+                                    Exit Sub
+                                End If
+                                '- Found Correct Existing Base Period File
+                                '- Eventually change this to Call BasePeriodFillArrays
+                                'SpeciesName = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(2)
+                                NumStk = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(4)
+                                NumFish = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(5)
+                                NumSteps = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(6)
+                                NumAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(7)
+                                MinAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(8)
+                                MaxAge = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(9)
+                                BasePeriodDate = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(10)
+                                BasePeriodComments = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(11)
+                                StockVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(12)
+                                FisheryVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(13)
+                                TimeStepVersion = FramDataSet.Tables("BasePeriodIDList").Rows(RecNum)(14)
+                                Call ReDimBaseArrays()
+                                Call ReDimCalcArrays()
+                                Exit For
+                            End If
+                        Next
+                        If RecNum = NumBP Then
+                            MsgBox("Can't Find the BASE PERIOD FILE for this CMD File in Database" &
+                            "Add BASE PERIOD FILE or Change CMD File OUT Name to Existing Name", MsgBoxStyle.OkOnly)
+                            Exit Sub
+                        End If
+                        BaseDA = Nothing
 
-               Case (NumComms + 5) To (NumComms + 7)
-                  '- Header Lines .. Not Needed
-                  Jim = 1
+                    Case (NumComms + 5) To (NumComms + 7)
+                        '- Header Lines .. Not Needed
+                        Jim = 1
 
-               Case NumComms + 8 To (((MaxAge - 1) * NumStk) + (NumComms + 8))
-                  '- Recruit Scalers
-                  RecNum = LineNum - (NumComms + 7)
-                  If SpeciesName = "COHO" Then
-                     '- COHO has two lines - Ages 2&3
-                     If (RecNum Mod 2) = 0 Then
-                        Stk = RecNum / 2
-                        Age = 3
-                        StockRecruit(Stk, Age, 1) = (CurrentRow(0))
-                     End If
-                  ElseIf SpeciesName = "CHINOOK" Then
-                     '- CHINOOK has four lines - Ages 2 to 5
-                     If (RecNum Mod 4) = 1 Then
-                        Stk = (RecNum + 3) / 4
-                        Age = 2
-                     ElseIf (RecNum Mod 4) = 2 Then
-                        Stk = (RecNum + 2) / 4
-                        Age = 3
-                     ElseIf (RecNum Mod 4) = 3 Then
-                        Stk = (RecNum + 1) / 4
-                        Age = 4
-                     ElseIf (RecNum Mod 4) = 0 Then
-                        Stk = RecNum / 4
-                        Age = 5
-                     End If
-                     StockRecruit(Stk, Age, 1) = (CurrentRow(0))
-                  End If
+                    Case NumComms + 8 To (((MaxAge - 1) * NumStk) + (NumComms + 8))
+                        '- Recruit Scalers
+                        RecNum = LineNum - (NumComms + 7)
+                        If SpeciesName = "COHO" Then
+                            '- COHO has two lines - Ages 2&3
+                            If (RecNum Mod 2) = 0 Then
+                                Stk = RecNum / 2
+                                Age = 3
+                                StockRecruit(Stk, Age, 1) = (CurrentRow(0))
+                            End If
+                        ElseIf SpeciesName = "CHINOOK" Then
+                            '- CHINOOK has four lines - Ages 2 to 5
+                            If (RecNum Mod 4) = 1 Then
+                                Stk = (RecNum + 3) / 4
+                                Age = 2
+                            ElseIf (RecNum Mod 4) = 2 Then
+                                Stk = (RecNum + 2) / 4
+                                Age = 3
+                            ElseIf (RecNum Mod 4) = 3 Then
+                                Stk = (RecNum + 1) / 4
+                                Age = 4
+                            ElseIf (RecNum Mod 4) = 0 Then
+                                Stk = RecNum / 4
+                                Age = 5
+                            End If
+                            StockRecruit(Stk, Age, 1) = (CurrentRow(0))
+                        End If
 
-            End Select
+                End Select
 
-         Catch ex As Exception
-            MsgBox("The COMMAND FILE file Selected has Format Problems" & vbCrLf & " RecNum=" & RecNum.ToString, MsgBoxStyle.OkOnly)
-            Exit Sub
-         End Try
-         LineNum += 1
-         '- Exit DO WHILE when Header Information has been Read
-         If LineNum = (((MaxAge - 1) * NumStk) + (NumComms + 8)) Then Exit While
-      End While
+            Catch ex As Exception
+                MsgBox("The COMMAND FILE file Selected has Format Problems" & vbCrLf & " RecNum=" & RecNum.ToString, MsgBoxStyle.OkOnly)
+                Exit Sub
+            End Try
+            LineNum += 1
+            '- Exit DO WHILE when Header Information has been Read
+            If LineNum = (((MaxAge - 1) * NumStk) + (NumComms + 8)) Then Exit While
+        End While
 
-      '- Read CMD Time-Step Specific Information ...
-      '   Species, RunName, Comments, BasePeriod, and Stock Recruits
+        '- Read CMD Time-Step Specific Information ...
+        '   Species, RunName, Comments, BasePeriod, and Stock Recruits
 
-      Dim Flag, NumCNR, NumSFS, NumFld As Integer
-      '- Note: Many CMD lines DO NOT have comma delimiters !!! Must use Space DeLimiter
-      CMDReader.SetDelimiters(",", " ")
-      For TStep = 1 To NumSteps
-         '- Size Limit Title Line
-         CurrentRow = CMDReader.ReadFields()
+        Dim Flag, NumCNR, NumSFS, NumFld As Integer
+        '- Note: Many CMD lines DO NOT have comma delimiters !!! Must use Space DeLimiter
+        CMDReader.SetDelimiters(",", " ")
+        For TStep = 1 To NumSteps
+            '- Size Limit Title Line
+            CurrentRow = CMDReader.ReadFields()
 NewCohoOldFormat:
-         For Fish = 1 To NumFish
-            '- One Size Limit Line per Fishery
-            CurrentRow = CMDReader.ReadFields()
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  MinSizeLimit(Fish, TStep) = CurrentField
-                  Exit For
-               End If
-            Next
-         Next
-         '- Quota/Fishery Scaler Title Line
-         CurrentRow = CMDReader.ReadFields()
-         For Fish = 1 To NumFish
-            '- Two Lines per Fishery
-            CurrentRow = CMDReader.ReadFields()
-            '- First Field in First Line has FisheryFlag
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  FisheryFlag(Fish, TStep) = CurrentField
-                  Exit For
-               End If
-            Next
-            '- Second Line has Variable Parameters
-            CurrentRow = CMDReader.ReadFields()
-            If FisheryFlag(Fish, TStep) = 0 Then
-               '- Fishery Scaler
-               For Each CurrentField In CurrentRow
-                  If CurrentField <> "" Then
-                     FisheryScaler(Fish, TStep) = CurrentField
-                     Exit For
-                  End If
-               Next
-               FisheryFlag(Fish, TStep) = 1
-            ElseIf FisheryFlag(Fish, TStep) = 1 Then
-               '- Fishery Quota
-               For Each CurrentField In CurrentRow
-                  If CurrentField <> "" Then
-                     FisheryQuota(Fish, TStep) = CurrentField
-                     Exit For
-                  End If
-               Next
-               FisheryFlag(Fish, TStep) = 2
-            ElseIf FisheryFlag(Fish, TStep) = 9 Then
-               '- Mark-Selective Fishery Parameters .. 7 Fields
-               NumFld = 1
-               For Each CurrentField In CurrentRow
-                  If CurrentField <> "" Then
-                     Select Case NumFld
-                        Case 1
-                           Flag = CurrentField
-                        Case 2
-                           If Flag = 0 Then
-                              MSFFisheryScaler(Fish, TStep) = CurrentField
-                              FisheryFlag(Fish, TStep) = 7
-                           ElseIf Flag = 1 Then
-                              MSFFisheryQuota(Fish, TStep) = CurrentField
-                              FisheryFlag(Fish, TStep) = 8
-                           End If
-                        Case 3
-                           Jim = 1
-                        Case 4
-                           MarkSelectiveMortRate(Fish, TStep) = CurrentField
-                        Case 5
-                           MarkSelectiveMarkMisID(Fish, TStep) = CurrentField
-                        Case 6
-                           MarkSelectiveUnMarkMisID(Fish, TStep) = CurrentField
-                        Case 7
-                           MarkSelectiveIncRate(Fish, TStep) = CurrentField
-                     End Select
-                     NumFld += 1
-                  End If
-               Next
-            End If
-         Next
-         '- CNR Title Line
-         CurrentRow = CMDReader.ReadFields()
-         '- Number of CNR Fisheries for this Time Step
-         CurrentRow = CMDReader.ReadFields()
-         For Each CurrentField In CurrentRow
-            If CurrentField <> "" Then
-               NumCNR = CurrentField
-               Exit For
-            End If
-         Next
-         For Flag = 1 To NumCNR
-            '- First Field in First Line has Fishery Number
-            CurrentRow = CMDReader.ReadFields()
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  Fish = CurrentField
-                  Exit For
-               End If
-            Next
-            '- Second Line has CNR Flag
-            CurrentRow = CMDReader.ReadFields()
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  NonRetentionFlag(Fish, TStep) = CurrentField
-                  '- No Longer using Zero Based Flagging
-                  If SpeciesName = "COHO" Then
-                     NonRetentionFlag(Fish, TStep) = 1
-                  ElseIf SpeciesName = "CHINOOK" Then
-                     NonRetentionFlag(Fish, TStep) = NonRetentionFlag(Fish, TStep) + 1
-                  End If
-                  Exit For
-               End If
-            Next
-            '- Next Four Lines have CNR Parameters
-            For LineNum = 1 To 4
-               CurrentRow = CMDReader.ReadFields()
-               For Each CurrentField In CurrentRow
-                  If CurrentField <> "" Then
-                     NonRetentionInput(Fish, TStep, LineNum) = CurrentField
-                     Exit For
-                  End If
-               Next
-            Next
-         Next
-         '- Stock/Fishery Scaler Title Line
-         CurrentRow = CMDReader.ReadFields()
-         '- Check for Old Format for COHO (i.e. No SHRS Values)
-         If TStep = NumSteps And IsNothing(CurrentRow) Then
-            Call CopyNewRecordset()
-            Exit Sub
-         End If
-         TextLine = ""
-         For Stk = 0 To CurrentRow.Length - 1
-            TextLine &= CurrentRow(Stk).ToString
-         Next
-         If InStr(TextLine, "StockSpecificExploitation") >= 1 Then
-            '- Check for Old Format for COHO (i.e. No SHRS Values)
-         Else
-            TStep += 1
-            GoTo NewCohoOldFormat
-         End If
-         '- Number of Stock/Fishery Scalers for this Time Step
-         CurrentRow = CMDReader.ReadFields()
-         For Each CurrentField In CurrentRow
-            If CurrentField <> "" Then
-               NumSFS = CurrentField
-               Exit For
-            End If
-         Next
-         For Flag = 1 To NumSFS
-            '- One Line per SF-Scaler .. expect single Space at start of line
-            CurrentRow = CMDReader.ReadFields()
-            FieldNum = 1
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  Select Case FieldNum
-                     Case 1
-                        Stk = CurrentField
-                     Case 2
-                        Fish = CurrentField
-                     Case 3
-                        StockFishRateScalers(Stk, Fish, TStep) = CurrentField
+            For Fish = 1 To NumFish
+                '- One Size Limit Line per Fishery
+                CurrentRow = CMDReader.ReadFields()
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        MinSizeLimit(Fish, TStep) = CurrentField
                         Exit For
-                  End Select
-                  FieldNum += 1
-               End If
+                    End If
+                Next
             Next
-         Next
-      Next TStep
+            '- Quota/Fishery Scaler Title Line
+            CurrentRow = CMDReader.ReadFields()
+            For Fish = 1 To NumFish
+                '- Two Lines per Fishery
+                CurrentRow = CMDReader.ReadFields()
+                '- First Field in First Line has FisheryFlag
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        FisheryFlag(Fish, TStep) = CurrentField
+                        Exit For
+                    End If
+                Next
+                '- Second Line has Variable Parameters
+                CurrentRow = CMDReader.ReadFields()
+                If FisheryFlag(Fish, TStep) = 0 Then
+                    '- Fishery Scaler
+                    For Each CurrentField In CurrentRow
+                        If CurrentField <> "" Then
+                            FisheryScaler(Fish, TStep) = CurrentField
+                            Exit For
+                        End If
+                    Next
+                    FisheryFlag(Fish, TStep) = 1
+                ElseIf FisheryFlag(Fish, TStep) = 1 Then
+                    '- Fishery Quota
+                    For Each CurrentField In CurrentRow
+                        If CurrentField <> "" Then
+                            FisheryQuota(Fish, TStep) = CurrentField
+                            Exit For
+                        End If
+                    Next
+                    FisheryFlag(Fish, TStep) = 2
+                ElseIf FisheryFlag(Fish, TStep) = 9 Then
+                    '- Mark-Selective Fishery Parameters .. 7 Fields
+                    NumFld = 1
+                    For Each CurrentField In CurrentRow
+                        If CurrentField <> "" Then
+                            Select Case NumFld
+                                Case 1
+                                    Flag = CurrentField
+                                Case 2
+                                    If Flag = 0 Then
+                                        MSFFisheryScaler(Fish, TStep) = CurrentField
+                                        FisheryFlag(Fish, TStep) = 7
+                                    ElseIf Flag = 1 Then
+                                        MSFFisheryQuota(Fish, TStep) = CurrentField
+                                        FisheryFlag(Fish, TStep) = 8
+                                    End If
+                                Case 3
+                                    Jim = 1
+                                Case 4
+                                    MarkSelectiveMortRate(Fish, TStep) = CurrentField
+                                Case 5
+                                    MarkSelectiveMarkMisID(Fish, TStep) = CurrentField
+                                Case 6
+                                    MarkSelectiveUnMarkMisID(Fish, TStep) = CurrentField
+                                Case 7
+                                    MarkSelectiveIncRate(Fish, TStep) = CurrentField
+                            End Select
+                            NumFld += 1
+                        End If
+                    Next
+                End If
+            Next
+            '- CNR Title Line
+            CurrentRow = CMDReader.ReadFields()
+            '- Number of CNR Fisheries for this Time Step
+            CurrentRow = CMDReader.ReadFields()
+            For Each CurrentField In CurrentRow
+                If CurrentField <> "" Then
+                    NumCNR = CurrentField
+                    Exit For
+                End If
+            Next
+            For Flag = 1 To NumCNR
+                '- First Field in First Line has Fishery Number
+                CurrentRow = CMDReader.ReadFields()
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        Fish = CurrentField
+                        Exit For
+                    End If
+                Next
+                '- Second Line has CNR Flag
+                CurrentRow = CMDReader.ReadFields()
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        NonRetentionFlag(Fish, TStep) = CurrentField
+                        '- No Longer using Zero Based Flagging
+                        If SpeciesName = "COHO" Then
+                            NonRetentionFlag(Fish, TStep) = 1
+                        ElseIf SpeciesName = "CHINOOK" Then
+                            NonRetentionFlag(Fish, TStep) = NonRetentionFlag(Fish, TStep) + 1
+                        End If
+                        Exit For
+                    End If
+                Next
+                '- Next Four Lines have CNR Parameters
+                For LineNum = 1 To 4
+                    CurrentRow = CMDReader.ReadFields()
+                    For Each CurrentField In CurrentRow
+                        If CurrentField <> "" Then
+                            NonRetentionInput(Fish, TStep, LineNum) = CurrentField
+                            Exit For
+                        End If
+                    Next
+                Next
+            Next
+            '- Stock/Fishery Scaler Title Line
+            CurrentRow = CMDReader.ReadFields()
+            '- Check for Old Format for COHO (i.e. No SHRS Values)
+            If TStep = NumSteps And IsNothing(CurrentRow) Then
+                Call CopyNewRecordset()
+                Exit Sub
+            End If
+            TextLine = ""
+            For Stk = 0 To CurrentRow.Length - 1
+                TextLine &= CurrentRow(Stk).ToString
+            Next
+            If InStr(TextLine, "StockSpecificExploitation") >= 1 Then
+                '- Check for Old Format for COHO (i.e. No SHRS Values)
+            Else
+                TStep += 1
+                GoTo NewCohoOldFormat
+            End If
+            '- Number of Stock/Fishery Scalers for this Time Step
+            CurrentRow = CMDReader.ReadFields()
+            For Each CurrentField In CurrentRow
+                If CurrentField <> "" Then
+                    NumSFS = CurrentField
+                    Exit For
+                End If
+            Next
+            For Flag = 1 To NumSFS
+                '- One Line per SF-Scaler .. expect single Space at start of line
+                CurrentRow = CMDReader.ReadFields()
+                FieldNum = 1
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        Select Case FieldNum
+                            Case 1
+                                Stk = CurrentField
+                            Case 2
+                                Fish = CurrentField
+                            Case 3
+                                StockFishRateScalers(Stk, Fish, TStep) = CurrentField
+                                Exit For
+                        End Select
+                        FieldNum += 1
+                    End If
+                Next
+            Next
+        Next TStep
 
-      '- PSC COHO Max ER Values for Coho Tech Report
-      If SpeciesName = "COHO" Then
-         If CMDReader.EndOfData Then
-            '- If No PSC Max ER's (Old CMD Format) Set All to 0.5
+        '- PSC COHO Max ER Values for Coho Tech Report
+        If SpeciesName = "COHO" Then
+            If CMDReader.EndOfData Then
+                '- If No PSC Max ER's (Old CMD Format) Set All to 0.5
+                For Stk = 1 To 17
+                    PSCMaxER(Stk) = 0.5
+                Next
+                Call CopyNewRecordset()
+                Exit Sub
+            End If
+            '- PSC Title Line
+            CurrentRow = CMDReader.ReadFields()
             For Stk = 1 To 17
-               PSCMaxER(Stk) = 0.5
+                CurrentRow = CMDReader.ReadFields()
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        PSCMaxER(Stk) = CurrentField
+                        Exit For
+                    End If
+                Next
+                If CMDReader.EndOfData Then
+                    Call CopyNewRecordset()
+                    Exit Sub
+                End If
             Next
+        End If
+        If CMDReader.EndOfData Then
             Call CopyNewRecordset()
             Exit Sub
-         End If
-         '- PSC Title Line
-         CurrentRow = CMDReader.ReadFields()
-         For Stk = 1 To 17
-            CurrentRow = CMDReader.ReadFields()
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  PSCMaxER(Stk) = CurrentField
-                  Exit For
-               End If
-            Next
-            If CMDReader.EndOfData Then
-               Call CopyNewRecordset()
-               Exit Sub
-            End If
-         Next
-      End If
-      If CMDReader.EndOfData Then
-         Call CopyNewRecordset()
-         Exit Sub
-      End If
+        End If
 
-      '- Backwards FRAM Parameters
-      '- Blank Line & BF Title Line
-      'CurrentRow = CMDReader.ReadFields()
-      CurrentRow = CMDReader.ReadFields()
-      For Each CurrentField In CurrentRow
-         If CurrentField = "Backwards" Then
-            Jim = 1
-            Exit For
-         End If
-      Next
-      If SpeciesName = "COHO" Then
-         For Stk = 1 To NumStk
-            CurrentRow = CMDReader.ReadFields()
-            FieldNum = 1
-            For Each CurrentField In CurrentRow
-               If CurrentField <> "" Then
-                  If FieldNum = 1 Then
-                     LineNum = CurrentField
-                  ElseIf FieldNum = 2 Then
-                     BackwardsTarget(Stk) = CurrentField
-                  ElseIf FieldNum = 3 Then
-                     BackwardsFlag(Stk) = CurrentField
-                     Exit For
-                  End If
-                  FieldNum += 1
-               End If
+        '- Backwards FRAM Parameters
+        '- Blank Line & BF Title Line
+        'CurrentRow = CMDReader.ReadFields()
+        CurrentRow = CMDReader.ReadFields()
+        For Each CurrentField In CurrentRow
+            If CurrentField = "Backwards" Then
+                Jim = 1
+                Exit For
+            End If
+        Next
+        If SpeciesName = "COHO" Then
+            For Stk = 1 To NumStk
+                CurrentRow = CMDReader.ReadFields()
+                FieldNum = 1
+                For Each CurrentField In CurrentRow
+                    If CurrentField <> "" Then
+                        If FieldNum = 1 Then
+                            LineNum = CurrentField
+                        ElseIf FieldNum = 2 Then
+                            BackwardsTarget(Stk) = CurrentField
+                        ElseIf FieldNum = 3 Then
+                            BackwardsFlag(Stk) = CurrentField
+                            Exit For
+                        End If
+                        FieldNum += 1
+                    End If
+                Next
             Next
-         Next
         ElseIf SpeciesName = "CHINOOK" Then
 
             If NumStk = 38 Or NumStk = 76 Then
@@ -673,70 +676,70 @@ NewCohoOldFormat:
                     End If
                 Next
             Next
-      End If
+        End If
 
-      Call CopyNewRecordset()
+        Call CopyNewRecordset()
 
-   End Sub
+    End Sub
 
-   Sub CopyNewRecordset()
+    Sub CopyNewRecordset()
 
-      Dim RunIDRead, BaseIDRead As Integer
+        Dim RunIDRead, BaseIDRead As Integer
 
-      '- Save Current RunID and BaseID
-      RunIDRead = RunIDSelect
-      BaseIDRead = BasePeriodIDSelect
+        '- Save Current RunID and BaseID
+        RunIDRead = RunIDSelect
+        BaseIDRead = BasePeriodIDSelect
 
-      '- Fill Database Tables with New RecordSet Values from Arrays
-      '- This Routine is called from ReadOldCMDFile and CopyRecordset
-      '- Both Calls are from FVS_FramUtils
+        '- Fill Database Tables with New RecordSet Values from Arrays
+        '- This Routine is called from ReadOldCMDFile and CopyRecordset
+        '- Both Calls are from FVS_FramUtils
 
-      '- NewRunID Variable set in CopyRecordset Selection from FVS_EditRecordsetInfo
-      If RecordsetSelectionType = 4 Or RecordsetSelectionType = 5 Then GoTo SkipRID
-      If RunIDSelect = 0 Then
-         '- Empty RunID Recordset
-         NewRunID = 1
-         GoTo SkipRID
-      End If
+        '- NewRunID Variable set in CopyRecordset Selection from FVS_EditRecordsetInfo
+        If RecordsetSelectionType = 4 Or RecordsetSelectionType = 5 Then GoTo SkipRID
+        If RunIDSelect = 0 Then
+            '- Empty RunID Recordset
+            NewRunID = 1
+            GoTo SkipRID
+        End If
 
-      '- RunID DataBase Table New Record --------
-      Dim drd1 As OleDb.OleDbDataReader
-      Dim cmd1 As New OleDb.OleDbCommand()
-      Dim MaxOldID As Integer
-      '- Get Current Max RunID Value, Add One for New Recordset RunID Value
-      cmd1.Connection = FramDB
-      cmd1.CommandText = "SELECT * FROM RunID ORDER BY RunID DESC"
-      FramDB.Open()
-      drd1 = cmd1.ExecuteReader
-      drd1.Read()
-      MaxOldID = drd1.GetInt32(1)
-      cmd1.Dispose()
-      drd1.Dispose()
-      FramDB.Close()
+        '- RunID DataBase Table New Record --------
+        Dim drd1 As OleDb.OleDbDataReader
+        Dim cmd1 As New OleDb.OleDbCommand()
+        Dim MaxOldID As Integer
+        '- Get Current Max RunID Value, Add One for New Recordset RunID Value
+        cmd1.Connection = FramDB
+        cmd1.CommandText = "SELECT * FROM RunID ORDER BY RunID DESC"
+        FramDB.Open()
+        drd1 = cmd1.ExecuteReader
+        drd1.Read()
+        MaxOldID = drd1.GetInt32(1)
+        cmd1.Dispose()
+        drd1.Dispose()
+        FramDB.Close()
 
-      NewRunID = MaxOldID + 1
+        NewRunID = MaxOldID + 1
 
-      Dim FramTrans As OleDb.OleDbTransaction
-      Dim RIC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
+        Dim FramTrans As OleDb.OleDbTransaction
+        Dim RIC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
         RIC.Connection = FramDB
 
-      RIC.Transaction = FramTrans
-        RIC.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " & _
-            "VALUES(" & NewRunID.ToString & "," & _
-                Chr(34) & SpeciesName.ToString & Chr(34) & "," & _
-              Chr(34) & RunIDNameSelect.ToString & Chr(34) & "," & _
-              Chr(34) & RunIDTitleSelect.ToString & Chr(34) & "," & _
-              BasePeriodID.ToString & "," & _
-              Chr(34) & RunIDCommentsSelect.ToString & Chr(34) & "," & _
-              Chr(35) & RunIDCreationDateSelect.ToString & Chr(35) & "," & _
-              Chr(35) & Now().ToString & Chr(35) & "," & _
-              Chr(35) & RunIDRunTimeDateSelect.ToString & Chr(35) & "," & _
-            Chr(34) & RunIDYearSelect & Chr(34) & "," & _
-            Chr(34) & RunIDTypeSelect & Chr(34) & "," & _
-            Chr(34) & TAMMName & Chr(34) & "," & _
-            Chr(34) & CoastalIter & Chr(34) & "," & _
+        RIC.Transaction = FramTrans
+        RIC.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " &
+            "VALUES(" & NewRunID.ToString & "," &
+                Chr(34) & SpeciesName.ToString & Chr(34) & "," &
+              Chr(34) & RunIDNameSelect.ToString & Chr(34) & "," &
+              Chr(34) & RunIDTitleSelect.ToString & Chr(34) & "," &
+              BasePeriodID.ToString & "," &
+              Chr(34) & RunIDCommentsSelect.ToString & Chr(34) & "," &
+              Chr(35) & RunIDCreationDateSelect.ToString & Chr(35) & "," &
+              Chr(35) & Now().ToString & Chr(35) & "," &
+              Chr(35) & RunIDRunTimeDateSelect.ToString & Chr(35) & "," &
+            Chr(34) & RunIDYearSelect & Chr(34) & "," &
+            Chr(34) & RunIDTypeSelect & Chr(34) & "," &
+            Chr(34) & TAMMName & Chr(34) & "," &
+            Chr(34) & CoastalIter & Chr(34) & "," &
             Chr(34) & FRAMVers & Chr(34) & ");"
 
         '"VALUES(" & NewRunID.ToString & "," & _
@@ -748,219 +751,219 @@ NewCohoOldFormat:
         'Chr(35) & Now().ToString & Chr(35) & "," & _
         'Chr(35) & RunIDModifyInputDateSelect.ToString & Chr(35) & "," & _
         'Chr(35) & RunIDRunTimeDateSelect.ToString & Chr(35) & ")"
-      RIC.ExecuteNonQuery()
-      FramTrans.Commit()
-      FramDB.Close()
+        RIC.ExecuteNonQuery()
+        FramTrans.Commit()
+        FramDB.Close()
 
 SkipRID:
-      '- RunID Information Already Saved in ModelRun Copy
-      If RecordsetSelectionType = 4 Or RecordsetSelectionType = 5 Then
-         NewRunID = RunIDSelect
-      End If
+        '- RunID Information Already Saved in ModelRun Copy
+        If RecordsetSelectionType = 4 Or RecordsetSelectionType = 5 Then
+            NewRunID = RunIDSelect
+        End If
 
-      '- STOCKRECRUIT DataBase Table Save --------
-      Dim SRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      SRC.Connection = FramDB
-      SRC.Transaction = FramTrans
-      For Stk = 1 To NumStk
-         For Age = MinAge To MaxAge
-            If StockRecruit(Stk, Age, 1) <> 0 Then
-               StockRecruit(Stk, Age, 2) = StockRecruit(Stk, Age, 1) * BaseCohortSize(Stk, Age)
-               SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " & _
-               "VALUES(" & NewRunID.ToString & "," & _
-               Stk.ToString & "," & _
-               Age.ToString & "," & _
-               StockRecruit(Stk, Age, 1).ToString("######0.0000") & "," & _
-               StockRecruit(Stk, Age, 2).ToString("######0.0000") & ")"
-               SRC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+        '- STOCKRECRUIT DataBase Table Save --------
+        Dim SRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        SRC.Connection = FramDB
+        SRC.Transaction = FramTrans
+        For Stk = 1 To NumStk
+            For Age = MinAge To MaxAge
+                If StockRecruit(Stk, Age, 1) <> 0 Then
+                    StockRecruit(Stk, Age, 2) = StockRecruit(Stk, Age, 1) * BaseCohortSize(Stk, Age)
+                    SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " &
+                    "VALUES(" & NewRunID.ToString & "," &
+                    Stk.ToString & "," &
+                    Age.ToString & "," &
+                    StockRecruit(Stk, Age, 1).ToString("######0.0000") & "," &
+                    StockRecruit(Stk, Age, 2).ToString("######0.0000") & ")"
+                    SRC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- FISHERYSCALERS DataBase Table Save --------
-      Dim FSC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      FSC.Connection = FramDB
-      FSC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
-            If FisheryFlag(Fish, TStep) <> 0 Or FisheryScaler(Fish, TStep) <> 0 Or FisheryQuota(Fish, TStep) <> 0 Or MSFFisheryScaler(Fish, TStep) <> 0 Or MSFFisheryQuota(Fish, TStep) <> 0 Then
+        '- FISHERYSCALERS DataBase Table Save --------
+        Dim FSC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        FSC.Connection = FramDB
+        FSC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
+                If FisheryFlag(Fish, TStep) <> 0 Or FisheryScaler(Fish, TStep) <> 0 Or FisheryQuota(Fish, TStep) <> 0 Or MSFFisheryScaler(Fish, TStep) <> 0 Or MSFFisheryQuota(Fish, TStep) <> 0 Then
                     '- MarkSelectiveFlag currently not used ... placeholder after Quota
                     If FramDataSet.Tables("FisheryScalers").Columns.IndexOf("Comment") = -1 Then
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Fish.ToString & "," & _
-                        TStep.ToString & "," & _
-                        FisheryFlag(Fish, TStep).ToString & "," & _
-                        FisheryScaler(Fish, TStep).ToString("######0.0000") & "," & _
-                        FisheryQuota(Fish, TStep).ToString("########0.0000") & "," & _
-                        MSFFisheryScaler(Fish, TStep).ToString("######0.0000") & "," & _
-                        MSFFisheryQuota(Fish, TStep).ToString("########0.0000") & "," & _
-                        MarkSelectiveMortRate(Fish, TStep).ToString("######0.0000") & "," & _
-                        MarkSelectiveMarkMisID(Fish, TStep).ToString("######0.0000") & "," & _
-                        MarkSelectiveUnMarkMisID(Fish, TStep).ToString("######0.0000") & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        FisheryFlag(Fish, TStep).ToString & "," &
+                        FisheryScaler(Fish, TStep).ToString("######0.0000") & "," &
+                        FisheryQuota(Fish, TStep).ToString("########0.0000") & "," &
+                        MSFFisheryScaler(Fish, TStep).ToString("######0.0000") & "," &
+                        MSFFisheryQuota(Fish, TStep).ToString("########0.0000") & "," &
+                        MarkSelectiveMortRate(Fish, TStep).ToString("######0.0000") & "," &
+                        MarkSelectiveMarkMisID(Fish, TStep).ToString("######0.0000") & "," &
+                        MarkSelectiveUnMarkMisID(Fish, TStep).ToString("######0.0000") & "," &
                         MarkSelectiveIncRate(Fish, TStep).ToString("######0.0000") & ")"
                     Else
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " & _
-                            "VALUES(" & NewRunID.ToString & "," & _
-                            Fish.ToString & "," & _
-                            TStep.ToString & "," & _
-                            FisheryFlag(Fish, TStep).ToString & "," & _
-                            FisheryScaler(Fish, TStep).ToString("######0.0000") & "," & _
-                            FisheryQuota(Fish, TStep).ToString("########0.0000") & "," & _
-                            MSFFisheryScaler(Fish, TStep).ToString("######0.0000") & "," & _
-                            MSFFisheryQuota(Fish, TStep).ToString("########0.0000") & "," & _
-                            MarkSelectiveMortRate(Fish, TStep).ToString("######0.0000") & "," & _
-                            MarkSelectiveMarkMisID(Fish, TStep).ToString("######0.0000") & "," & _
-                            MarkSelectiveUnMarkMisID(Fish, TStep).ToString("######0.0000") & "," & _
-                            MarkSelectiveIncRate(Fish, TStep).ToString("######0.0000") & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " &
+                            "VALUES(" & NewRunID.ToString & "," &
+                            Fish.ToString & "," &
+                            TStep.ToString & "," &
+                            FisheryFlag(Fish, TStep).ToString & "," &
+                            FisheryScaler(Fish, TStep).ToString("######0.0000") & "," &
+                            FisheryQuota(Fish, TStep).ToString("########0.0000") & "," &
+                            MSFFisheryScaler(Fish, TStep).ToString("######0.0000") & "," &
+                            MSFFisheryQuota(Fish, TStep).ToString("########0.0000") & "," &
+                            MarkSelectiveMortRate(Fish, TStep).ToString("######0.0000") & "," &
+                            MarkSelectiveMarkMisID(Fish, TStep).ToString("######0.0000") & "," &
+                            MarkSelectiveUnMarkMisID(Fish, TStep).ToString("######0.0000") & "," &
+                            MarkSelectiveIncRate(Fish, TStep).ToString("######0.0000") & "," &
                             Chr(34) & FisheryComment(Fish, TStep) & Chr(34) & ")"
                     End If
                     FSC.ExecuteNonQuery()
                 End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- NONRETENTION DataBase Table Save --------
-      Dim NRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      NRC.Connection = FramDB
-      NRC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
+        '- NONRETENTION DataBase Table Save --------
+        Dim NRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        NRC.Connection = FramDB
+        NRC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
                 If NonRetentionFlag(Fish, TStep) <> 0 Then
                     If FramDataSet.Tables("NonRetention").Columns.IndexOf("Comment") = -1 Then
-                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Fish.ToString & "," & _
-                        TStep.ToString & "," & _
-                        NonRetentionFlag(Fish, TStep).ToString & "," & _
-                        NonRetentionInput(Fish, TStep, 1).ToString("######0.0000") & "," & _
-                        NonRetentionInput(Fish, TStep, 2).ToString("######0.0000") & "," & _
-                        NonRetentionInput(Fish, TStep, 3).ToString("######0.0000") & "," & _
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        NonRetentionFlag(Fish, TStep).ToString & "," &
+                        NonRetentionInput(Fish, TStep, 1).ToString("######0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 2).ToString("######0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 3).ToString("######0.0000") & "," &
                         NonRetentionInput(Fish, TStep, 4).ToString("######0.0000") & ")"
                         NRC.ExecuteNonQuery()
                     Else
-                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Fish.ToString & "," & _
-                        TStep.ToString & "," & _
-                        NonRetentionFlag(Fish, TStep).ToString & "," & _
-                        NonRetentionInput(Fish, TStep, 1).ToString("######0.0000") & "," & _
-                        NonRetentionInput(Fish, TStep, 2).ToString("######0.0000") & "," & _
-                        NonRetentionInput(Fish, TStep, 3).ToString("######0.0000") & "," & _
-                        NonRetentionInput(Fish, TStep, 4).ToString("######0.0000") & "," & _
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        NonRetentionFlag(Fish, TStep).ToString & "," &
+                        NonRetentionInput(Fish, TStep, 1).ToString("######0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 2).ToString("######0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 3).ToString("######0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 4).ToString("######0.0000") & "," &
                             Chr(34) & NonRetentionComment(Fish, TStep) & Chr(34) & ")"
                         NRC.ExecuteNonQuery()
                     End If
                 End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- SIZELIMIT DataBase Table Save --------
-      If SpeciesName = "COHO" Then GoTo SkipCohoSL
-      Dim SLC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      SLC.Connection = FramDB
-      SLC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
-            If MinSizeLimit(Fish, TStep) <> 0 Then
-               SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize) " & _
-               "VALUES(" & NewRunID.ToString & "," & _
-               Fish.ToString & "," & _
-               TStep.ToString & "," & _
-               MinSizeLimit(Fish, TStep).ToString("######0") & ")"
-               SLC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+        '- SIZELIMIT DataBase Table Save --------
+        If SpeciesName = "COHO" Then GoTo SkipCohoSL
+        Dim SLC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        SLC.Connection = FramDB
+        SLC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
+                If MinSizeLimit(Fish, TStep) <> 0 Then
+                    SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize) " &
+                    "VALUES(" & NewRunID.ToString & "," &
+                    Fish.ToString & "," &
+                    TStep.ToString & "," &
+                    MinSizeLimit(Fish, TStep).ToString("######0") & ")"
+                    SLC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 SkipCohoSL:
 
-      '- STOCKFISHERYRATESCALER DataBase Table Save --------
-      Dim SFRS As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      SFRS.Connection = FramDB
-      SFRS.Transaction = FramTrans
-      For Stk = 1 To NumStk
-         For Fish = 1 To NumFish
-            For TStep = 1 To NumSteps
-               If StockFishRateScalers(Stk, Fish, TStep) <> 1 Then
-                  SFRS.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " & _
-                  "VALUES(" & NewRunID.ToString & "," & _
-                  Stk.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  StockFishRateScalers(Stk, Fish, TStep).ToString("######0.0000") & ")"
-                  SFRS.ExecuteNonQuery()
-               End If
+        '- STOCKFISHERYRATESCALER DataBase Table Save --------
+        Dim SFRS As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        SFRS.Connection = FramDB
+        SFRS.Transaction = FramTrans
+        For Stk = 1 To NumStk
+            For Fish = 1 To NumFish
+                For TStep = 1 To NumSteps
+                    If StockFishRateScalers(Stk, Fish, TStep) <> 1 Then
+                        SFRS.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Stk.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        StockFishRateScalers(Stk, Fish, TStep).ToString("######0.0000") & ")"
+                        SFRS.ExecuteNonQuery()
+                    End If
+                Next
             Next
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- PSC ER Maximum DataBase Table Save --------
-      If SpeciesName = "CHINOOK" Then GoTo SkipChinookMER
-      Dim MEC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      MEC.Connection = FramDB
-      MEC.Transaction = FramTrans
-      For Stk = 1 To 17
-         If PSCMaxER(Stk) = 0 Then PSCMaxER(Stk) = 0.5
-         MEC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " & _
-         "VALUES(" & NewRunID.ToString & "," & _
-         Stk.ToString & "," & _
-         PSCMaxER(Stk).ToString("0.0000") & ")"
-         MEC.ExecuteNonQuery()
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+        '- PSC ER Maximum DataBase Table Save --------
+        If SpeciesName = "CHINOOK" Then GoTo SkipChinookMER
+        Dim MEC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        MEC.Connection = FramDB
+        MEC.Transaction = FramTrans
+        For Stk = 1 To 17
+            If PSCMaxER(Stk) = 0 Then PSCMaxER(Stk) = 0.5
+            MEC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " &
+            "VALUES(" & NewRunID.ToString & "," &
+            Stk.ToString & "," &
+            PSCMaxER(Stk).ToString("0.0000") & ")"
+            MEC.ExecuteNonQuery()
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 SkipChinookMER:
 
-      '- Backwards FRAM Target Escapements and Flag
-      Dim BFC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BFC.Connection = FramDB
-      BFC.Transaction = FramTrans
-      If SpeciesName = "COHO" Then
-         For Stk = 1 To NumStk
+        '- Backwards FRAM Target Escapements and Flag
+        Dim BFC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BFC.Connection = FramDB
+        BFC.Transaction = FramTrans
+        If SpeciesName = "COHO" Then
+            For Stk = 1 To NumStk
                 If BackwardsTarget(Stk) <> 0 Then
                     If FramDataSet.Tables("BackwardsFram").Columns.IndexOf("comment") = -1 Then
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Stk.ToString & "," &
+                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " &
                         BackwardsFlag(Stk).ToString & ")"
                     Else
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " & _
-                        BackwardsFlag(Stk).ToString & "," & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Stk.ToString & "," &
+                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " &
+                        BackwardsFlag(Stk).ToString & "," &
                         Chr(34) & BackwardsComment(Stk) & Chr(34) & ")"
                     End If
                     BFC.ExecuteNonQuery()
                 End If
             Next
-      ElseIf SpeciesName = "CHINOOK" Then
-         Dim SumChinTarget As Double
+        ElseIf SpeciesName = "CHINOOK" Then
+            Dim SumChinTarget As Double
             'SumChinTarget = BackwardsChinook(Stk, 3) + BackwardsChinook(Stk, 4) + BackwardsChinook(Stk, 5)
             If NumStk = 38 Or NumStk = 76 Then
                 NumChinTermRuns = 37
@@ -970,24 +973,24 @@ SkipChinookMER:
                 NumChinTermRuns = NumStk / 2 - 1
             End If
 
-         For Stk = 1 To NumStk + NumChinTermRuns
+            For Stk = 1 To NumStk + NumChinTermRuns
                 'If SumChinTarget <> 0 Then
                 If FramDataSet.Tables("BackwardsFram").Columns.IndexOf("comment") = -1 Then
-                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                    "VALUES(" & NewRunID.ToString & "," & _
-                    Stk.ToString & "," & _
-                    BackwardsChinook(Stk, 3).ToString("0.0") & "," & _
-                    BackwardsChinook(Stk, 4).ToString("0.0") & "," & _
-                    BackwardsChinook(Stk, 5).ToString("0.0") & "," & _
+                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                    "VALUES(" & NewRunID.ToString & "," &
+                    Stk.ToString & "," &
+                    BackwardsChinook(Stk, 3).ToString("0.0") & "," &
+                    BackwardsChinook(Stk, 4).ToString("0.0") & "," &
+                    BackwardsChinook(Stk, 5).ToString("0.0") & "," &
                     BackwardsFlag(Stk).ToString & ")"
                 Else
-                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " & _
-                    "VALUES(" & NewRunID.ToString & "," & _
-                    Stk.ToString & "," & _
-                    BackwardsChinook(Stk, 3).ToString("0.0") & "," & _
-                    BackwardsChinook(Stk, 4).ToString("0.0") & "," & _
-                    BackwardsChinook(Stk, 5).ToString("0.0") & "," & _
-                    BackwardsFlag(Stk).ToString & "," & _
+                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " &
+                    "VALUES(" & NewRunID.ToString & "," &
+                    Stk.ToString & "," &
+                    BackwardsChinook(Stk, 3).ToString("0.0") & "," &
+                    BackwardsChinook(Stk, 4).ToString("0.0") & "," &
+                    BackwardsChinook(Stk, 5).ToString("0.0") & "," &
+                    BackwardsFlag(Stk).ToString & "," &
                     Chr(34) & BackwardsComment(Stk) & Chr(34) & ")"
                 End If
                 BFC.ExecuteNonQuery()
@@ -1026,22 +1029,22 @@ SkipChinookMER:
                         MortSum = LandedCatch(Stk, Age, Fish, TimeStep) + NonRetention(Stk, Age, Fish, TimeStep) + Shakers(Stk, Age, Fish, TimeStep) + DropOff(Stk, Age, Fish, TimeStep) + MSFLandedCatch(Stk, Age, Fish, TimeStep) + MSFNonRetention(Stk, Age, Fish, TimeStep) + MSFShakers(Stk, Age, Fish, TimeStep) + MSFDropOff(Stk, Age, Fish, TimeStep)
                         If MortSum <> 0 Then
                             RCount += 1
-                            FIC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " & _
-                            "VALUES(" & RCount.ToString & "," & _
-                            NewRunID.ToString & "," & _
-                            Stk.ToString & "," & _
-                            Age.ToString & "," & _
-                            Fish.ToString & "," & _
-                            TimeStep.ToString & "," & _
-                            LandedCatch(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            NonRetention(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            Shakers(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            DropOff(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            Encounters(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            MSFLandedCatch(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            MSFNonRetention(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            MSFShakers(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
-                            MSFDropOff(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," & _
+                            FIC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " &
+                            "VALUES(" & RCount.ToString & "," &
+                            NewRunID.ToString & "," &
+                            Stk.ToString & "," &
+                            Age.ToString & "," &
+                            Fish.ToString & "," &
+                            TimeStep.ToString & "," &
+                            LandedCatch(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            NonRetention(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            Shakers(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            DropOff(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            Encounters(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            MSFLandedCatch(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            MSFNonRetention(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            MSFShakers(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
+                            MSFDropOff(Stk, Age, Fish, TimeStep).ToString("######0.000000") & "," &
                             MSFEncounters(Stk, Age, Fish, TimeStep).ToString("######0.000000") & ")"
                             FIC.ExecuteNonQuery()
                         End If
@@ -1064,15 +1067,15 @@ SkipChinookMER:
             For Age = 1 To MaxAge
                 For TimeStep = 1 To NumSteps
                     If Cohort(Stk, Age, 3, TimeStep) <> 0 Or Cohort(Stk, Age, 1, TimeStep) <> 0 Then
-                        FCC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        Age.ToString & "," & _
-                        TimeStep.ToString & "," & _
-                        Cohort(Stk, Age, 0, TimeStep).ToString("######0.000000") & "," & _
-                        Cohort(Stk, Age, 1, TimeStep).ToString("######0.000000") & "," & _
-                        Cohort(Stk, Age, 4, TimeStep).ToString("######0.000000") & "," & _
-                        Cohort(Stk, Age, 3, TimeStep).ToString("######0.000000") & "," & _
+                        FCC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Stk.ToString & "," &
+                        Age.ToString & "," &
+                        TimeStep.ToString & "," &
+                        Cohort(Stk, Age, 0, TimeStep).ToString("######0.000000") & "," &
+                        Cohort(Stk, Age, 1, TimeStep).ToString("######0.000000") & "," &
+                        Cohort(Stk, Age, 4, TimeStep).ToString("######0.000000") & "," &
+                        Cohort(Stk, Age, 3, TimeStep).ToString("######0.000000") & "," &
                         Cohort(Stk, Age, 2, TimeStep).ToString("######0.000000") & ")"
                         FCC.ExecuteNonQuery()
                     End If
@@ -1094,11 +1097,11 @@ SkipChinookMER:
             For Age = 1 To MaxAge
                 For TimeStep = 1 To NumSteps
                     If Escape(Stk, Age, TimeStep) <> 0 Then
-                        FEC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        Age.ToString & "," & _
-                        TimeStep.ToString & "," & _
+                        FEC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        Stk.ToString & "," &
+                        Age.ToString & "," &
+                        TimeStep.ToString & "," &
                         Escape(Stk, Age, TimeStep).ToString("######0.000000") & ")"
                         FEC.ExecuteNonQuery()
                     End If
@@ -1121,15 +1124,15 @@ SkipChinookMER:
             For TimeStep = 1 To NumSteps
                 TotFM = TotalLandedCatch(Fish, TimeStep) + TotalLandedCatch(NumFish + Fish, TimeStep) + TotalEncounters(Fish, TimeStep) + TotalShakers(Fish, TimeStep) + TotalDropOff(Fish, TimeStep) + TotalNonRetention(Fish, TimeStep)
                 If TotFM <> 0 Then
-                    TFM.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " & _
-                    "VALUES(" & NewRunID.ToString & "," & _
-                    Fish.ToString & "," & _
-                    TimeStep.ToString & "," & _
-                    TotalLandedCatch(Fish, TimeStep).ToString("#######0.000000") & "," & _
-                    TotalLandedCatch(NumFish + Fish, TimeStep).ToString("#######0.000000") & "," & _
-                    TotalNonRetention(Fish, TimeStep).ToString("#######0.000000") & "," & _
-                    TotalShakers(Fish, TimeStep).ToString("#######0.000000") & "," & _
-                    TotalDropOff(Fish, TimeStep).ToString("#######0.000000") & "," & _
+                    TFM.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " &
+                    "VALUES(" & NewRunID.ToString & "," &
+                    Fish.ToString & "," &
+                    TimeStep.ToString & "," &
+                    TotalLandedCatch(Fish, TimeStep).ToString("#######0.000000") & "," &
+                    TotalLandedCatch(NumFish + Fish, TimeStep).ToString("#######0.000000") & "," &
+                    TotalNonRetention(Fish, TimeStep).ToString("#######0.000000") & "," &
+                    TotalShakers(Fish, TimeStep).ToString("#######0.000000") & "," &
+                    TotalDropOff(Fish, TimeStep).ToString("#######0.000000") & "," &
                     TotalEncounters(Fish, TimeStep).ToString("#######0.000000") & ")"
                     TFM.ExecuteNonQuery()
                 End If
@@ -1155,14 +1158,14 @@ SkipChinookMER:
                             If UpdBy(Fish, Age, TimeStep) <> "not updated--ignore datetime" Then
                                 'Uncomment the If end if content if cluttering with 1.00 is undesired; for now, testing, leave it in...
                                 'If TargetRatio(Fish, Age, TimeStep) <> 1 Or TargetRatio(Fish, Age, TimeStep) <> 1 Then 
-                                SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment,UpdateWhen,UpdateBy) " & _
-                                "VALUES(" & NewRunID.ToString & "," & _
-                                Fish.ToString & "," & _
-                                Age.ToString & "," & _
-                                TimeStep.ToString & "," & _
-                                TargetRatio(Fish, Age, TimeStep).ToString & "," & _
-                                RunEncounterRateAdjustment(Fish, Age, TimeStep).ToString & "," & _
-                                "'" & UpdWhen(Fish, Age, TimeStep).ToString & "'" & "," & _
+                                SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment,UpdateWhen,UpdateBy) " &
+                                "VALUES(" & NewRunID.ToString & "," &
+                                Fish.ToString & "," &
+                                Age.ToString & "," &
+                                TimeStep.ToString & "," &
+                                TargetRatio(Fish, Age, TimeStep).ToString & "," &
+                                RunEncounterRateAdjustment(Fish, Age, TimeStep).ToString & "," &
+                                "'" & UpdWhen(Fish, Age, TimeStep).ToString & "'" & "," &
                                 "'" & UpdBy(Fish, Age, TimeStep).ToString & "'" & ")"
                                 SLRatC.ExecuteNonQuery()
                                 'End If
@@ -1182,730 +1185,730 @@ SkipChinookMER:
         FVS_ModelRunSelection.GetRunVariables(BaseIDRead, RunIDRead)
 
 
-   End Sub
+    End Sub
 
-   Sub DeleteRecordset()
-
-
-      '============================================================================
-      'Pete 12/13 Code for multi-run deletion
-      'See also *** if/then statements for bypassing dialog boxes below...
-      If multiRunDeleteMode = True Then
-         RunIDDelete = multiRunPass
-      End If
-      '============================================================================
-
-      '- Read RUN Selection Variables
-      Dim drd1 As OleDb.OleDbDataReader
-      Dim cmd1 As New OleDb.OleDbCommand()
-      Dim DeleteSpeciesName As String
-      Dim result As Integer
-      Dim RunIDNameDelete, RunIDTitleDelete, RunIDCommentsDelete As String
-      cmd1.Connection = FramDB
-      cmd1.CommandText = "SELECT * FROM RunID WHERE RunID = " & CStr(RunIDDelete)
-      FramDB.Open()
-      drd1 = cmd1.ExecuteReader
-      drd1.Read()
-      'RunIDDelete = drd1.GetInt32(1)          '- Current Run ID (User Selection)
-      DeleteSpeciesName = drd1.GetString(2)
-      RunIDNameDelete = drd1.GetString(3)     '- Delete Run Name
-      RunIDTitleDelete = drd1.GetString(4)    '- Delete Run Title
-      RunIDCommentsDelete = drd1.GetString(6) '- Delete Run Comments
-      cmd1.Dispose()
-      drd1.Dispose()
-      FramDB.Close()
-
-      If multiRunDeleteMode = False Then '*** Pete 12/13 If/then allows for bypass during multi-delete mode
-         result = MsgBox("Is this the Correct RunID/Recordset to DELETE???" & vbCrLf & _
-             "RunID  = " & RunIDDelete.ToString & vbCrLf & _
-             "Species= " & DeleteSpeciesName & vbCrLf & _
-             "Name   = " & RunIDNameDelete & vbCrLf & _
-             "Title  = " & RunIDTitleDelete, MsgBoxStyle.YesNo)
-         If result = vbNo Then Exit Sub
-      End If '*** Pete 12/13 If/then allows for bypass during multi-delete mode
+    Sub DeleteRecordset()
 
 
-      '- Delete All Records for this RunID
+        '============================================================================
+        'Pete 12/13 Code for multi-run deletion
+        'See also *** if/then statements for bypassing dialog boxes below...
+        If multiRunDeleteMode = True Then
+            RunIDDelete = multiRunPass
+        End If
+        '============================================================================
 
-      '- RunID SELECT Statement
-      Dim CmdStr As String
-      CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDDelete.ToString
-      Dim RIcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim RunDA As New System.Data.OleDb.OleDbDataAdapter
-      RunDA.SelectCommand = RIcm
-      '- RunID DELETE Statement
-      CmdStr = "DELETE * FROM RunID WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      RunDA.DeleteCommand = RIDcm
-      '- Command Builder
-      Dim RIcb As New OleDb.OleDbCommandBuilder
-      RIcb = New OleDb.OleDbCommandBuilder(RunDA)
-      FramDB.Open()
-      RunDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Read RUN Selection Variables
+        Dim drd1 As OleDb.OleDbDataReader
+        Dim cmd1 As New OleDb.OleDbCommand()
+        Dim DeleteSpeciesName As String
+        Dim result As Integer
+        Dim RunIDNameDelete, RunIDTitleDelete, RunIDCommentsDelete As String
+        cmd1.Connection = FramDB
+        cmd1.CommandText = "SELECT * FROM RunID WHERE RunID = " & CStr(RunIDDelete)
+        FramDB.Open()
+        drd1 = cmd1.ExecuteReader
+        drd1.Read()
+        'RunIDDelete = drd1.GetInt32(1)          '- Current Run ID (User Selection)
+        DeleteSpeciesName = drd1.GetString(2)
+        RunIDNameDelete = drd1.GetString(3)     '- Delete Run Name
+        RunIDTitleDelete = drd1.GetString(4)    '- Delete Run Title
+        RunIDCommentsDelete = drd1.GetString(6) '- Delete Run Comments
+        cmd1.Dispose()
+        drd1.Dispose()
+        FramDB.Close()
 
-      '- StockRecruit SELECT Statement
-      CmdStr = "SELECT * FROM StockRecruit WHERE RunID = " & RunIDDelete.ToString
-      Dim SRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim SRDA As New System.Data.OleDb.OleDbDataAdapter
-      SRDA.SelectCommand = SRcm
-      '- StockRecruit DELETE Statement
-      CmdStr = "DELETE * FROM StockRecruit WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim SRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      SRDA.DeleteCommand = SRDcm
-      '- Command Builder
-      Dim SRcb As New OleDb.OleDbCommandBuilder
-      SRcb = New OleDb.OleDbCommandBuilder(SRDA)
-      FramDB.Open()
-      SRDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        If multiRunDeleteMode = False Then '*** Pete 12/13 If/then allows for bypass during multi-delete mode
+            result = MsgBox("Is this the Correct RunID/Recordset to DELETE???" & vbCrLf &
+                "RunID  = " & RunIDDelete.ToString & vbCrLf &
+                "Species= " & DeleteSpeciesName & vbCrLf &
+                "Name   = " & RunIDNameDelete & vbCrLf &
+                "Title  = " & RunIDTitleDelete, MsgBoxStyle.YesNo)
+            If result = vbNo Then Exit Sub
+        End If '*** Pete 12/13 If/then allows for bypass during multi-delete mode
 
-      '- FisheryScalers SELECT Statement
-      CmdStr = "SELECT * FROM FisheryScalers WHERE RunID = " & RunIDDelete.ToString
-      Dim FScm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim FSDA As New System.Data.OleDb.OleDbDataAdapter
-      FSDA.SelectCommand = FScm
-      '- FisheryScalers DELETE Statement
-      CmdStr = "DELETE * FROM FisheryScalers WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim FSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      FSDA.DeleteCommand = FSDcm
-      '- Command Builder
-      Dim FScb As New OleDb.OleDbCommandBuilder
-      FScb = New OleDb.OleDbCommandBuilder(FSDA)
-      FramDB.Open()
-      FSDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
 
-      '- NonRetention SELECT Statement
-      CmdStr = "SELECT * FROM NonRetention WHERE RunID = " & RunIDDelete.ToString
-      Dim NRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim NRDA As New System.Data.OleDb.OleDbDataAdapter
-      NRDA.SelectCommand = NRcm
-      '- NonRetention DELETE Statement
-      CmdStr = "DELETE * FROM NonRetention WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim NRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      NRDA.DeleteCommand = NRDcm
-      '- Command Builder
-      Dim NRcb As New OleDb.OleDbCommandBuilder
-      NRcb = New OleDb.OleDbCommandBuilder(NRDA)
-      FramDB.Open()
-      NRDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Delete All Records for this RunID
 
-      '- SizeLimits SELECT Statement
-      If DeleteSpeciesName = "COHO" Then GoTo SkipCohoDEL
-      CmdStr = "SELECT * FROM SizeLimits WHERE RunID = " & RunIDDelete.ToString
-      Dim SLcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim SLDA As New System.Data.OleDb.OleDbDataAdapter
-      SLDA.SelectCommand = SLcm
-      '- SizeLimits DELETE Statement
-      CmdStr = "DELETE * FROM SizeLimits WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim SLDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      SLDA.DeleteCommand = SLDcm
-      '- Command Builder
-      Dim SLcb As New OleDb.OleDbCommandBuilder
-      SLcb = New OleDb.OleDbCommandBuilder(SLDA)
-      FramDB.Open()
-      SLDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- RunID SELECT Statement
+        Dim CmdStr As String
+        CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDDelete.ToString
+        Dim RIcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim RunDA As New System.Data.OleDb.OleDbDataAdapter
+        RunDA.SelectCommand = RIcm
+        '- RunID DELETE Statement
+        CmdStr = "DELETE * FROM RunID WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        RunDA.DeleteCommand = RIDcm
+        '- Command Builder
+        Dim RIcb As New OleDb.OleDbCommandBuilder
+        RIcb = New OleDb.OleDbCommandBuilder(RunDA)
+        FramDB.Open()
+        RunDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
+
+        '- StockRecruit SELECT Statement
+        CmdStr = "SELECT * FROM StockRecruit WHERE RunID = " & RunIDDelete.ToString
+        Dim SRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim SRDA As New System.Data.OleDb.OleDbDataAdapter
+        SRDA.SelectCommand = SRcm
+        '- StockRecruit DELETE Statement
+        CmdStr = "DELETE * FROM StockRecruit WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim SRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        SRDA.DeleteCommand = SRDcm
+        '- Command Builder
+        Dim SRcb As New OleDb.OleDbCommandBuilder
+        SRcb = New OleDb.OleDbCommandBuilder(SRDA)
+        FramDB.Open()
+        SRDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
+
+        '- FisheryScalers SELECT Statement
+        CmdStr = "SELECT * FROM FisheryScalers WHERE RunID = " & RunIDDelete.ToString
+        Dim FScm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim FSDA As New System.Data.OleDb.OleDbDataAdapter
+        FSDA.SelectCommand = FScm
+        '- FisheryScalers DELETE Statement
+        CmdStr = "DELETE * FROM FisheryScalers WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim FSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        FSDA.DeleteCommand = FSDcm
+        '- Command Builder
+        Dim FScb As New OleDb.OleDbCommandBuilder
+        FScb = New OleDb.OleDbCommandBuilder(FSDA)
+        FramDB.Open()
+        FSDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
+
+        '- NonRetention SELECT Statement
+        CmdStr = "SELECT * FROM NonRetention WHERE RunID = " & RunIDDelete.ToString
+        Dim NRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim NRDA As New System.Data.OleDb.OleDbDataAdapter
+        NRDA.SelectCommand = NRcm
+        '- NonRetention DELETE Statement
+        CmdStr = "DELETE * FROM NonRetention WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim NRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        NRDA.DeleteCommand = NRDcm
+        '- Command Builder
+        Dim NRcb As New OleDb.OleDbCommandBuilder
+        NRcb = New OleDb.OleDbCommandBuilder(NRDA)
+        FramDB.Open()
+        NRDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
+
+        '- SizeLimits SELECT Statement
+        If DeleteSpeciesName = "COHO" Then GoTo SkipCohoDEL
+        CmdStr = "SELECT * FROM SizeLimits WHERE RunID = " & RunIDDelete.ToString
+        Dim SLcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim SLDA As New System.Data.OleDb.OleDbDataAdapter
+        SLDA.SelectCommand = SLcm
+        '- SizeLimits DELETE Statement
+        CmdStr = "DELETE * FROM SizeLimits WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim SLDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        SLDA.DeleteCommand = SLDcm
+        '- Command Builder
+        Dim SLcb As New OleDb.OleDbCommandBuilder
+        SLcb = New OleDb.OleDbCommandBuilder(SLDA)
+        FramDB.Open()
+        SLDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 SkipCohoDEL:
 
-      '- PSC Max ER SELECT Statement
-      If DeleteSpeciesName = "CHINOOK" Then GoTo SkipChinookME
-      CmdStr = "SELECT * FROM PSCMaxER WHERE RunID = " & RunIDDelete.ToString
-      Dim MEcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim MEDA As New System.Data.OleDb.OleDbDataAdapter
-      MEDA.SelectCommand = MEcm
-      '- PSC Max ER DELETE Statement
-      CmdStr = "DELETE * FROM PSCMaxER WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim MEDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      MEDA.DeleteCommand = MEDcm
-      '- Command Builder
-      Dim MEcb As New OleDb.OleDbCommandBuilder
-      MEcb = New OleDb.OleDbCommandBuilder(MEDA)
-      FramDB.Open()
-      MEDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- PSC Max ER SELECT Statement
+        If DeleteSpeciesName = "CHINOOK" Then GoTo SkipChinookME
+        CmdStr = "SELECT * FROM PSCMaxER WHERE RunID = " & RunIDDelete.ToString
+        Dim MEcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim MEDA As New System.Data.OleDb.OleDbDataAdapter
+        MEDA.SelectCommand = MEcm
+        '- PSC Max ER DELETE Statement
+        CmdStr = "DELETE * FROM PSCMaxER WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim MEDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        MEDA.DeleteCommand = MEDcm
+        '- Command Builder
+        Dim MEcb As New OleDb.OleDbCommandBuilder
+        MEcb = New OleDb.OleDbCommandBuilder(MEDA)
+        FramDB.Open()
+        MEDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 SkipChinookME:
 
-      '- Mortality SELECT Statement
-      CmdStr = "SELECT * FROM Mortality WHERE RunID = " & RunIDDelete.ToString
-      Dim Mcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim MDA As New System.Data.OleDb.OleDbDataAdapter
-      MDA.SelectCommand = Mcm
-      '- Mortality DELETE Statement
-      CmdStr = "DELETE * FROM Mortality WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim MDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      MDA.DeleteCommand = MDcm
-      '- Command Builder
-      Dim Mcb As New OleDb.OleDbCommandBuilder
-      Mcb = New OleDb.OleDbCommandBuilder(MDA)
-      FramDB.Open()
-      MDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Mortality SELECT Statement
+        CmdStr = "SELECT * FROM Mortality WHERE RunID = " & RunIDDelete.ToString
+        Dim Mcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim MDA As New System.Data.OleDb.OleDbDataAdapter
+        MDA.SelectCommand = Mcm
+        '- Mortality DELETE Statement
+        CmdStr = "DELETE * FROM Mortality WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim MDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        MDA.DeleteCommand = MDcm
+        '- Command Builder
+        Dim Mcb As New OleDb.OleDbCommandBuilder
+        Mcb = New OleDb.OleDbCommandBuilder(MDA)
+        FramDB.Open()
+        MDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- Escapement SELECT Statement
-      CmdStr = "SELECT * FROM Escapement WHERE RunID = " & RunIDDelete.ToString
-      Dim Ecm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim EDA As New System.Data.OleDb.OleDbDataAdapter
-      EDA.SelectCommand = Ecm
-      '- Escapement DELETE Statement
-      CmdStr = "DELETE * FROM Escapement WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim EDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      EDA.DeleteCommand = EDcm
-      '- Command Builder
-      Dim Ecb As New OleDb.OleDbCommandBuilder
-      Ecb = New OleDb.OleDbCommandBuilder(EDA)
-      FramDB.Open()
-      EDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Escapement SELECT Statement
+        CmdStr = "SELECT * FROM Escapement WHERE RunID = " & RunIDDelete.ToString
+        Dim Ecm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim EDA As New System.Data.OleDb.OleDbDataAdapter
+        EDA.SelectCommand = Ecm
+        '- Escapement DELETE Statement
+        CmdStr = "DELETE * FROM Escapement WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim EDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        EDA.DeleteCommand = EDcm
+        '- Command Builder
+        Dim Ecb As New OleDb.OleDbCommandBuilder
+        Ecb = New OleDb.OleDbCommandBuilder(EDA)
+        FramDB.Open()
+        EDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- Cohort SELECT Statement
-      CmdStr = "SELECT * FROM Cohort WHERE RunID = " & RunIDDelete.ToString
-      Dim Ccm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim CDA As New System.Data.OleDb.OleDbDataAdapter
-      CDA.SelectCommand = Ccm
-      '- Cohort DELETE Statement
-      CmdStr = "DELETE * FROM Cohort WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim CDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      CDA.DeleteCommand = CDcm
-      '- Command Builder
-      Dim Ccb As New OleDb.OleDbCommandBuilder
-      Ccb = New OleDb.OleDbCommandBuilder(CDA)
-      FramDB.Open()
-      CDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Cohort SELECT Statement
+        CmdStr = "SELECT * FROM Cohort WHERE RunID = " & RunIDDelete.ToString
+        Dim Ccm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim CDA As New System.Data.OleDb.OleDbDataAdapter
+        CDA.SelectCommand = Ccm
+        '- Cohort DELETE Statement
+        CmdStr = "DELETE * FROM Cohort WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim CDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        CDA.DeleteCommand = CDcm
+        '- Command Builder
+        Dim Ccb As New OleDb.OleDbCommandBuilder
+        Ccb = New OleDb.OleDbCommandBuilder(CDA)
+        FramDB.Open()
+        CDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- BackwardsFRAM SELECT Statement
-      CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDDelete.ToString
-      Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim BFDA As New System.Data.OleDb.OleDbDataAdapter
-      BFDA.SelectCommand = BFcm
-      '- BackwardsFRAM DELETE Statement
-      CmdStr = "DELETE * FROM BackwardsFRAM WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim BFDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      BFDA.DeleteCommand = BFDcm
-      '- Command Builder
-      Dim BFcb As New OleDb.OleDbCommandBuilder
-      BFcb = New OleDb.OleDbCommandBuilder(BFDA)
-      FramDB.Open()
-      BFDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- BackwardsFRAM SELECT Statement
+        CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDDelete.ToString
+        Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim BFDA As New System.Data.OleDb.OleDbDataAdapter
+        BFDA.SelectCommand = BFcm
+        '- BackwardsFRAM DELETE Statement
+        CmdStr = "DELETE * FROM BackwardsFRAM WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim BFDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        BFDA.DeleteCommand = BFDcm
+        '- Command Builder
+        Dim BFcb As New OleDb.OleDbCommandBuilder
+        BFcb = New OleDb.OleDbCommandBuilder(BFDA)
+        FramDB.Open()
+        BFDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- FisheryMortality SELECT Statement
-      CmdStr = "SELECT * FROM FisheryMortality WHERE RunID = " & RunIDDelete.ToString
-      Dim FMcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim FMDA As New System.Data.OleDb.OleDbDataAdapter
-      FMDA.SelectCommand = FMcm
-      '- FisheryMortality DELETE Statement
-      CmdStr = "DELETE * FROM FisheryMortality WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim FMDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      FMDA.DeleteCommand = FMDcm
-      '- Command Builder
-      Dim FMcb As New OleDb.OleDbCommandBuilder
-      FMcb = New OleDb.OleDbCommandBuilder(FMDA)
-      FramDB.Open()
-      FMDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- FisheryMortality SELECT Statement
+        CmdStr = "SELECT * FROM FisheryMortality WHERE RunID = " & RunIDDelete.ToString
+        Dim FMcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim FMDA As New System.Data.OleDb.OleDbDataAdapter
+        FMDA.SelectCommand = FMcm
+        '- FisheryMortality DELETE Statement
+        CmdStr = "DELETE * FROM FisheryMortality WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim FMDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        FMDA.DeleteCommand = FMDcm
+        '- Command Builder
+        Dim FMcb As New OleDb.OleDbCommandBuilder
+        FMcb = New OleDb.OleDbCommandBuilder(FMDA)
+        FramDB.Open()
+        FMDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- StockFisheryRateScaler SELECT Statement
-      CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDDelete.ToString
-      Dim SRScm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim SRSDA As New System.Data.OleDb.OleDbDataAdapter
-      SRSDA.SelectCommand = SRScm
-      '- StockFisheryRateScaler DELETE Statement
-      CmdStr = "DELETE * FROM StockFisheryRateScaler WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim SRSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      SRSDA.DeleteCommand = SRSDcm
-      '- Command Builder
-      Dim SRScb As New OleDb.OleDbCommandBuilder
-      SRScb = New OleDb.OleDbCommandBuilder(SRSDA)
-      FramDB.Open()
-      SRSDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- StockFisheryRateScaler SELECT Statement
+        CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDDelete.ToString
+        Dim SRScm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim SRSDA As New System.Data.OleDb.OleDbDataAdapter
+        SRSDA.SelectCommand = SRScm
+        '- StockFisheryRateScaler DELETE Statement
+        CmdStr = "DELETE * FROM StockFisheryRateScaler WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim SRSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        SRSDA.DeleteCommand = SRSDcm
+        '- Command Builder
+        Dim SRScb As New OleDb.OleDbCommandBuilder
+        SRScb = New OleDb.OleDbCommandBuilder(SRSDA)
+        FramDB.Open()
+        SRSDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '===========================================================================
-      'Pete 12/13 Delete Records from SLRatio and RunEncounterRateAdjustment tables
+        '===========================================================================
+        'Pete 12/13 Delete Records from SLRatio and RunEncounterRateAdjustment tables
 
-      '- SLRatio SELECT Statement
-      CmdStr = "SELECT * FROM SLRatio WHERE RunID = " & RunIDDelete.ToString
-      Dim SLRatcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim SLRatDA As New System.Data.OleDb.OleDbDataAdapter
-      SLRatDA.SelectCommand = SLRatcm
-      '- SLRatio DELETE Statement
-      CmdStr = "DELETE * FROM SLRatio WHERE RunID = " & RunIDDelete.ToString & ";"
-      Dim SLRatDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      SLRatDA.DeleteCommand = SLRatDcm
-      '- Command Builder
-      Dim SLRatcb As New OleDb.OleDbCommandBuilder
-      SLRatcb = New OleDb.OleDbCommandBuilder(SLRatDA)
-      FramDB.Open()
-      SLRatDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- SLRatio SELECT Statement
+        CmdStr = "SELECT * FROM SLRatio WHERE RunID = " & RunIDDelete.ToString
+        Dim SLRatcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim SLRatDA As New System.Data.OleDb.OleDbDataAdapter
+        SLRatDA.SelectCommand = SLRatcm
+        '- SLRatio DELETE Statement
+        CmdStr = "DELETE * FROM SLRatio WHERE RunID = " & RunIDDelete.ToString & ";"
+        Dim SLRatDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        SLRatDA.DeleteCommand = SLRatDcm
+        '- Command Builder
+        Dim SLRatcb As New OleDb.OleDbCommandBuilder
+        SLRatcb = New OleDb.OleDbCommandBuilder(SLRatDA)
+        FramDB.Open()
+        SLRatDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '===========================================================================
+        '===========================================================================
 
 
-      RunIDDelete = 0
+        RunIDDelete = 0
 
-   End Sub
+    End Sub
 
-   Sub ReadOldBasePeriodOUTFile()
+    Sub ReadOldBasePeriodOUTFile()
 
-      '- Text File Reader
-      Dim BaseReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(OldOUTFile)
-      BaseReader.TextFieldType = FileIO.FieldType.Delimited
-      BaseReader.SetDelimiters(",")
+        '- Text File Reader
+        Dim BaseReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(OldOUTFile)
+        BaseReader.TextFieldType = FileIO.FieldType.Delimited
+        BaseReader.SetDelimiters(",")
 
-      Dim CurrentRow As String()
-      Dim CurrentField, Scratch As String
-      Dim LineNum, FieldNum, Result, NumRates As Integer
-      Dim RecNum As Integer
+        Dim CurrentRow As String()
+        Dim CurrentField, Scratch As String
+        Dim LineNum, FieldNum, Result, NumRates As Integer
+        Dim RecNum As Integer
 
-      '- Read OUT Header Information ...
-      '   NumStk, NumFish, NumSteps, MaxAge
-      LineNum = 1
-      While Not BaseReader.EndOfData
-         Try
-            CurrentRow = BaseReader.ReadFields()
-            '- Fields are Line Number Specific
-            Select Case LineNum
-               Case 1
-                  '- Number of Stocks
-                  NumStk = CurrentRow(0)
-               Case 2
-                  '- Number of Fisheries
-                  NumFish = CurrentRow(0)
-               Case 3
-                  '- Number of Time Steps
-                  NumSteps = CurrentRow(0)
-               Case 4
-                  '- Maximum Age
-                  MaxAge = CurrentRow(0)
-               Case 5
-                  '- Maximum Encounter Rate Age .. no longer used
-                  Scratch = CurrentRow(0)
-            End Select
-         Catch ex As Exception
+        '- Read OUT Header Information ...
+        '   NumStk, NumFish, NumSteps, MaxAge
+        LineNum = 1
+        While Not BaseReader.EndOfData
+            Try
+                CurrentRow = BaseReader.ReadFields()
+                '- Fields are Line Number Specific
+                Select Case LineNum
+                    Case 1
+                        '- Number of Stocks
+                        NumStk = CurrentRow(0)
+                    Case 2
+                        '- Number of Fisheries
+                        NumFish = CurrentRow(0)
+                    Case 3
+                        '- Number of Time Steps
+                        NumSteps = CurrentRow(0)
+                    Case 4
+                        '- Maximum Age
+                        MaxAge = CurrentRow(0)
+                    Case 5
+                        '- Maximum Encounter Rate Age .. no longer used
+                        Scratch = CurrentRow(0)
+                End Select
+            Catch ex As Exception
                 MsgBox("The BASE-PERIOD FILE Selected has Format Problems" & vbCrLf & "in the HEADER INFORMATION section", MsgBoxStyle.OkOnly)
-            Exit Sub
-         End Try
-         LineNum += 1
-         '- Exit DO WHILE when Header Information has been Read
-         If LineNum > 5 Then Exit While
-      End While
+                Exit Sub
+            End Try
+            LineNum += 1
+            '- Exit DO WHILE when Header Information has been Read
+            If LineNum > 5 Then Exit While
+        End While
 
-      '- Query User about Species ... Not Included in Base-Period File Format
-      If NumStk > 100 And NumFish > 100 Then
-         Result = MsgBox("The Number of Stocks and Fisheries indicate that this" & vbCrLf & _
-          "BASE PERIOD File is for COHO ... Is that Correct ???", MsgBoxStyle.YesNo)
-         If Result = vbYes Then
-            SpeciesName = "COHO"
-         Else
-            SpeciesName = "CHINOOK"
-         End If
-      Else
-         Result = MsgBox("The Number of Stocks and Fisheries indicate that this" & vbCrLf & _
-          "BASE PERIOD File is for CHINOOK ... Is that Correct ???", MsgBoxStyle.YesNo)
-         If Result = vbYes Then
-            SpeciesName = "CHINOOK"
-         Else
-            SpeciesName = "COHO"
-         End If
-      End If
+        '- Query User about Species ... Not Included in Base-Period File Format
+        If NumStk > 100 And NumFish > 100 Then
+            Result = MsgBox("The Number of Stocks and Fisheries indicate that this" & vbCrLf &
+             "BASE PERIOD File is for COHO ... Is that Correct ???", MsgBoxStyle.YesNo)
+            If Result = vbYes Then
+                SpeciesName = "COHO"
+            Else
+                SpeciesName = "CHINOOK"
+            End If
+        Else
+            Result = MsgBox("The Number of Stocks and Fisheries indicate that this" & vbCrLf &
+             "BASE PERIOD File is for CHINOOK ... Is that Correct ???", MsgBoxStyle.YesNo)
+            If Result = vbYes Then
+                SpeciesName = "CHINOOK"
+            Else
+                SpeciesName = "COHO"
+            End If
+        End If
 
-      '- ReDim Base Arrays
-      Call ReDimBaseArrays()
+        '- ReDim Base Arrays
+        Call ReDimBaseArrays()
 
-      '- Set NumAges and MinAge by Species plus COHO Default TermFlag and Maturation
-      If SpeciesName = "COHO" Then
-         NumAge = 1
-         MinAge = 3
-         '- Set Default TerminalFisheryFlag for COHO
-         TStep = NumSteps
-         For Fish = 1 To NumFish
-            TerminalFisheryFlag(Fish, TStep) = 1
-         Next
-         '- Set Default Maturation Rates for COHO
-         TStep = NumSteps
-         Age = MaxAge
-         For Stk = 1 To NumStk
-            MaturationRate(Stk, Age, TStep) = 1
-         Next
-      ElseIf SpeciesName = "CHINOOK" Then
-         NumAge = 4
-         MinAge = 2
-      End If
-
-      '- Read CHINOOK AEQ, Growth (VonBertLanf), and Shaker Flags
-      If SpeciesName = "CHINOOK" Then
-         '- AEQ Title Line
-         CurrentRow = BaseReader.ReadFields()
-         For Stk = 1 To NumStk
-            For Age = MaxAge To MinAge Step -1
-               For TStep = NumSteps To 1 Step -1
-                  Try
-                     CurrentRow = BaseReader.ReadFields()
-                     AEQ(Stk, Age, TStep) = CDbl(CurrentRow(0))
-                  Catch ex As Exception
-                     MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the AEQ section for Stock=" & Stk.ToString, MsgBoxStyle.OkOnly)
-                     Exit Sub
-                  End Try
-               Next
-            Next
-         Next
-         '- Growth Parameter Title Line
-         CurrentRow = BaseReader.ReadFields()
-         Dim MatType As Integer
-         For Stk = 1 To NumStk
-            For MatType = 0 To 1
-               Try
-                  CurrentRow = BaseReader.ReadFields()
-                  VonBertL(Stk, MatType) = CurrentRow(0)
-                  CurrentRow = BaseReader.ReadFields()
-                  VonBertT(Stk, MatType) = CurrentRow(0)
-                  CurrentRow = BaseReader.ReadFields()
-                  VonBertK(Stk, MatType) = CurrentRow(0)
-                  For Age = MinAge To MaxAge
-                     CurrentRow = BaseReader.ReadFields()
-                     VonBertCV(Stk, Age, MatType) = CurrentRow(0)
-                  Next
-               Catch ex As Exception
-                  MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the GROWTH section for Stock=" & Stk.ToString, MsgBoxStyle.OkOnly)
-                  Exit Sub
-               End Try
-            Next
-         Next
-         '- CHINOOK TimeStep Midpoints (for PNV Calculations)
-         For TStep = 1 To NumSteps
-            CurrentRow = BaseReader.ReadFields()
-            MidTimeStep(TStep) = CurrentRow(0)
-         Next
-         '- Shaker Inclusion Flag Title Line
-         CurrentRow = BaseReader.ReadFields()
-         'MidTimeStep(TStep) = CurrentRow(0)
-         '- These Flags are no longer used but still exist in the BasePeriod File
-         For Fish = 1 To NumFish
-            CurrentRow = BaseReader.ReadFields()
-         Next
-      End If
-
-      '---- Read Base Period COHORT SIZES
-      LineNum = 1
-      While Not BaseReader.EndOfData
-         Try
-            CurrentRow = BaseReader.ReadFields()
-            Select Case LineNum
-               Case 1
-                  '- Cohort Title line
-                  Scratch = CurrentRow(0)
-               Case 2 To (((MaxAge - 1) * NumStk) + 1)
-                  '- Cohort Sizes
-                  RecNum = LineNum - 1
-                  If SpeciesName = "COHO" Then
-                     '- COHO has two lines - Ages 2&3
-                     If (RecNum Mod 2) = 0 Then
-                        Stk = RecNum / 2
-                        Age = 3
-                        BaseCohortSize(Stk, Age) = (CurrentRow(0))
-                     End If
-                  ElseIf SpeciesName = "CHINOOK" Then
-                     '- CHINOOK has four lines - Ages 2 to 5
-                     If (RecNum Mod 4) = 1 Then
-                        Stk = (RecNum + 3) / 4
-                        Age = 2
-                     ElseIf (RecNum Mod 4) = 2 Then
-                        Stk = (RecNum + 2) / 4
-                        Age = 3
-                     ElseIf (RecNum Mod 4) = 3 Then
-                        Stk = (RecNum + 1) / 4
-                        Age = 4
-                     ElseIf (RecNum Mod 4) = 0 Then
-                        Stk = RecNum / 4
-                        Age = 5
-                     End If
-                     BaseCohortSize(Stk, Age) = (CurrentRow(0))
-                  End If
-            End Select
-         Catch ex As Exception
-                MsgBox("The BASE_PERIOD FILE Selected has Format Problems" & vbCrLf & "in the COHORT SIZES section", MsgBoxStyle.OkOnly)
-            Exit Sub
-         End Try
-         LineNum += 1
-         '- Exit DO WHILE when Stock-Recruit Information has been Read
-         If LineNum >= (((MaxAge - 1) * NumStk) + 2) Then Exit While
-      End While
-
-      '- Read CHINOOK Fishery ModelStockProportions
-      If SpeciesName = "CHINOOK" Then
-         Try
-            '- Title Line
-            CurrentRow = BaseReader.ReadFields()
+        '- Set NumAges and MinAge by Species plus COHO Default TermFlag and Maturation
+        If SpeciesName = "COHO" Then
+            NumAge = 1
+            MinAge = 3
+            '- Set Default TerminalFisheryFlag for COHO
+            TStep = NumSteps
             For Fish = 1 To NumFish
-               CurrentRow = BaseReader.ReadFields()
-               ModelStockProportion(Fish) = CurrentRow(0)
+                TerminalFisheryFlag(Fish, TStep) = 1
             Next
-         Catch ex As Exception
-            MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the MODEL STOCK PROP. section", MsgBoxStyle.OkOnly)
-            Exit Sub
-         End Try
-      End If
+            '- Set Default Maturation Rates for COHO
+            TStep = NumSteps
+            Age = MaxAge
+            For Stk = 1 To NumStk
+                MaturationRate(Stk, Age, TStep) = 1
+            Next
+        ElseIf SpeciesName = "CHINOOK" Then
+            NumAge = 4
+            MinAge = 2
+        End If
 
-      '- Read Other Mortality (DropOff and DropOut Rates)
-      LineNum = 1
-      '- Title Line
-      CurrentRow = BaseReader.ReadFields()
-      While Not BaseReader.EndOfData
-         Try
+        '- Read CHINOOK AEQ, Growth (VonBertLanf), and Shaker Flags
+        If SpeciesName = "CHINOOK" Then
+            '- AEQ Title Line
             CurrentRow = BaseReader.ReadFields()
-            '- LineNum and Fish are the same here
-            IncidentalRate(LineNum, 1) = CurrentRow(0)
-            '- New Base Period has Incidental Rate for all Time-Steps
-            For TStep = 2 To NumSteps
-               IncidentalRate(LineNum, TStep) = IncidentalRate(LineNum, 1)
+            For Stk = 1 To NumStk
+                For Age = MaxAge To MinAge Step -1
+                    For TStep = NumSteps To 1 Step -1
+                        Try
+                            CurrentRow = BaseReader.ReadFields()
+                            AEQ(Stk, Age, TStep) = CDbl(CurrentRow(0))
+                        Catch ex As Exception
+                            MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the AEQ section for Stock=" & Stk.ToString, MsgBoxStyle.OkOnly)
+                            Exit Sub
+                        End Try
+                    Next
+                Next
             Next
-         Catch ex As Exception
-            MsgBox("The BASE-PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the INCIDENTAL RATE section", MsgBoxStyle.OkOnly)
-            Exit Sub
-         End Try
-         LineNum += 1
-         '- Exit DO WHILE when Incidental Information has been Read
-         If LineNum > NumFish Then Exit While
-      End While
+            '- Growth Parameter Title Line
+            CurrentRow = BaseReader.ReadFields()
+            Dim MatType As Integer
+            For Stk = 1 To NumStk
+                For MatType = 0 To 1
+                    Try
+                        CurrentRow = BaseReader.ReadFields()
+                        VonBertL(Stk, MatType) = CurrentRow(0)
+                        CurrentRow = BaseReader.ReadFields()
+                        VonBertT(Stk, MatType) = CurrentRow(0)
+                        CurrentRow = BaseReader.ReadFields()
+                        VonBertK(Stk, MatType) = CurrentRow(0)
+                        For Age = MinAge To MaxAge
+                            CurrentRow = BaseReader.ReadFields()
+                            VonBertCV(Stk, Age, MatType) = CurrentRow(0)
+                        Next
+                    Catch ex As Exception
+                        MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the GROWTH section for Stock=" & Stk.ToString, MsgBoxStyle.OkOnly)
+                        Exit Sub
+                    End Try
+                Next
+            Next
+            '- CHINOOK TimeStep Midpoints (for PNV Calculations)
+            For TStep = 1 To NumSteps
+                CurrentRow = BaseReader.ReadFields()
+                MidTimeStep(TStep) = CurrentRow(0)
+            Next
+            '- Shaker Inclusion Flag Title Line
+            CurrentRow = BaseReader.ReadFields()
+            'MidTimeStep(TStep) = CurrentRow(0)
+            '- These Flags are no longer used but still exist in the BasePeriod File
+            For Fish = 1 To NumFish
+                CurrentRow = BaseReader.ReadFields()
+            Next
+        End If
 
-      '- Read TIME-STEP Information ... 
+        '---- Read Base Period COHORT SIZES
+        LineNum = 1
+        While Not BaseReader.EndOfData
+            Try
+                CurrentRow = BaseReader.ReadFields()
+                Select Case LineNum
+                    Case 1
+                        '- Cohort Title line
+                        Scratch = CurrentRow(0)
+                    Case 2 To (((MaxAge - 1) * NumStk) + 1)
+                        '- Cohort Sizes
+                        RecNum = LineNum - 1
+                        If SpeciesName = "COHO" Then
+                            '- COHO has two lines - Ages 2&3
+                            If (RecNum Mod 2) = 0 Then
+                                Stk = RecNum / 2
+                                Age = 3
+                                BaseCohortSize(Stk, Age) = (CurrentRow(0))
+                            End If
+                        ElseIf SpeciesName = "CHINOOK" Then
+                            '- CHINOOK has four lines - Ages 2 to 5
+                            If (RecNum Mod 4) = 1 Then
+                                Stk = (RecNum + 3) / 4
+                                Age = 2
+                            ElseIf (RecNum Mod 4) = 2 Then
+                                Stk = (RecNum + 2) / 4
+                                Age = 3
+                            ElseIf (RecNum Mod 4) = 3 Then
+                                Stk = (RecNum + 1) / 4
+                                Age = 4
+                            ElseIf (RecNum Mod 4) = 0 Then
+                                Stk = RecNum / 4
+                                Age = 5
+                            End If
+                            BaseCohortSize(Stk, Age) = (CurrentRow(0))
+                        End If
+                End Select
+            Catch ex As Exception
+                MsgBox("The BASE_PERIOD FILE Selected has Format Problems" & vbCrLf & "in the COHORT SIZES section", MsgBoxStyle.OkOnly)
+                Exit Sub
+            End Try
+            LineNum += 1
+            '- Exit DO WHILE when Stock-Recruit Information has been Read
+            If LineNum >= (((MaxAge - 1) * NumStk) + 2) Then Exit While
+        End While
 
-      If SpeciesName = "COHO" Then
-         '- Note: OUT Expl. Rate lines DO NOT have comma delimiters 
-         BaseReader.SetDelimiters(",", " ")
-         For TStep = 1 To NumSteps
-            LineNum = 1
-            While Not BaseReader.EndOfData
-               Try
-                  CurrentRow = BaseReader.ReadFields()
-                  Select Case LineNum
-                     Case 1
-                        '- Natural-Mortality Title line
-                        Scratch = CurrentRow(0)
-                     Case 2
-                        '- Natural-Mortality COHO Age 2 .. Not Used
-                        Scratch = CurrentRow(0)
-                     Case 3
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              NaturalMortality(3, TStep) = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case 4
-                        '- Exploitation-Rate Title line
-                        Scratch = CurrentRow(0)
-                     Case 5
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              NumRates = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case 6
-                        '- Exploitation-Rate Header line
-                        Scratch = CurrentRow(0)
-                     Case 7 To (NumRates + 7)
-                        FieldNum = 1
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              Select Case FieldNum
-                                 Case 1
-                                    Stk = CurrentField
-                                    FieldNum += 1
-                                 Case 2
-                                    Age = CurrentField
-                                    FieldNum += 1
-                                 Case 3
-                                    Fish = CurrentField
-                                    FieldNum += 1
-                                 Case 4
-                                    BaseExploitationRate(Stk, Age, Fish, TStep) = CurrentField
-                                    Exit For
-                              End Select
-                           End If
-                        Next
-                  End Select
-               Catch ex As Exception
+        '- Read CHINOOK Fishery ModelStockProportions
+        If SpeciesName = "CHINOOK" Then
+            Try
+                '- Title Line
+                CurrentRow = BaseReader.ReadFields()
+                For Fish = 1 To NumFish
+                    CurrentRow = BaseReader.ReadFields()
+                    ModelStockProportion(Fish) = CurrentRow(0)
+                Next
+            Catch ex As Exception
+                MsgBox("The BASE_PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the MODEL STOCK PROP. section", MsgBoxStyle.OkOnly)
+                Exit Sub
+            End Try
+        End If
+
+        '- Read Other Mortality (DropOff and DropOut Rates)
+        LineNum = 1
+        '- Title Line
+        CurrentRow = BaseReader.ReadFields()
+        While Not BaseReader.EndOfData
+            Try
+                CurrentRow = BaseReader.ReadFields()
+                '- LineNum and Fish are the same here
+                IncidentalRate(LineNum, 1) = CurrentRow(0)
+                '- New Base Period has Incidental Rate for all Time-Steps
+                For TStep = 2 To NumSteps
+                    IncidentalRate(LineNum, TStep) = IncidentalRate(LineNum, 1)
+                Next
+            Catch ex As Exception
+                MsgBox("The BASE-PERIOD FILE file Selected has Format Problems" & vbCrLf & "in the INCIDENTAL RATE section", MsgBoxStyle.OkOnly)
+                Exit Sub
+            End Try
+            LineNum += 1
+            '- Exit DO WHILE when Incidental Information has been Read
+            If LineNum > NumFish Then Exit While
+        End While
+
+        '- Read TIME-STEP Information ... 
+
+        If SpeciesName = "COHO" Then
+            '- Note: OUT Expl. Rate lines DO NOT have comma delimiters 
+            BaseReader.SetDelimiters(",", " ")
+            For TStep = 1 To NumSteps
+                LineNum = 1
+                While Not BaseReader.EndOfData
+                    Try
+                        CurrentRow = BaseReader.ReadFields()
+                        Select Case LineNum
+                            Case 1
+                                '- Natural-Mortality Title line
+                                Scratch = CurrentRow(0)
+                            Case 2
+                                '- Natural-Mortality COHO Age 2 .. Not Used
+                                Scratch = CurrentRow(0)
+                            Case 3
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        NaturalMortality(3, TStep) = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case 4
+                                '- Exploitation-Rate Title line
+                                Scratch = CurrentRow(0)
+                            Case 5
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        NumRates = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case 6
+                                '- Exploitation-Rate Header line
+                                Scratch = CurrentRow(0)
+                            Case 7 To (NumRates + 7)
+                                FieldNum = 1
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        Select Case FieldNum
+                                            Case 1
+                                                Stk = CurrentField
+                                                FieldNum += 1
+                                            Case 2
+                                                Age = CurrentField
+                                                FieldNum += 1
+                                            Case 3
+                                                Fish = CurrentField
+                                                FieldNum += 1
+                                            Case 4
+                                                BaseExploitationRate(Stk, Age, Fish, TStep) = CurrentField
+                                                Exit For
+                                        End Select
+                                    End If
+                                Next
+                        End Select
+                    Catch ex As Exception
                         MsgBox("The BASE-PERIOD FILE Selected has Format Problems" & vbCrLf & "in the EXPL. RATE section - TimeStep=" & TStep.ToString, MsgBoxStyle.OkOnly)
-                  Exit Sub
-               End Try
-               LineNum += 1
-               If LineNum = NumRates + 7 Then
-                  Jim = 1
-               End If
-               '- Exit DO WHILE when Header Information has been Read
-               If LineNum = NumRates + 7 Then Exit While
-            End While
-         Next
+                        Exit Sub
+                    End Try
+                    LineNum += 1
+                    If LineNum = NumRates + 7 Then
+                        Jim = 1
+                    End If
+                    '- Exit DO WHILE when Header Information has been Read
+                    If LineNum = NumRates + 7 Then Exit While
+                End While
+            Next
 
-      ElseIf SpeciesName = "CHINOOK" Then
+        ElseIf SpeciesName = "CHINOOK" Then
 
-         '- Note: OUT Expl. Rate lines DO NOT have comma delimiters 
-         BaseReader.SetDelimiters(",", " ")
-         Dim NumMatRates As Integer
-         For TStep = 1 To NumSteps
-            LineNum = 1
-            While Not BaseReader.EndOfData
-               Try
-                  CurrentRow = BaseReader.ReadFields()
-                  Select Case LineNum
-                     Case 1
-                        '- Natural-Mortality Title line
-                        Scratch = CurrentRow(0)
-                     Case 2 To 5
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              NaturalMortality(LineNum, TStep) = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case 6
-                        '- Shaker-Rate Title line
-                        Scratch = CurrentRow(0)
-                     Case 7 To (NumFish + 6)
-                        '- SubLegal Hooking Mortality Rates (ShakerMortRate)
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              ShakerMortRate(LineNum - 6, TStep) = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case (NumFish + 7)
-                        '- SubLegal Shaker Encounter Rate Adjustment Title line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish + 8) To (NumFish * 2 + 7)
-                        '- SubLegal Shaker Encounter Rate Adjustment
-                        FieldNum = 1
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              EncounterRateAdjustment(FieldNum + 1, LineNum - (NumFish + 7), TStep) = CurrentField
-                              FieldNum += 1
-                              If FieldNum = 4 Then
-                                 EncounterRateAdjustment(5, LineNum - (NumFish + 7), TStep) = 1
-                                 Exit For
-                              End If
-                           End If
-                        Next
-                     Case (NumFish * 2 + 8)
-                        '- Terminal Fishery Flag Title line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish * 2 + 9) To (NumFish * 3 + 8)
-                        '- Terminal Fishery Flags 
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              TerminalFisheryFlag(LineNum - (NumFish * 2 + 8), TStep) = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case (NumFish * 3 + 9)
-                        '- Maturity Rate Title Line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish * 3 + 10)
-                        '- Maturity Rate NumRates Line
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              NumMatRates = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case (NumFish * 3 + 11)
-                        '- Maturity Rate Headers Line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish * 3 + 12) To (NumFish * 3 + 11 + NumMatRates)
-                        '- Maturity Rates
-                        FieldNum = 1
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              Select Case FieldNum
-                                 Case 1
-                                    Stk = CurrentField
-                                 Case 2
-                                    Age = CurrentField
-                                 Case 3
-                                    MaturationRate(Stk, Age, TStep) = CurrentField
-                                    Exit For
-                              End Select
-                              FieldNum += 1
-                           End If
-                        Next
+            '- Note: OUT Expl. Rate lines DO NOT have comma delimiters 
+            BaseReader.SetDelimiters(",", " ")
+            Dim NumMatRates As Integer
+            For TStep = 1 To NumSteps
+                LineNum = 1
+                While Not BaseReader.EndOfData
+                    Try
+                        CurrentRow = BaseReader.ReadFields()
+                        Select Case LineNum
+                            Case 1
+                                '- Natural-Mortality Title line
+                                Scratch = CurrentRow(0)
+                            Case 2 To 5
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        NaturalMortality(LineNum, TStep) = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case 6
+                                '- Shaker-Rate Title line
+                                Scratch = CurrentRow(0)
+                            Case 7 To (NumFish + 6)
+                                '- SubLegal Hooking Mortality Rates (ShakerMortRate)
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        ShakerMortRate(LineNum - 6, TStep) = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case (NumFish + 7)
+                                '- SubLegal Shaker Encounter Rate Adjustment Title line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish + 8) To (NumFish * 2 + 7)
+                                '- SubLegal Shaker Encounter Rate Adjustment
+                                FieldNum = 1
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        EncounterRateAdjustment(FieldNum + 1, LineNum - (NumFish + 7), TStep) = CurrentField
+                                        FieldNum += 1
+                                        If FieldNum = 4 Then
+                                            EncounterRateAdjustment(5, LineNum - (NumFish + 7), TStep) = 1
+                                            Exit For
+                                        End If
+                                    End If
+                                Next
+                            Case (NumFish * 2 + 8)
+                                '- Terminal Fishery Flag Title line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish * 2 + 9) To (NumFish * 3 + 8)
+                                '- Terminal Fishery Flags 
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        TerminalFisheryFlag(LineNum - (NumFish * 2 + 8), TStep) = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case (NumFish * 3 + 9)
+                                '- Maturity Rate Title Line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish * 3 + 10)
+                                '- Maturity Rate NumRates Line
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        NumMatRates = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case (NumFish * 3 + 11)
+                                '- Maturity Rate Headers Line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish * 3 + 12) To (NumFish * 3 + 11 + NumMatRates)
+                                '- Maturity Rates
+                                FieldNum = 1
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        Select Case FieldNum
+                                            Case 1
+                                                Stk = CurrentField
+                                            Case 2
+                                                Age = CurrentField
+                                            Case 3
+                                                MaturationRate(Stk, Age, TStep) = CurrentField
+                                                Exit For
+                                        End Select
+                                        FieldNum += 1
+                                    End If
+                                Next
 
-                     Case (NumFish * 3 + 12 + NumMatRates)
-                        '- Exploitation Rate Title Line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish * 3 + 13 + NumMatRates)
-                        '- Exploitation Rate NumRates Line
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              NumRates = CurrentField
-                              Exit For
-                           End If
-                        Next
-                     Case (NumFish * 3 + 14 + NumMatRates)
-                        '- Exploitation Rate Headers Line
-                        Scratch = CurrentRow(0)
-                     Case (NumFish * 3 + 15 + NumMatRates) To (NumFish * 3 + 14 + NumMatRates + NumRates)
-                        '- Exploitation Rates
-                        FieldNum = 1
-                        For Each CurrentField In CurrentRow
-                           If CurrentField <> "" Then
-                              Select Case FieldNum
-                                 Case 1
-                                    Stk = CurrentField
-                                 Case 2
-                                    Age = CurrentField
-                                 Case 3
-                                    Fish = CurrentField
-                                 Case 4
-                                    BaseExploitationRate(Stk, Age, Fish, TStep) = CurrentField
-                                 Case 5
-                                    BaseSubLegalRate(Stk, Age, Fish, TStep) = CurrentField
-                                    Exit For
-                              End Select
-                              FieldNum += 1
-                           End If
-                        Next
-                  End Select
-               Catch ex As Exception
+                            Case (NumFish * 3 + 12 + NumMatRates)
+                                '- Exploitation Rate Title Line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish * 3 + 13 + NumMatRates)
+                                '- Exploitation Rate NumRates Line
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        NumRates = CurrentField
+                                        Exit For
+                                    End If
+                                Next
+                            Case (NumFish * 3 + 14 + NumMatRates)
+                                '- Exploitation Rate Headers Line
+                                Scratch = CurrentRow(0)
+                            Case (NumFish * 3 + 15 + NumMatRates) To (NumFish * 3 + 14 + NumMatRates + NumRates)
+                                '- Exploitation Rates
+                                FieldNum = 1
+                                For Each CurrentField In CurrentRow
+                                    If CurrentField <> "" Then
+                                        Select Case FieldNum
+                                            Case 1
+                                                Stk = CurrentField
+                                            Case 2
+                                                Age = CurrentField
+                                            Case 3
+                                                Fish = CurrentField
+                                            Case 4
+                                                BaseExploitationRate(Stk, Age, Fish, TStep) = CurrentField
+                                            Case 5
+                                                BaseSubLegalRate(Stk, Age, Fish, TStep) = CurrentField
+                                                Exit For
+                                        End Select
+                                        FieldNum += 1
+                                    End If
+                                Next
+                        End Select
+                    Catch ex As Exception
                         MsgBox("The BASE-PERIOD FILE Selected has Format Problems" & vbCrLf & "in the EXPL. RATE section - TimeStep=" & TStep.ToString, MsgBoxStyle.OkOnly)
-                  Exit Sub
-               End Try
-               LineNum += 1
-               '- Exit DO WHILE when TimeStep Information has been Read
-               If LineNum = (NumFish * 3 + 15 + NumMatRates + NumRates) Then Exit While
-            End While
-         Next
+                        Exit Sub
+                    End Try
+                    LineNum += 1
+                    '- Exit DO WHILE when TimeStep Information has been Read
+                    If LineNum = (NumFish * 3 + 15 + NumMatRates + NumRates) Then Exit While
+                End While
+            Next
 
-      End If
+        End If
 
-      '- Fill Database Tables with New RecordSet Values from Arrays
+        '- Fill Database Tables with New RecordSet Values from Arrays
 
-      '- BaseID DataBase Table New Record --------
-      Dim drd1 As OleDb.OleDbDataReader
-      Dim cmd1 As New OleDb.OleDbCommand()
-      Dim MaxOldID, NewBaseID, LoopLen, ChinookStockVersion As Integer
-      Dim BaseName As String
+        '- BaseID DataBase Table New Record --------
+        Dim drd1 As OleDb.OleDbDataReader
+        Dim cmd1 As New OleDb.OleDbCommand()
+        Dim MaxOldID, NewBaseID, LoopLen, ChinookStockVersion As Integer
+        Dim BaseName As String
 
-      '- Get Current Max RunID Value, Add One for New Recordset RunID Value
-      cmd1.Connection = FramDB
-      cmd1.CommandText = "SELECT * FROM BaseID ORDER BY BasePeriodID DESC"
-      FramDB.Open()
-      drd1 = cmd1.ExecuteReader
-      drd1.Read()
-      MaxOldID = drd1.GetInt32(1)
-      cmd1.Dispose()
-      drd1.Dispose()
-      FramDB.Close()
+        '- Get Current Max RunID Value, Add One for New Recordset RunID Value
+        cmd1.Connection = FramDB
+        cmd1.CommandText = "SELECT * FROM BaseID ORDER BY BasePeriodID DESC"
+        FramDB.Open()
+        drd1 = cmd1.ExecuteReader
+        drd1.Read()
+        MaxOldID = drd1.GetInt32(1)
+        cmd1.Dispose()
+        drd1.Dispose()
+        FramDB.Close()
 
-      NewBaseID = MaxOldID + 1
+        NewBaseID = MaxOldID + 1
 
-      '- Number of CHINOOK Stocks varies by Base Period Type and Purpose
-      If SpeciesName$ = "CHINOOK" Then
+        '- Number of CHINOOK Stocks varies by Base Period Type and Purpose
+        If SpeciesName$ = "CHINOOK" Then
             Select Case NumStk
                 Case 78
                     ChinookStockVersion = 5
@@ -1918,376 +1921,376 @@ SkipChinookME:
                 Case 33
                     ChinookStockVersion = 4
             End Select
-      ElseIf SpeciesName = "COHO" Then
-         ChinookStockVersion = 1
-      End If
+        ElseIf SpeciesName = "COHO" Then
+            ChinookStockVersion = 1
+        End If
 
-      '- BaseID Database Table
-      BaseName = My.Computer.FileSystem.GetFileInfo(OldOUTFile).Name
-      LoopLen = InStr(BaseName.ToUpper, ".OUT")
-      If LoopLen <> 0 Then
-         BaseName = Mid(BaseName, 1, LoopLen - 1)
-      End If
-      Dim FramTrans As OleDb.OleDbTransaction
-      Dim BIC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BIC.Connection = FramDB
-      BIC.Transaction = FramTrans
-      BIC.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " & _
-         "VALUES(" & NewBaseID.ToString & "," & _
-         Chr(34) & BaseName.ToString & Chr(34) & "," & _
-         Chr(34) & SpeciesName.ToString & Chr(34) & "," & _
-         NumStk.ToString & "," & _
-         NumFish.ToString & "," & _
-         NumSteps.ToString & "," & _
-         NumAge.ToString & "," & _
-         MinAge.ToString & "," & _
-         MaxAge.ToString & "," & _
-         Chr(35) & Now().ToString & Chr(35) & "," & _
-         Chr(34) & "From File = " & OldOUTFile & Chr(34) & "," & _
-         ChinookStockVersion.ToString & ",1,1)"
-      '- StockVersion, FisheryVersion, and TimeStepVersion will need to be updated
-      '- when different Base-Period files are created ... Default values for now
-      '- except for Chinook Stock Version
-      BIC.ExecuteNonQuery()
-      FramTrans.Commit()
-      FramDB.Close()
+        '- BaseID Database Table
+        BaseName = My.Computer.FileSystem.GetFileInfo(OldOUTFile).Name
+        LoopLen = InStr(BaseName.ToUpper, ".OUT")
+        If LoopLen <> 0 Then
+            BaseName = Mid(BaseName, 1, LoopLen - 1)
+        End If
+        Dim FramTrans As OleDb.OleDbTransaction
+        Dim BIC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BIC.Connection = FramDB
+        BIC.Transaction = FramTrans
+        BIC.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " &
+           "VALUES(" & NewBaseID.ToString & "," &
+           Chr(34) & BaseName.ToString & Chr(34) & "," &
+           Chr(34) & SpeciesName.ToString & Chr(34) & "," &
+           NumStk.ToString & "," &
+           NumFish.ToString & "," &
+           NumSteps.ToString & "," &
+           NumAge.ToString & "," &
+           MinAge.ToString & "," &
+           MaxAge.ToString & "," &
+           Chr(35) & Now().ToString & Chr(35) & "," &
+           Chr(34) & "From File = " & OldOUTFile & Chr(34) & "," &
+           ChinookStockVersion.ToString & ",1,1)"
+        '- StockVersion, FisheryVersion, and TimeStepVersion will need to be updated
+        '- when different Base-Period files are created ... Default values for now
+        '- except for Chinook Stock Version
+        BIC.ExecuteNonQuery()
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- BaseCohort Size Database Table 
-      Dim BCIC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BCIC.Connection = FramDB
-      BCIC.Transaction = FramTrans
-      For Stk = 1 To NumStk
-         For Age = MinAge To MaxAge
-            If BaseCohortSize(Stk, Age) <> 0 Then
-               BCIC.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Stk.ToString & "," & _
-                  Age.ToString & "," & _
-                  BaseCohortSize(Stk, Age).ToString & ")"
-               BCIC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- BaseExploitationRate Database Table 
-      Dim BERC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BERC.Connection = FramDB
-      BERC.Transaction = FramTrans
-      For Stk = 1 To NumStk
-         For Age = MinAge To MaxAge
-            For Fish = 1 To NumFish
-               For TStep = 1 To NumSteps
-                  If BaseExploitationRate(Stk, Age, Fish, TStep) <> 0 Or BaseSubLegalRate(Stk, Age, Fish, TStep) <> 0 Then
-                     BERC.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SubLegalEncounterRate) " & _
-                        "VALUES(" & NewBaseID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        Age.ToString & "," & _
-                        Fish.ToString & "," & _
-                        TStep.ToString & "," & _
-                        BaseExploitationRate(Stk, Age, Fish, TStep).ToString("0.0000000000") & "," & _
-                        BaseSubLegalRate(Stk, Age, Fish, TStep).ToString("0.0000000000") & ")"
-                     BERC.ExecuteNonQuery()
-                  End If
-               Next
-            Next
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- IncidentalRate Database Table 
-      Dim BIRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BIRC.Connection = FramDB
-      BIRC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
-            If IncidentalRate(Fish, TStep) <> 0 Then
-               BIRC.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  IncidentalRate(Fish, TStep).ToString("0.0000") & ")"
-               BIRC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- ShakerMortRate Database Table 
-      Dim SMRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      SMRC.Connection = FramDB
-      SMRC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
-            If ShakerMortRate(Fish, TStep) <> 0 Then
-               SMRC.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  ShakerMortRate(Fish, TStep).ToString("0.0000") & ")"
-               SMRC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- NaturalMortality Rate Database Table 
-      Dim NMRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      NMRC.Connection = FramDB
-      NMRC.Transaction = FramTrans
-      For TStep = 1 To NumSteps
-         For Age = MinAge To MaxAge
-            If NaturalMortality(Age, TStep) <> 0 Then
-               NMRC.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Age.ToString & "," & _
-                  TStep.ToString & "," & _
-                  NaturalMortality(Age, TStep).ToString("0.000000") & ")"
-               NMRC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- TerminalFisheryFlag Database Table 
-      Dim TFFC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      TFFC.Connection = FramDB
-      TFFC.Transaction = FramTrans
-      For Fish = 1 To NumFish
-         For TStep = 1 To NumSteps
-            If TerminalFisheryFlag(Fish, TStep) <> 0 Then
-               TFFC.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  TerminalFisheryFlag(Fish, TStep).ToString & ")"
-               TFFC.ExecuteNonQuery()
-            End If
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- Maturation Database Table 
-      Dim BMRC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      BMRC.Connection = FramDB
-      BMRC.Transaction = FramTrans
-      For Stk = 1 To NumStk
-         For Age = MinAge To MaxAge
-            For TStep = 1 To NumSteps
-               If MaturationRate(Stk, Age, TStep) <> 0 Then
-                  BMRC.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " & _
-                     "VALUES(" & NewBaseID.ToString & "," & _
-                     Stk.ToString & "," & _
-                     Age.ToString & "," & _
-                     TStep.ToString & "," & _
-                     MaturationRate(Stk, Age, TStep).ToString("0.00000000") & ")"
-                  BMRC.ExecuteNonQuery()
-               End If
-            Next
-         Next
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
-
-      '- ModelStockProportion Database Table ... CHINOOK Only
-      If SpeciesName = "CHINOOK" Then
-         Dim MSPC As New OleDbCommand
-         FramDB.Open()
-         FramTrans = FramDB.BeginTransaction
-         MSPC.Connection = FramDB
-         MSPC.Transaction = FramTrans
-         For Fish = 1 To NumFish
-            If ModelStockProportion(Fish) <> 0 Then
-               MSPC.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Fish.ToString & "," & _
-                  ModelStockProportion(Fish).ToString("0.00000000") & ")"
-               MSPC.ExecuteNonQuery()
-            End If
-         Next
-         FramTrans.Commit()
-         FramDB.Close()
-      End If
-
-      '- EncounterRateAdjustment Database Table ... CHINOOK Only
-      If SpeciesName = "CHINOOK" Then
-         Dim EAPC As New OleDbCommand
-         FramDB.Open()
-         FramTrans = FramDB.BeginTransaction
-         EAPC.Connection = FramDB
-         EAPC.Transaction = FramTrans
-         For Age = MinAge To MaxAge
-            For Fish = 1 To NumFish
-               For TStep = 1 To NumSteps
-                  'If EncounterRateAdjustment(Age, Fish, TStep) <> 1 Then
-                  EAPC.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " & _
-                     "VALUES(" & NewBaseID.ToString & "," & _
-                     Age.ToString & "," & _
-                     Fish.ToString & "," & _
-                     TStep.ToString & "," & _
-                     EncounterRateAdjustment(Age, Fish, TStep).ToString("###0.0000") & ")"
-                  EAPC.ExecuteNonQuery()
-                  'End If
-               Next
-            Next
-         Next
-         FramTrans.Commit()
-         FramDB.Close()
-      End If
-
-      '- Growth Database Table ... CHINOOK Only
-      If SpeciesName = "CHINOOK" Then
-         Dim GPC As New OleDbCommand
-         FramDB.Open()
-         FramTrans = FramDB.BeginTransaction
-         GPC.Connection = FramDB
-         GPC.Transaction = FramTrans
-         For Stk = 1 To NumStk
-            If VonBertL(Stk, 0) <> 0 Then
-               GPC.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " & _
-                  "VALUES(" & NewBaseID.ToString & "," & _
-                  Stk.ToString & "," & _
-                  VonBertL(Stk, 0).ToString("###0.000") & "," & _
-                  VonBertK(Stk, 0).ToString("###0.000") & "," & _
-                  VonBertT(Stk, 0).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 2, 0).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 3, 0).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 4, 0).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 5, 0).ToString("###0.000") & "," & _
-                  VonBertL(Stk, 1).ToString("###0.000") & "," & _
-                  VonBertK(Stk, 1).ToString("###0.000") & "," & _
-                  VonBertT(Stk, 1).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 2, 1).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 3, 1).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 4, 1).ToString("###0.000") & "," & _
-                  VonBertCV(Stk, 5, 1).ToString("###0.000") & ")"
-               GPC.ExecuteNonQuery()
-            End If
-         Next
-         FramTrans.Commit()
-         FramDB.Close()
-      End If
-
-      If SpeciesName = "CHINOOK" Then
-         '- AEQ Database Table 
-         Dim ARC As New OleDbCommand
-         FramDB.Open()
-         FramTrans = FramDB.BeginTransaction
-         ARC.Connection = FramDB
-         ARC.Transaction = FramTrans
-         For Stk = 1 To NumStk
+        '- BaseCohort Size Database Table 
+        Dim BCIC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BCIC.Connection = FramDB
+        BCIC.Transaction = FramTrans
+        For Stk = 1 To NumStk
             For Age = MinAge To MaxAge
-               For TStep = 1 To NumSteps
-                  If AEQ(Stk, Age, TStep) <> 0 Then
-                     ARC.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep,AEQ) " & _
-                        "VALUES(" & NewBaseID.ToString & "," & _
-                        Stk.ToString & "," & _
-                        Age.ToString & "," & _
-                        TStep.ToString & "," & _
-                        AEQ(Stk, Age, TStep).ToString("0.00000000") & ")"
-                     ARC.ExecuteNonQuery()
-                  End If
-               Next
+                If BaseCohortSize(Stk, Age) <> 0 Then
+                    BCIC.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Stk.ToString & "," &
+                       Age.ToString & "," &
+                       BaseCohortSize(Stk, Age).ToString & ")"
+                    BCIC.ExecuteNonQuery()
+                End If
             Next
-         Next
-         FramTrans.Commit()
-         FramDB.Close()
-      End If
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-   End Sub
+        '- BaseExploitationRate Database Table 
+        Dim BERC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BERC.Connection = FramDB
+        BERC.Transaction = FramTrans
+        For Stk = 1 To NumStk
+            For Age = MinAge To MaxAge
+                For Fish = 1 To NumFish
+                    For TStep = 1 To NumSteps
+                        If BaseExploitationRate(Stk, Age, Fish, TStep) <> 0 Or BaseSubLegalRate(Stk, Age, Fish, TStep) <> 0 Then
+                            BERC.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SubLegalEncounterRate) " &
+                               "VALUES(" & NewBaseID.ToString & "," &
+                               Stk.ToString & "," &
+                               Age.ToString & "," &
+                               Fish.ToString & "," &
+                               TStep.ToString & "," &
+                               BaseExploitationRate(Stk, Age, Fish, TStep).ToString("0.0000000000") & "," &
+                               BaseSubLegalRate(Stk, Age, Fish, TStep).ToString("0.0000000000") & ")"
+                            BERC.ExecuteNonQuery()
+                        End If
+                    Next
+                Next
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-   Sub DeleteBasePeriodRecordset()
+        '- IncidentalRate Database Table 
+        Dim BIRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BIRC.Connection = FramDB
+        BIRC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
+                If IncidentalRate(Fish, TStep) <> 0 Then
+                    BIRC.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Fish.ToString & "," &
+                       TStep.ToString & "," &
+                       IncidentalRate(Fish, TStep).ToString("0.0000") & ")"
+                    BIRC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      Dim DeleteSpeciesName As String
-      Dim AnyRunIDRecs, Result As Integer
-      Dim drd1 As OleDb.OleDbDataReader
-      Dim cmd1 As New OleDb.OleDbCommand()
+        '- ShakerMortRate Database Table 
+        Dim SMRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        SMRC.Connection = FramDB
+        SMRC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
+                If ShakerMortRate(Fish, TStep) <> 0 Then
+                    SMRC.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Fish.ToString & "," &
+                       TStep.ToString & "," &
+                       ShakerMortRate(Fish, TStep).ToString("0.0000") & ")"
+                    SMRC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-      '- Look for any RunID Records using the Selected BASE PERIOD Delete
-      FramDB.Open()
-      cmd1.Connection = FramDB
-      cmd1.CommandText = "SELECT * FROM RunID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
-      drd1 = cmd1.ExecuteReader
-      AnyRunIDRecs = 0
-      Do While drd1.Read
-         AnyRunIDRecs = 1
-         Exit Do
-      Loop
-      If AnyRunIDRecs = 1 Then
-         Result = MsgBox("There are Model Runs using this Base Period Recordset" & vbCrLf & "Do you want to Continue???", MsgBoxStyle.YesNo)
-         If Result = vbNo Then
+        '- NaturalMortality Rate Database Table 
+        Dim NMRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        NMRC.Connection = FramDB
+        NMRC.Transaction = FramTrans
+        For TStep = 1 To NumSteps
+            For Age = MinAge To MaxAge
+                If NaturalMortality(Age, TStep) <> 0 Then
+                    NMRC.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Age.ToString & "," &
+                       TStep.ToString & "," &
+                       NaturalMortality(Age, TStep).ToString("0.000000") & ")"
+                    NMRC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
+
+        '- TerminalFisheryFlag Database Table 
+        Dim TFFC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        TFFC.Connection = FramDB
+        TFFC.Transaction = FramTrans
+        For Fish = 1 To NumFish
+            For TStep = 1 To NumSteps
+                If TerminalFisheryFlag(Fish, TStep) <> 0 Then
+                    TFFC.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Fish.ToString & "," &
+                       TStep.ToString & "," &
+                       TerminalFisheryFlag(Fish, TStep).ToString & ")"
+                    TFFC.ExecuteNonQuery()
+                End If
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
+
+        '- Maturation Database Table 
+        Dim BMRC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        BMRC.Connection = FramDB
+        BMRC.Transaction = FramTrans
+        For Stk = 1 To NumStk
+            For Age = MinAge To MaxAge
+                For TStep = 1 To NumSteps
+                    If MaturationRate(Stk, Age, TStep) <> 0 Then
+                        BMRC.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " &
+                           "VALUES(" & NewBaseID.ToString & "," &
+                           Stk.ToString & "," &
+                           Age.ToString & "," &
+                           TStep.ToString & "," &
+                           MaturationRate(Stk, Age, TStep).ToString("0.00000000") & ")"
+                        BMRC.ExecuteNonQuery()
+                    End If
+                Next
+            Next
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
+
+        '- ModelStockProportion Database Table ... CHINOOK Only
+        If SpeciesName = "CHINOOK" Then
+            Dim MSPC As New OleDbCommand
+            FramDB.Open()
+            FramTrans = FramDB.BeginTransaction
+            MSPC.Connection = FramDB
+            MSPC.Transaction = FramTrans
+            For Fish = 1 To NumFish
+                If ModelStockProportion(Fish) <> 0 Then
+                    MSPC.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Fish.ToString & "," &
+                       ModelStockProportion(Fish).ToString("0.00000000") & ")"
+                    MSPC.ExecuteNonQuery()
+                End If
+            Next
+            FramTrans.Commit()
             FramDB.Close()
-            Exit Sub
-         End If
-      End If
-      drd1.Close()
-      'BasePeriodName = drd1.GetString(2)
-      'DeleteSpeciesName = drd1.GetString(3)
-      'FramDB.Close()
+        End If
 
-      '- Get Delete BASE PERIOD Delete Selection SpeciesName
-      'FramDB.Open()
-      cmd1.Connection = FramDB
-      cmd1.CommandText = "SELECT * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
-      drd1 = cmd1.ExecuteReader
-      drd1.Read()
-      BasePeriodName = drd1.GetString(2)
-      DeleteSpeciesName = drd1.GetString(3)
-      FramDB.Close()
+        '- EncounterRateAdjustment Database Table ... CHINOOK Only
+        If SpeciesName = "CHINOOK" Then
+            Dim EAPC As New OleDbCommand
+            FramDB.Open()
+            FramTrans = FramDB.BeginTransaction
+            EAPC.Connection = FramDB
+            EAPC.Transaction = FramTrans
+            For Age = MinAge To MaxAge
+                For Fish = 1 To NumFish
+                    For TStep = 1 To NumSteps
+                        'If EncounterRateAdjustment(Age, Fish, TStep) <> 1 Then
+                        EAPC.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " &
+                           "VALUES(" & NewBaseID.ToString & "," &
+                           Age.ToString & "," &
+                           Fish.ToString & "," &
+                           TStep.ToString & "," &
+                           EncounterRateAdjustment(Age, Fish, TStep).ToString("###0.0000") & ")"
+                        EAPC.ExecuteNonQuery()
+                        'End If
+                    Next
+                Next
+            Next
+            FramTrans.Commit()
+            FramDB.Close()
+        End If
 
-      '- BaseID SELECT Statement
-      Dim CmdStr As String
-      CmdStr = "SELECT * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
-      Dim BIcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim BaseDA As New System.Data.OleDb.OleDbDataAdapter
-      BaseDA.SelectCommand = BIcm
-      '- BaseID DELETE Statement
-      CmdStr = "DELETE * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString & ";"
-      Dim BIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      BaseDA.DeleteCommand = BIDcm
-      '- Command Builder
-      Dim BIcb As New OleDb.OleDbCommandBuilder
-      BIcb = New OleDb.OleDbCommandBuilder(BaseDA)
-      FramDB.Open()
-      BaseDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        '- Growth Database Table ... CHINOOK Only
+        If SpeciesName = "CHINOOK" Then
+            Dim GPC As New OleDbCommand
+            FramDB.Open()
+            FramTrans = FramDB.BeginTransaction
+            GPC.Connection = FramDB
+            GPC.Transaction = FramTrans
+            For Stk = 1 To NumStk
+                If VonBertL(Stk, 0) <> 0 Then
+                    GPC.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " &
+                       "VALUES(" & NewBaseID.ToString & "," &
+                       Stk.ToString & "," &
+                       VonBertL(Stk, 0).ToString("###0.000") & "," &
+                       VonBertK(Stk, 0).ToString("###0.000") & "," &
+                       VonBertT(Stk, 0).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 2, 0).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 3, 0).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 4, 0).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 5, 0).ToString("###0.000") & "," &
+                       VonBertL(Stk, 1).ToString("###0.000") & "," &
+                       VonBertK(Stk, 1).ToString("###0.000") & "," &
+                       VonBertT(Stk, 1).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 2, 1).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 3, 1).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 4, 1).ToString("###0.000") & "," &
+                       VonBertCV(Stk, 5, 1).ToString("###0.000") & ")"
+                    GPC.ExecuteNonQuery()
+                End If
+            Next
+            FramTrans.Commit()
+            FramDB.Close()
+        End If
 
-      '- BaseCohort SELECT Statement
-      CmdStr = "SELECT * FROM BaseCohort WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
-      Dim BCcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim BCDA As New System.Data.OleDb.OleDbDataAdapter
-      BCDA.SelectCommand = BCcm
-      '- BaseCohort DELETE Statement
-      CmdStr = "DELETE * FROM BaseCohort WHERE BasePeriodID = " & BasePeriodIDSelect.ToString & ";"
-      Dim BCDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      BCDA.DeleteCommand = BCDcm
-      '- Command Builder
-      Dim BCcb As New OleDb.OleDbCommandBuilder
-      BCcb = New OleDb.OleDbCommandBuilder(BCDA)
-      FramDB.Open()
-      BCDA.DeleteCommand.ExecuteScalar()
+        If SpeciesName = "CHINOOK" Then
+            '- AEQ Database Table 
+            Dim ARC As New OleDbCommand
+            FramDB.Open()
+            FramTrans = FramDB.BeginTransaction
+            ARC.Connection = FramDB
+            ARC.Transaction = FramTrans
+            For Stk = 1 To NumStk
+                For Age = MinAge To MaxAge
+                    For TStep = 1 To NumSteps
+                        If AEQ(Stk, Age, TStep) <> 0 Then
+                            ARC.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep,AEQ) " &
+                               "VALUES(" & NewBaseID.ToString & "," &
+                               Stk.ToString & "," &
+                               Age.ToString & "," &
+                               TStep.ToString & "," &
+                               AEQ(Stk, Age, TStep).ToString("0.00000000") & ")"
+                            ARC.ExecuteNonQuery()
+                        End If
+                    Next
+                Next
+            Next
+            FramTrans.Commit()
+            FramDB.Close()
+        End If
+
+    End Sub
+
+    Sub DeleteBasePeriodRecordset()
+
+        Dim DeleteSpeciesName As String
+        Dim AnyRunIDRecs, Result As Integer
+        Dim drd1 As OleDb.OleDbDataReader
+        Dim cmd1 As New OleDb.OleDbCommand()
+
+        '- Look for any RunID Records using the Selected BASE PERIOD Delete
+        FramDB.Open()
+        cmd1.Connection = FramDB
+        cmd1.CommandText = "SELECT * FROM RunID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
+        drd1 = cmd1.ExecuteReader
+        AnyRunIDRecs = 0
+        Do While drd1.Read
+            AnyRunIDRecs = 1
+            Exit Do
+        Loop
+        If AnyRunIDRecs = 1 Then
+            Result = MsgBox("There are Model Runs using this Base Period Recordset" & vbCrLf & "Do you want to Continue???", MsgBoxStyle.YesNo)
+            If Result = vbNo Then
+                FramDB.Close()
+                Exit Sub
+            End If
+        End If
+        drd1.Close()
+        'BasePeriodName = drd1.GetString(2)
+        'DeleteSpeciesName = drd1.GetString(3)
+        'FramDB.Close()
+
+        '- Get Delete BASE PERIOD Delete Selection SpeciesName
+        'FramDB.Open()
+        cmd1.Connection = FramDB
+        cmd1.CommandText = "SELECT * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
+        drd1 = cmd1.ExecuteReader
+        drd1.Read()
+        BasePeriodName = drd1.GetString(2)
+        DeleteSpeciesName = drd1.GetString(3)
+        FramDB.Close()
+
+        '- BaseID SELECT Statement
+        Dim CmdStr As String
+        CmdStr = "SELECT * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
+        Dim BIcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim BaseDA As New System.Data.OleDb.OleDbDataAdapter
+        BaseDA.SelectCommand = BIcm
+        '- BaseID DELETE Statement
+        CmdStr = "DELETE * FROM BaseID WHERE BasePeriodID = " & BasePeriodIDSelect.ToString & ";"
+        Dim BIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        BaseDA.DeleteCommand = BIDcm
+        '- Command Builder
+        Dim BIcb As New OleDb.OleDbCommandBuilder
+        BIcb = New OleDb.OleDbCommandBuilder(BaseDA)
+        FramDB.Open()
+        BaseDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
+
+        '- BaseCohort SELECT Statement
+        CmdStr = "SELECT * FROM BaseCohort WHERE BasePeriodID = " & BasePeriodIDSelect.ToString
+        Dim BCcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim BCDA As New System.Data.OleDb.OleDbDataAdapter
+        BCDA.SelectCommand = BCcm
+        '- BaseCohort DELETE Statement
+        CmdStr = "DELETE * FROM BaseCohort WHERE BasePeriodID = " & BasePeriodIDSelect.ToString & ";"
+        Dim BCDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        BCDA.DeleteCommand = BCDcm
+        '- Command Builder
+        Dim BCcb As New OleDb.OleDbCommandBuilder
+        BCcb = New OleDb.OleDbCommandBuilder(BCDA)
+        FramDB.Open()
+        BCDA.DeleteCommand.ExecuteScalar()
         FramDB.Close()
 
 
@@ -2476,488 +2479,488 @@ SkipFMSP:
 
     End Sub
 
-   Sub ReadTaaEtrsFile()
+    Sub ReadTaaEtrsFile()
 
-      '--- Read TAA and ETRS Instructions from Original Text File
-      ReDim TaaEtrsNum(100)
-      ReDim TaaEtrsStk(100, NumStk)
-      ReDim TaaEtrsFish(100, NumFish)
-      ReDim TaaEtrsTStep(100, 2)
-      ReDim TaaEtrsType(100)
-      ReDim TaaEtrsName(100)
+        '--- Read TAA and ETRS Instructions from Original Text File
+        ReDim TaaEtrsNum(100)
+        ReDim TaaEtrsStk(100, NumStk)
+        ReDim TaaEtrsFish(100, NumFish)
+        ReDim TaaEtrsTStep(100, 2)
+        ReDim TaaEtrsType(100)
+        ReDim TaaEtrsName(100)
 
-      '- Text File Reader
-      Dim TAAReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(FVSdatabasepath & "\TaaEtrsNum.txt")
-      TAAReader.TextFieldType = FileIO.FieldType.Delimited
-      TAAReader.SetDelimiters(",", " ")
+        '- Text File Reader
+        Dim TAAReader As New Microsoft.VisualBasic.FileIO.TextFieldParser(FVSdatabasepath & "\TaaEtrsNum.txt")
+        TAAReader.TextFieldType = FileIO.FieldType.Delimited
+        TAAReader.SetDelimiters(",", " ")
 
-      Dim CurrentRow As String()
-      Dim CurrentField As String
-      Dim StkLine, FishLine, CmdStr As String
-      Dim FieldNum As Integer
-      Dim NumTaaStks, NumTaaFish, TaaNum, TAA As Integer
+        Dim CurrentRow As String()
+        Dim CurrentField As String
+        Dim StkLine, FishLine, CmdStr As String
+        Dim FieldNum As Integer
+        Dim NumTaaStks, NumTaaFish, TaaNum, TAA As Integer
 
-      '- Read TAA/ETRS Information 
-      '   Terminal Number, Stocks, Fisheries, Time Steps, Type, and Terminal Name
-      While Not TAAReader.EndOfData
-         CurrentRow = TAAReader.ReadFields()
-         FieldNum = 0
-         For Each CurrentField In CurrentRow
-            If CurrentField = "" Then GoTo SkipTaaField
-            Select Case FieldNum
-               Case 0                                  '- Terminal Area Number
-                  TaaNum = CInt(CurrentField)
-                  TaaEtrsNum(TaaNum) = TaaNum
-               Case 1                                  '- Number of TAA Stocks
-                  NumTaaStks = CInt(CurrentField)
-                  TaaEtrsStk(TaaNum, 0) = NumTaaStks
-               Case 2 To NumTaaStks + 1                '- TAA Stock List
-                  TaaEtrsStk(TaaNum, FieldNum - 1) = CInt(CurrentField)
-               Case NumTaaStks + 2                     '- Number TAA Fisheries
-                  NumTaaFish = CInt(CurrentField)
-                  TaaEtrsFish(TaaNum, 0) = NumTaaFish
-               Case (NumTaaStks + 3) To (NumTaaStks + NumTaaFish + 2) '- TAA Fishery List
-                  If NumTaaFish = 0 Then GoTo NextTaaField
-                  TaaEtrsFish(TaaNum, FieldNum - (NumTaaStks + 2)) = CInt(CurrentField)
-               Case (NumTaaStks + NumTaaFish + 3) '- TAA Time Step 1
-                  TaaEtrsTStep(TaaNum, 1) = CInt(CurrentField)
-               Case (NumTaaStks + NumTaaFish + 4) '- TAA Time Step 2
-                  TaaEtrsTStep(TaaNum, 2) = CInt(CurrentField)
-               Case (NumTaaStks + NumTaaFish + 5) '- TAA Terminal Type (TAA or ETRS) 
-                  TaaEtrsType(TaaNum) = CInt(CurrentField)
-               Case (NumTaaStks + NumTaaFish + 6) '- TAA Terminal Name
-                  TaaEtrsName(TaaNum) = CurrentField
-            End Select
+        '- Read TAA/ETRS Information 
+        '   Terminal Number, Stocks, Fisheries, Time Steps, Type, and Terminal Name
+        While Not TAAReader.EndOfData
+            CurrentRow = TAAReader.ReadFields()
+            FieldNum = 0
+            For Each CurrentField In CurrentRow
+                If CurrentField = "" Then GoTo SkipTaaField
+                Select Case FieldNum
+                    Case 0                                  '- Terminal Area Number
+                        TaaNum = CInt(CurrentField)
+                        TaaEtrsNum(TaaNum) = TaaNum
+                    Case 1                                  '- Number of TAA Stocks
+                        NumTaaStks = CInt(CurrentField)
+                        TaaEtrsStk(TaaNum, 0) = NumTaaStks
+                    Case 2 To NumTaaStks + 1                '- TAA Stock List
+                        TaaEtrsStk(TaaNum, FieldNum - 1) = CInt(CurrentField)
+                    Case NumTaaStks + 2                     '- Number TAA Fisheries
+                        NumTaaFish = CInt(CurrentField)
+                        TaaEtrsFish(TaaNum, 0) = NumTaaFish
+                    Case (NumTaaStks + 3) To (NumTaaStks + NumTaaFish + 2) '- TAA Fishery List
+                        If NumTaaFish = 0 Then GoTo NextTaaField
+                        TaaEtrsFish(TaaNum, FieldNum - (NumTaaStks + 2)) = CInt(CurrentField)
+                    Case (NumTaaStks + NumTaaFish + 3) '- TAA Time Step 1
+                        TaaEtrsTStep(TaaNum, 1) = CInt(CurrentField)
+                    Case (NumTaaStks + NumTaaFish + 4) '- TAA Time Step 2
+                        TaaEtrsTStep(TaaNum, 2) = CInt(CurrentField)
+                    Case (NumTaaStks + NumTaaFish + 5) '- TAA Terminal Type (TAA or ETRS) 
+                        TaaEtrsType(TaaNum) = CInt(CurrentField)
+                    Case (NumTaaStks + NumTaaFish + 6) '- TAA Terminal Name
+                        TaaEtrsName(TaaNum) = CurrentField
+                End Select
 NextTaaField:
-            FieldNum += 1
+                FieldNum += 1
 SkipTaaField:
-         Next
-      End While
+            Next
+        End While
 
-      '- Delete Existing TAA Records in TAAETRSList Table
+        '- Delete Existing TAA Records in TAAETRSList Table
 
-      CmdStr = "SELECT * FROM TAAETRSList"
-      Dim Taacm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim TaaDA As New System.Data.OleDb.OleDbDataAdapter
-      TaaDA.SelectCommand = Taacm
-      '- EncounterRateAdjustment DELETE Statement
-      CmdStr = "DELETE * FROM TAAETRSList;"
-      Dim TaaDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      TaaDA.DeleteCommand = TaaDcm
-      '- Command Builder
-      Dim Taacb As New OleDb.OleDbCommandBuilder
-      Taacb = New OleDb.OleDbCommandBuilder(TaaDA)
-      FramDB.Open()
-      TaaDA.DeleteCommand.ExecuteScalar()
-      FramDB.Close()
+        CmdStr = "SELECT * FROM TAAETRSList"
+        Dim Taacm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim TaaDA As New System.Data.OleDb.OleDbDataAdapter
+        TaaDA.SelectCommand = Taacm
+        '- EncounterRateAdjustment DELETE Statement
+        CmdStr = "DELETE * FROM TAAETRSList;"
+        Dim TaaDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        TaaDA.DeleteCommand = TaaDcm
+        '- Command Builder
+        Dim Taacb As New OleDb.OleDbCommandBuilder
+        Taacb = New OleDb.OleDbCommandBuilder(TaaDA)
+        FramDB.Open()
+        TaaDA.DeleteCommand.ExecuteScalar()
+        FramDB.Close()
 
-      '- Store TAA Arrays in TAAETRSList Table
+        '- Store TAA Arrays in TAAETRSList Table
 
-      Dim FramTrans As OleDb.OleDbTransaction
-      Dim TaaC As New OleDbCommand
-      FramDB.Open()
-      FramTrans = FramDB.BeginTransaction
-      TaaC.Connection = FramDB
-      TaaC.Transaction = FramTrans
-      For TAA = 1 To 100
-         'If TaaEtrsStk(TAA, 0) = 0 Or TaaEtrsFish(TAA, 0) = 0 Then GoTo SkipTaa
-         If TaaEtrsNum(TAA) = 0 Then Exit For
-         '- Stock List
-         StkLine = ""
-         For Stk = 1 To TaaEtrsStk(TAA, 0)
-            StkLine &= TaaEtrsStk(TAA, Stk).ToString
-            If Stk <> TaaEtrsStk(TAA, 0) Then StkLine &= ","
-         Next
-         '- Fishery List
-         FishLine = ""
-         For Fish = 1 To TaaEtrsFish(TAA, 0)
-            FishLine &= TaaEtrsFish(TAA, Fish).ToString
-            If Fish <> TaaEtrsFish(TAA, 0) Then FishLine &= ","
-         Next
-         If TaaEtrsFish(TAA, 0) = 0 Then FishLine = "0"
+        Dim FramTrans As OleDb.OleDbTransaction
+        Dim TaaC As New OleDbCommand
+        FramDB.Open()
+        FramTrans = FramDB.BeginTransaction
+        TaaC.Connection = FramDB
+        TaaC.Transaction = FramTrans
+        For TAA = 1 To 100
+            'If TaaEtrsStk(TAA, 0) = 0 Or TaaEtrsFish(TAA, 0) = 0 Then GoTo SkipTaa
+            If TaaEtrsNum(TAA) = 0 Then Exit For
+            '- Stock List
+            StkLine = ""
+            For Stk = 1 To TaaEtrsStk(TAA, 0)
+                StkLine &= TaaEtrsStk(TAA, Stk).ToString
+                If Stk <> TaaEtrsStk(TAA, 0) Then StkLine &= ","
+            Next
+            '- Fishery List
+            FishLine = ""
+            For Fish = 1 To TaaEtrsFish(TAA, 0)
+                FishLine &= TaaEtrsFish(TAA, Fish).ToString
+                If Fish <> TaaEtrsFish(TAA, 0) Then FishLine &= ","
+            Next
+            If TaaEtrsFish(TAA, 0) = 0 Then FishLine = "0"
 
-         TaaC.CommandText = "INSERT INTO TAAETRSList (TaaNum,NumTaaStks,TaaStkList,NumTaaFish,TaaFishList,TaaTimeStep1,TaaTimeStep2,TaaType,TaaName) " & _
-            "VALUES(" & TAA.ToString & "," & _
-            TaaEtrsStk(TAA, 0).ToString & "," & _
-            Chr(34) & StkLine.ToString & Chr(34) & "," & _
-            TaaEtrsFish(TAA, 0).ToString & "," & _
-            Chr(34) & FishLine.ToString & Chr(34) & "," & _
-            TaaEtrsTStep(TAA, 1).ToString & "," & _
-            TaaEtrsTStep(TAA, 2).ToString & "," & _
-            TaaEtrsType(TAA).ToString & "," & _
-            Chr(34) & TaaEtrsName(TAA) & Chr(34) & ")"
-         TaaC.ExecuteNonQuery()
+            TaaC.CommandText = "INSERT INTO TAAETRSList (TaaNum,NumTaaStks,TaaStkList,NumTaaFish,TaaFishList,TaaTimeStep1,TaaTimeStep2,TaaType,TaaName) " &
+               "VALUES(" & TAA.ToString & "," &
+               TaaEtrsStk(TAA, 0).ToString & "," &
+               Chr(34) & StkLine.ToString & Chr(34) & "," &
+               TaaEtrsFish(TAA, 0).ToString & "," &
+               Chr(34) & FishLine.ToString & Chr(34) & "," &
+               TaaEtrsTStep(TAA, 1).ToString & "," &
+               TaaEtrsTStep(TAA, 2).ToString & "," &
+               TaaEtrsType(TAA).ToString & "," &
+               Chr(34) & TaaEtrsName(TAA) & Chr(34) & ")"
+            TaaC.ExecuteNonQuery()
 SkipTaa:
-      Next
-      FramTrans.Commit()
-      FramDB.Close()
+        Next
+        FramTrans.Commit()
+        FramDB.Close()
 
-   End Sub
+    End Sub
 
-   Sub SaveModelRunInputs()
+    Sub SaveModelRunInputs()
 
-      '- Save Input Variables in Database Tables
+        '- Save Input Variables in Database Tables
 
-      Dim CmdStr As String
+        Dim CmdStr As String
 
-      '- UPDATE RunID InputModified Field
+        '- UPDATE RunID InputModified Field
 
-      CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDSelect.ToString & ";"
-      Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-      Dim RunIDDA As New System.Data.OleDb.OleDbDataAdapter
-      RunIDDA.SelectCommand = RIDcm
+        CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDSelect.ToString & ";"
+        Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+        Dim RunIDDA As New System.Data.OleDb.OleDbDataAdapter
+        RunIDDA.SelectCommand = RIDcm
 
-      Dim RIDcb As New OleDb.OleDbCommandBuilder
-      RIDcb = New OleDb.OleDbCommandBuilder(RunIDDA)
-      If FramDataSet.Tables.Contains("RunID") Then
-         FramDataSet.Tables("RunID").Clear()
-      End If
-      RunIDDA.Fill(FramDataSet, "RunID")
-      Dim NumRID As Integer
-      NumRID = FramDataSet.Tables("RunID").Rows.Count
-      If NumRID <> 1 Then
-         MsgBox("ERROR in RunID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
-      End If
-      FramDataSet.Tables("RunID").Rows(0)(8) = DateTime.Now
-      RunIDDA.Update(FramDataSet, "RunID")
-      RunIDDA = Nothing
+        Dim RIDcb As New OleDb.OleDbCommandBuilder
+        RIDcb = New OleDb.OleDbCommandBuilder(RunIDDA)
+        If FramDataSet.Tables.Contains("RunID") Then
+            FramDataSet.Tables("RunID").Clear()
+        End If
+        RunIDDA.Fill(FramDataSet, "RunID")
+        Dim NumRID As Integer
+        NumRID = FramDataSet.Tables("RunID").Rows.Count
+        If NumRID <> 1 Then
+            MsgBox("ERROR in RunID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
+        End If
+        FramDataSet.Tables("RunID").Rows(0)(8) = DateTime.Now
+        RunIDDA.Update(FramDataSet, "RunID")
+        RunIDDA = Nothing
 
-      '- Backwards Fram TARGET ESCAPEMENTS 
-      If ChangeBackFram = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID"
-         Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim BackDA As New System.Data.OleDb.OleDbDataAdapter
-         BackDA.SelectCommand = BFcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM BackwardsFRAM WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim BFDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         BackDA.DeleteCommand = BFDcm
-         '- Command Builder
-         Dim BFcb As New OleDb.OleDbCommandBuilder
-         BFcb = New OleDb.OleDbCommandBuilder(BackDA)
-         '- Set Up DataBase Transaction
-         Dim BFTrans As OleDb.OleDbTransaction
-         Dim BFC As New OleDbCommand
-         FramDB.Open()
-         BackDA.DeleteCommand.ExecuteScalar()
-         BFTrans = FramDB.BeginTransaction
-         BFC.Connection = FramDB
-         BFC.Transaction = BFTrans
-         '- INSERT Records into DataBase Table
-         If SpeciesName = "COHO" Then
-            For Stk = 1 To NumStk
+        '- Backwards Fram TARGET ESCAPEMENTS 
+        If ChangeBackFram = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID"
+            Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim BackDA As New System.Data.OleDb.OleDbDataAdapter
+            BackDA.SelectCommand = BFcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM BackwardsFRAM WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim BFDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            BackDA.DeleteCommand = BFDcm
+            '- Command Builder
+            Dim BFcb As New OleDb.OleDbCommandBuilder
+            BFcb = New OleDb.OleDbCommandBuilder(BackDA)
+            '- Set Up DataBase Transaction
+            Dim BFTrans As OleDb.OleDbTransaction
+            Dim BFC As New OleDbCommand
+            FramDB.Open()
+            BackDA.DeleteCommand.ExecuteScalar()
+            BFTrans = FramDB.BeginTransaction
+            BFC.Connection = FramDB
+            BFC.Transaction = BFTrans
+            '- INSERT Records into DataBase Table
+            If SpeciesName = "COHO" Then
+                For Stk = 1 To NumStk
                     If BackwardsTarget(Stk) <> 0 Or BackwardsFlag(Stk) <> 0 Then
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                        "VALUES(" & RunIDSelect.ToString & "," & _
-                        Stk.ToString & "," & _
-                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                        "VALUES(" & RunIDSelect.ToString & "," &
+                        Stk.ToString & "," &
+                        BackwardsTarget(Stk).ToString("0.0") & ", 0, 0, " &
                         BackwardsFlag(Stk).ToString & ")"
                         BFC.ExecuteNonQuery()
 
                     End If
-            Next
-         ElseIf SpeciesName = "CHINOOK" Then
-            Dim SumChinTarget As Double
-            For Stk = 1 To NumStk + NumChinTermRuns
-               SumChinTarget = BackwardsChinook(Stk, 3) + BackwardsChinook(Stk, 4) + BackwardsChinook(Stk, 5)
+                Next
+            ElseIf SpeciesName = "CHINOOK" Then
+                Dim SumChinTarget As Double
+                For Stk = 1 To NumStk + NumChinTermRuns
+                    SumChinTarget = BackwardsChinook(Stk, 3) + BackwardsChinook(Stk, 4) + BackwardsChinook(Stk, 5)
                     If SumChinTarget <> 0 Or BackwardsFlag(Stk) <> 0 Then
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                        "VALUES(" & RunIDSelect.ToString & "," & _
-                        Stk.ToString & "," & _
-                        BackwardsChinook(Stk, 3).ToString("0.0") & "," & _
-                        BackwardsChinook(Stk, 4).ToString("0.0") & "," & _
-                        BackwardsChinook(Stk, 5).ToString("0.0") & "," & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                        "VALUES(" & RunIDSelect.ToString & "," &
+                        Stk.ToString & "," &
+                        BackwardsChinook(Stk, 3).ToString("0.0") & "," &
+                        BackwardsChinook(Stk, 4).ToString("0.0") & "," &
+                        BackwardsChinook(Stk, 5).ToString("0.0") & "," &
                         BackwardsFlag(Stk).ToString & ")"
                         BFC.ExecuteNonQuery()
                     End If
-            Next
-         End If
-         BFTrans.Commit()
-         FramDB.Close()
-         BackDA = Nothing
-      End If
+                Next
+            End If
+            BFTrans.Commit()
+            FramDB.Close()
+            BackDA = Nothing
+        End If
 
-      '- Fishery Scalers
-      If ChangeFishScalers = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM FisheryScalers WHERE RunID = " & RunIDSelect.ToString & " ORDER BY FisheryID, TimeStep"
-         Dim FScm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim ScalerDA As New System.Data.OleDb.OleDbDataAdapter
-         ScalerDA.SelectCommand = FScm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM FisheryScalers WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim FSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         ScalerDA.DeleteCommand = FSDcm
-         '- Command Builder
-         Dim FScb As New OleDb.OleDbCommandBuilder
-         FScb = New OleDb.OleDbCommandBuilder(ScalerDA)
-         'ScalerDA.Fill(FramDataSet, "FisheryScalers")
-         '- Set Up DataBase Transaction
-         Dim FSTrans As OleDb.OleDbTransaction
-         Dim FSC As New OleDbCommand
-         FramDB.Open()
-         ScalerDA.DeleteCommand.ExecuteScalar()
-         FSTrans = FramDB.BeginTransaction
-         FSC.Connection = FramDB
-         FSC.Transaction = FSTrans
-         '- INSERT Records into DataBase Table
-         For Fish = 1 To NumFish
-            For TStep = 1 To NumSteps
-               If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep2
-               If FisheryFlag(Fish, TStep) = 0 And FisheryScaler(Fish, TStep) = 0 And FisheryQuota(Fish, TStep) = 0 And MSFFisheryScaler(Fish, TStep) = 0 And MSFFisheryQuota(Fish, TStep) = 0 Then GoTo NextTStep2
-                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                    "VALUES(" & RunIDSelect.ToString & "," & _
-                    Fish.ToString & "," & _
-                    TStep.ToString & "," & _
-                    FisheryFlag(Fish, TStep).ToString(" #0") & "," & _
-                    FisheryScaler(Fish, TStep).ToString(" ####0.0000") & "," & _
-                    FisheryQuota(Fish, TStep).ToString(" ######0.0000") & "," & _
-                    MSFFisheryScaler(Fish, TStep).ToString(" ####0.0000") & "," & _
-                    MSFFisheryQuota(Fish, TStep).ToString(" ######0.0000") & "," & _
-                    MarkSelectiveMortRate(Fish, TStep).ToString(" #0.0000") & "," & _
-                    MarkSelectiveMarkMisID(Fish, TStep).ToString(" #0.0000") & "," & _
-                    MarkSelectiveUnMarkMisID(Fish, TStep).ToString(" #0.0000") & "," & _
-                    MarkSelectiveIncRate(Fish, TStep).ToString(" #0.0000") & ") ;"
-               FSC.ExecuteNonQuery()
-NextTStep2:
-            Next
-         Next
-         FSTrans.Commit()
-         FramDB.Close()
-         ScalerDA = Nothing
-      End If
-
-      '- Non Retention
-      If ChangeNonRetention = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM NonRetention WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, Age, TimeStep"
-         Dim NRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim NonRetDA As New System.Data.OleDb.OleDbDataAdapter
-         NonRetDA.SelectCommand = NRcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM NonRetention WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim NRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         NonRetDA.DeleteCommand = NRDcm
-         '- Command Builder
-         Dim NRcb As New OleDb.OleDbCommandBuilder
-         NRcb = New OleDb.OleDbCommandBuilder(NonRetDA)
-         'ScalerDA.Fill(FramDataSet, "NonRetention")
-         '- Set Up DataBase Transaction
-         Dim NRTrans As OleDb.OleDbTransaction
-         Dim NRC As New OleDbCommand
-         FramDB.Open()
-         NonRetDA.DeleteCommand.ExecuteScalar()
-         NRTrans = FramDB.BeginTransaction
-         NRC.Connection = FramDB
-         NRC.Transaction = NRTrans
-         '- INSERT Records into DataBase Table
-         For Fish = 1 To NumFish
-            For TStep = 1 To NumSteps
-               If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep4
-               If NonRetentionFlag(Fish, TStep) = 0 And NonRetentionInput(Fish, TStep, 1) = 0 Then GoTo NextTStep4
-               If SpeciesName = "COHO" Then
-                  NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1) " & _
-                  "VALUES(" & RunIDSelect.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  NonRetentionFlag(Fish, TStep).ToString(" #0") & "," & _
-                  NonRetentionInput(Fish, TStep, 1).ToString(" ####0.0000") & ") ;"
-               ElseIf SpeciesName = "CHINOOK" Then
-                  NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " & _
-                  "VALUES(" & RunIDSelect.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  NonRetentionFlag(Fish, TStep).ToString(" #0") & "," & _
-                  NonRetentionInput(Fish, TStep, 1).ToString(" ####0.0000") & "," & _
-                  NonRetentionInput(Fish, TStep, 2).ToString(" ####0.0000") & "," & _
-                  NonRetentionInput(Fish, TStep, 3).ToString(" ####0.0000") & "," & _
-                  NonRetentionInput(Fish, TStep, 4).ToString(" ####0.0000") & ") ;"
-               End If
-               NRC.ExecuteNonQuery()
-NextTStep4:
-            Next
-         Next
-         NRTrans.Commit()
-         FramDB.Close()
-         NonRetDA = Nothing
-      End If
-
-      '- Stock/Fishery Rate Scalers
-      If ChangeStockFishScaler = True Then
-         '- DataApapter SELECT Statement
-         'CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & " AND FisheryID = " & FisheryEditSelection.ToString & " ORDER BY StockID, FisheryID, TimeStep"
-         CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, FisheryID, TimeStep"
-         Dim SFRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim StockFisheryDA As New System.Data.OleDb.OleDbDataAdapter
-         StockFisheryDA.SelectCommand = SFRcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim SFRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         StockFisheryDA.DeleteCommand = SFRDcm
-         '- Command Builder
-         Dim SFRcb As New OleDb.OleDbCommandBuilder
-         SFRcb = New OleDb.OleDbCommandBuilder(StockFisheryDA)
-         'StockFisheryDA.Fill(FramDataSet, "NonRetention")
-         '- Set Up DataBase Transaction
-         Dim SFRTrans As OleDb.OleDbTransaction
-         Dim SFRC As New OleDbCommand
-         FramDB.Open()
-         StockFisheryDA.DeleteCommand.ExecuteScalar()
-         SFRTrans = FramDB.BeginTransaction
-         SFRC.Connection = FramDB
-         SFRC.Transaction = SFRTrans
-         '- INSERT Records into DataBase Table
-         For Stk = 1 To NumStk
+        '- Fishery Scalers
+        If ChangeFishScalers = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM FisheryScalers WHERE RunID = " & RunIDSelect.ToString & " ORDER BY FisheryID, TimeStep"
+            Dim FScm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim ScalerDA As New System.Data.OleDb.OleDbDataAdapter
+            ScalerDA.SelectCommand = FScm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM FisheryScalers WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim FSDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            ScalerDA.DeleteCommand = FSDcm
+            '- Command Builder
+            Dim FScb As New OleDb.OleDbCommandBuilder
+            FScb = New OleDb.OleDbCommandBuilder(ScalerDA)
+            'ScalerDA.Fill(FramDataSet, "FisheryScalers")
+            '- Set Up DataBase Transaction
+            Dim FSTrans As OleDb.OleDbTransaction
+            Dim FSC As New OleDbCommand
+            FramDB.Open()
+            ScalerDA.DeleteCommand.ExecuteScalar()
+            FSTrans = FramDB.BeginTransaction
+            FSC.Connection = FramDB
+            FSC.Transaction = FSTrans
+            '- INSERT Records into DataBase Table
             For Fish = 1 To NumFish
-               For TStep = 1 To NumSteps
-                  If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep5
-                  If StockFishRateScalers(Stk, Fish, TStep) = 1 Then GoTo NextTStep5
-                  SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " & _
-                  "VALUES(" & RunIDSelect.ToString & "," & _
-                  Stk.ToString & "," & _
-                  Fish.ToString & "," & _
-                  TStep.ToString & "," & _
-                  StockFishRateScalers(Stk, Fish, TStep).ToString(" ####0.0000") & ") ;"
-                  SFRC.ExecuteNonQuery()
+                For TStep = 1 To NumSteps
+                    If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep2
+                    If FisheryFlag(Fish, TStep) = 0 And FisheryScaler(Fish, TStep) = 0 And FisheryQuota(Fish, TStep) = 0 And MSFFisheryScaler(Fish, TStep) = 0 And MSFFisheryQuota(Fish, TStep) = 0 Then GoTo NextTStep2
+                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                    "VALUES(" & RunIDSelect.ToString & "," &
+                    Fish.ToString & "," &
+                    TStep.ToString & "," &
+                    FisheryFlag(Fish, TStep).ToString(" #0") & "," &
+                    FisheryScaler(Fish, TStep).ToString(" ####0.0000") & "," &
+                    FisheryQuota(Fish, TStep).ToString(" ######0.0000") & "," &
+                    MSFFisheryScaler(Fish, TStep).ToString(" ####0.0000") & "," &
+                    MSFFisheryQuota(Fish, TStep).ToString(" ######0.0000") & "," &
+                    MarkSelectiveMortRate(Fish, TStep).ToString(" #0.0000") & "," &
+                    MarkSelectiveMarkMisID(Fish, TStep).ToString(" #0.0000") & "," &
+                    MarkSelectiveUnMarkMisID(Fish, TStep).ToString(" #0.0000") & "," &
+                    MarkSelectiveIncRate(Fish, TStep).ToString(" #0.0000") & ") ;"
+                    FSC.ExecuteNonQuery()
+NextTStep2:
+                Next
+            Next
+            FSTrans.Commit()
+            FramDB.Close()
+            ScalerDA = Nothing
+        End If
+
+        '- Non Retention
+        If ChangeNonRetention = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM NonRetention WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, Age, TimeStep"
+            Dim NRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim NonRetDA As New System.Data.OleDb.OleDbDataAdapter
+            NonRetDA.SelectCommand = NRcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM NonRetention WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim NRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            NonRetDA.DeleteCommand = NRDcm
+            '- Command Builder
+            Dim NRcb As New OleDb.OleDbCommandBuilder
+            NRcb = New OleDb.OleDbCommandBuilder(NonRetDA)
+            'ScalerDA.Fill(FramDataSet, "NonRetention")
+            '- Set Up DataBase Transaction
+            Dim NRTrans As OleDb.OleDbTransaction
+            Dim NRC As New OleDbCommand
+            FramDB.Open()
+            NonRetDA.DeleteCommand.ExecuteScalar()
+            NRTrans = FramDB.BeginTransaction
+            NRC.Connection = FramDB
+            NRC.Transaction = NRTrans
+            '- INSERT Records into DataBase Table
+            For Fish = 1 To NumFish
+                For TStep = 1 To NumSteps
+                    If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep4
+                    If NonRetentionFlag(Fish, TStep) = 0 And NonRetentionInput(Fish, TStep, 1) = 0 Then GoTo NextTStep4
+                    If SpeciesName = "COHO" Then
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1) " &
+                        "VALUES(" & RunIDSelect.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        NonRetentionFlag(Fish, TStep).ToString(" #0") & "," &
+                        NonRetentionInput(Fish, TStep, 1).ToString(" ####0.0000") & ") ;"
+                    ElseIf SpeciesName = "CHINOOK" Then
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " &
+                        "VALUES(" & RunIDSelect.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        NonRetentionFlag(Fish, TStep).ToString(" #0") & "," &
+                        NonRetentionInput(Fish, TStep, 1).ToString(" ####0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 2).ToString(" ####0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 3).ToString(" ####0.0000") & "," &
+                        NonRetentionInput(Fish, TStep, 4).ToString(" ####0.0000") & ") ;"
+                    End If
+                    NRC.ExecuteNonQuery()
+NextTStep4:
+                Next
+            Next
+            NRTrans.Commit()
+            FramDB.Close()
+            NonRetDA = Nothing
+        End If
+
+        '- Stock/Fishery Rate Scalers
+        If ChangeStockFishScaler = True Then
+            '- DataApapter SELECT Statement
+            'CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & " AND FisheryID = " & FisheryEditSelection.ToString & " ORDER BY StockID, FisheryID, TimeStep"
+            CmdStr = "SELECT * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, FisheryID, TimeStep"
+            Dim SFRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim StockFisheryDA As New System.Data.OleDb.OleDbDataAdapter
+            StockFisheryDA.SelectCommand = SFRcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM StockFisheryRateScaler WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim SFRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            StockFisheryDA.DeleteCommand = SFRDcm
+            '- Command Builder
+            Dim SFRcb As New OleDb.OleDbCommandBuilder
+            SFRcb = New OleDb.OleDbCommandBuilder(StockFisheryDA)
+            'StockFisheryDA.Fill(FramDataSet, "NonRetention")
+            '- Set Up DataBase Transaction
+            Dim SFRTrans As OleDb.OleDbTransaction
+            Dim SFRC As New OleDbCommand
+            FramDB.Open()
+            StockFisheryDA.DeleteCommand.ExecuteScalar()
+            SFRTrans = FramDB.BeginTransaction
+            SFRC.Connection = FramDB
+            SFRC.Transaction = SFRTrans
+            '- INSERT Records into DataBase Table
+            For Stk = 1 To NumStk
+                For Fish = 1 To NumFish
+                    For TStep = 1 To NumSteps
+                        If AnyBaseRate(Fish, TStep) = 0 Then GoTo NextTStep5
+                        If StockFishRateScalers(Stk, Fish, TStep) = 1 Then GoTo NextTStep5
+                        SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " &
+                        "VALUES(" & RunIDSelect.ToString & "," &
+                        Stk.ToString & "," &
+                        Fish.ToString & "," &
+                        TStep.ToString & "," &
+                        StockFishRateScalers(Stk, Fish, TStep).ToString(" ####0.0000") & ") ;"
+                        SFRC.ExecuteNonQuery()
 NextTStep5:
-               Next
+                    Next
+                Next
             Next
-         Next
-         SFRTrans.Commit()
-         FramDB.Close()
-         StockFisheryDA = Nothing
-      End If
+            SFRTrans.Commit()
+            FramDB.Close()
+            StockFisheryDA = Nothing
+        End If
 
-      '- PSCMaxER - Coho Only
-      If ChangePSCMaxER = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM PSCMaxER WHERE RunID = " & RunIDSelect.ToString & " ORDER BY PSCStockID"
-         Dim PSCcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim PSCDA As New System.Data.OleDb.OleDbDataAdapter
-         PSCDA.SelectCommand = PSCcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM PSCMaxER WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim PSCDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         PSCDA.DeleteCommand = PSCDcm
-         '- Command Builder
-         Dim PSCcb As New OleDb.OleDbCommandBuilder
-         PSCcb = New OleDb.OleDbCommandBuilder(PSCDA)
-         'StockFisheryDA.Fill(FramDataSet, "NonRetention")
-         '- Set Up DataBase Transaction
-         Dim PSCTrans As OleDb.OleDbTransaction
-         Dim PSCC As New OleDbCommand
-         FramDB.Open()
-         PSCDA.DeleteCommand.ExecuteScalar()
-         PSCTrans = FramDB.BeginTransaction
-         PSCC.Connection = FramDB
-         PSCC.Transaction = PSCTrans
-         '- INSERT Records into DataBase Table
-         For Stk = 1 To 17
-            PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " & _
-            "VALUES(" & RunIDSelect.ToString & "," & _
-            Stk.ToString & "," & _
-            PSCMaxER(Stk).ToString(" ####0.0000") & ") ;"
-            PSCC.ExecuteNonQuery()
-         Next
-         PSCTrans.Commit()
-         FramDB.Close()
-         PSCDA = Nothing
-      End If
-
-      '- Size Limits - Chinook Only
-      If ChangeSizeLimit = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM SizeLimits WHERE RunID = " & RunIDSelect.ToString & " ORDER BY FisheryID, TimeStep"
-         Dim SLcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim SLDA As New System.Data.OleDb.OleDbDataAdapter
-         SLDA.SelectCommand = SLcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM SizeLimits WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim SLDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         SLDA.DeleteCommand = SLDcm
-         '- Command Builder
-         Dim SLcb As New OleDb.OleDbCommandBuilder
-         SLcb = New OleDb.OleDbCommandBuilder(SLDA)
-         'StockFisheryDA.Fill(FramDataSet, "NonRetention")
-         '- Set Up DataBase Transaction
-         Dim SLTrans As OleDb.OleDbTransaction
-         Dim SLC As New OleDbCommand
-         FramDB.Open()
-         SLDA.DeleteCommand.ExecuteScalar()
-         SLTrans = FramDB.BeginTransaction
-         SLC.Connection = FramDB
-         SLC.Transaction = SLTrans
-         '- INSERT Records into DataBase Table
-         For Fish = 1 To NumFish
-            For TStep = 1 To NumSteps
-               SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " & _
-               "VALUES(" & RunIDSelect.ToString & "," & _
-               Fish.ToString & "," & _
-               TStep.ToString & "," & _
-               MinSizeLimit(Fish, TStep).ToString(" ####0") & "," & _
-               MinSizeLimit(Fish, TStep).ToString(" ####0") & ") ;"
-               SLC.ExecuteNonQuery()
+        '- PSCMaxER - Coho Only
+        If ChangePSCMaxER = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM PSCMaxER WHERE RunID = " & RunIDSelect.ToString & " ORDER BY PSCStockID"
+            Dim PSCcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim PSCDA As New System.Data.OleDb.OleDbDataAdapter
+            PSCDA.SelectCommand = PSCcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM PSCMaxER WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim PSCDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            PSCDA.DeleteCommand = PSCDcm
+            '- Command Builder
+            Dim PSCcb As New OleDb.OleDbCommandBuilder
+            PSCcb = New OleDb.OleDbCommandBuilder(PSCDA)
+            'StockFisheryDA.Fill(FramDataSet, "NonRetention")
+            '- Set Up DataBase Transaction
+            Dim PSCTrans As OleDb.OleDbTransaction
+            Dim PSCC As New OleDbCommand
+            FramDB.Open()
+            PSCDA.DeleteCommand.ExecuteScalar()
+            PSCTrans = FramDB.BeginTransaction
+            PSCC.Connection = FramDB
+            PSCC.Transaction = PSCTrans
+            '- INSERT Records into DataBase Table
+            For Stk = 1 To 17
+                PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " &
+                "VALUES(" & RunIDSelect.ToString & "," &
+                Stk.ToString & "," &
+                PSCMaxER(Stk).ToString(" ####0.0000") & ") ;"
+                PSCC.ExecuteNonQuery()
             Next
-         Next
-         SLTrans.Commit()
-         FramDB.Close()
-         SLDA = Nothing
-      End If
+            PSCTrans.Commit()
+            FramDB.Close()
+            PSCDA = Nothing
+        End If
 
-      '- Stock Recruits
-      If ChangeStockRecruit = True Then
-         '- DataApapter SELECT Statement
-         CmdStr = "SELECT * FROM StockRecruit WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, Age"
-         Dim SRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim SRDA As New System.Data.OleDb.OleDbDataAdapter
-         SRDA.SelectCommand = SRcm
-         '- DataApapter DELETE Statement
-         CmdStr = "DELETE * FROM StockRecruit WHERE RunID = " & RunIDSelect.ToString & ";"
-         Dim SRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         SRDA.DeleteCommand = SRDcm
-         '- Command Builder
-         Dim SRcb As New OleDb.OleDbCommandBuilder
-         SRcb = New OleDb.OleDbCommandBuilder(SRDA)
-         'StockFisheryDA.Fill(FramDataSet, "NonRetention")
-         '- Set Up DataBase Transaction
-         Dim SRTrans As OleDb.OleDbTransaction
-         Dim SRC As New OleDbCommand
-         FramDB.Open()
-         SRDA.DeleteCommand.ExecuteScalar()
-         SRTrans = FramDB.BeginTransaction
-         SRC.Connection = FramDB
-         SRC.Transaction = SRTrans
-         '- INSERT Records into DataBase Table
-         For Stk = 1 To NumStk
-            For Age = MinAge To MaxAge
-               If StockRecruit(Stk, Age, 1) = 0 Then GoTo SkipSR
-               SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " & _
-               "VALUES(" & RunIDSelect.ToString & "," & _
-               Stk.ToString & "," & _
-               Age.ToString & "," & _
-               StockRecruit(Stk, Age, 1).ToString(" ####0.0000") & "," & _
-               StockRecruit(Stk, Age, 2).ToString(" ####0") & ") ;"
-               SRC.ExecuteNonQuery()
+        '- Size Limits - Chinook Only
+        If ChangeSizeLimit = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM SizeLimits WHERE RunID = " & RunIDSelect.ToString & " ORDER BY FisheryID, TimeStep"
+            Dim SLcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim SLDA As New System.Data.OleDb.OleDbDataAdapter
+            SLDA.SelectCommand = SLcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM SizeLimits WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim SLDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            SLDA.DeleteCommand = SLDcm
+            '- Command Builder
+            Dim SLcb As New OleDb.OleDbCommandBuilder
+            SLcb = New OleDb.OleDbCommandBuilder(SLDA)
+            'StockFisheryDA.Fill(FramDataSet, "NonRetention")
+            '- Set Up DataBase Transaction
+            Dim SLTrans As OleDb.OleDbTransaction
+            Dim SLC As New OleDbCommand
+            FramDB.Open()
+            SLDA.DeleteCommand.ExecuteScalar()
+            SLTrans = FramDB.BeginTransaction
+            SLC.Connection = FramDB
+            SLC.Transaction = SLTrans
+            '- INSERT Records into DataBase Table
+            For Fish = 1 To NumFish
+                For TStep = 1 To NumSteps
+                    SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " &
+                    "VALUES(" & RunIDSelect.ToString & "," &
+                    Fish.ToString & "," &
+                    TStep.ToString & "," &
+                    MinSizeLimit(Fish, TStep).ToString(" ####0") & "," &
+                    MinSizeLimit(Fish, TStep).ToString(" ####0") & ") ;"
+                    SLC.ExecuteNonQuery()
+                Next
+            Next
+            SLTrans.Commit()
+            FramDB.Close()
+            SLDA = Nothing
+        End If
+
+        '- Stock Recruits
+        If ChangeStockRecruit = True Then
+            '- DataApapter SELECT Statement
+            CmdStr = "SELECT * FROM StockRecruit WHERE RunID = " & RunIDSelect.ToString & " ORDER BY StockID, Age"
+            Dim SRcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim SRDA As New System.Data.OleDb.OleDbDataAdapter
+            SRDA.SelectCommand = SRcm
+            '- DataApapter DELETE Statement
+            CmdStr = "DELETE * FROM StockRecruit WHERE RunID = " & RunIDSelect.ToString & ";"
+            Dim SRDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            SRDA.DeleteCommand = SRDcm
+            '- Command Builder
+            Dim SRcb As New OleDb.OleDbCommandBuilder
+            SRcb = New OleDb.OleDbCommandBuilder(SRDA)
+            'StockFisheryDA.Fill(FramDataSet, "NonRetention")
+            '- Set Up DataBase Transaction
+            Dim SRTrans As OleDb.OleDbTransaction
+            Dim SRC As New OleDbCommand
+            FramDB.Open()
+            SRDA.DeleteCommand.ExecuteScalar()
+            SRTrans = FramDB.BeginTransaction
+            SRC.Connection = FramDB
+            SRC.Transaction = SRTrans
+            '- INSERT Records into DataBase Table
+            For Stk = 1 To NumStk
+                For Age = MinAge To MaxAge
+                    If StockRecruit(Stk, Age, 1) = 0 Then GoTo SkipSR
+                    SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " &
+                    "VALUES(" & RunIDSelect.ToString & "," &
+                    Stk.ToString & "," &
+                    Age.ToString & "," &
+                    StockRecruit(Stk, Age, 1).ToString(" ####0.0000") & "," &
+                    StockRecruit(Stk, Age, 2).ToString(" ####0") & ") ;"
+                    SRC.ExecuteNonQuery()
 SkipSR:
+                Next
             Next
-         Next
-         SRTrans.Commit()
-         FramDB.Close()
-         SRDA = Nothing
-      End If
+            SRTrans.Commit()
+            FramDB.Close()
+            SRDA = Nothing
+        End If
 
-      '- Set Edit Change Variables to False
-      ChangeAnyInput = False
-      ChangeBackFram = False
-      ChangeFishScalers = False
-      ChangeNonRetention = False
-      ChangePSCMaxER = False
-      ChangeSizeLimit = False
-      ChangeStockFishScaler = False
-      ChangeStockRecruit = False
+        '- Set Edit Change Variables to False
+        ChangeAnyInput = False
+        ChangeBackFram = False
+        ChangeFishScalers = False
+        ChangeNonRetention = False
+        ChangePSCMaxER = False
+        ChangeSizeLimit = False
+        ChangeStockFishScaler = False
+        ChangeStockRecruit = False
 
-   End Sub
+    End Sub
     Sub TransferBasePeriodTables()
         Dim CmdStr As String
         Dim TransID, RecNum, NumRecs, TransferBaseID As Integer
@@ -2989,26 +2992,26 @@ SkipSR:
             BID.Connection = TransDB
             BID.Transaction = BIDTrans
             RecNum = 0
-            BID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " & _
-               "VALUES(" & FramDataSet.Tables("BaseID").Rows(RecNum)(1) & "," & _
-               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(2) & Chr(34) & "," & _
-               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(3) & Chr(34) & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(4).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(5).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(6).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(7).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(8).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(9).ToString & "," & _
-               Chr(35) & FramDataSet.Tables("BaseID").Rows(RecNum)(10) & Chr(35) & "," & _
-               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(11) & Chr(34) & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(12).ToString & "," & _
-               FramDataSet.Tables("BaseID").Rows(RecNum)(13).ToString & "," & _
+            BID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " &
+               "VALUES(" & FramDataSet.Tables("BaseID").Rows(RecNum)(1) & "," &
+               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(2) & Chr(34) & "," &
+               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(3) & Chr(34) & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(4).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(5).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(6).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(7).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(8).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(9).ToString & "," &
+               Chr(35) & FramDataSet.Tables("BaseID").Rows(RecNum)(10) & Chr(35) & "," &
+               Chr(34) & FramDataSet.Tables("BaseID").Rows(RecNum)(11) & Chr(34) & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(12).ToString & "," &
+               FramDataSet.Tables("BaseID").Rows(RecNum)(13).ToString & "," &
                FramDataSet.Tables("BaseID").Rows(RecNum)(14).ToString & ")"
             BID.ExecuteNonQuery()
             BIDTrans.Commit()
             TransDB.Close()
 
-           
+
 
             'Base Cohort
             CmdStr = "SELECT * FROM BaseCohort WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
@@ -3032,10 +3035,10 @@ SkipSR:
             BaseCohort.Transaction = BaseCohortTrans
             NumRecs = FramDataSet.Tables("BaseCohort").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                BaseCohort.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " & _
-                   "VALUES(" & FramDataSet.Tables("BaseCohort").Rows(RecNum)(0) & "," & _
-                    FramDataSet.Tables("BaseCohort").Rows(RecNum)(1) & "," & _
-                    FramDataSet.Tables("BaseCohort").Rows(RecNum)(2) & "," & _
+                BaseCohort.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " &
+                   "VALUES(" & FramDataSet.Tables("BaseCohort").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("BaseCohort").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("BaseCohort").Rows(RecNum)(2) & "," &
                    FramDataSet.Tables("BaseCohort").Rows(RecNum)(3) & ")"
 
                 BaseCohort.ExecuteNonQuery()
@@ -3067,11 +3070,11 @@ SkipSR:
                 AEQ.Transaction = AEQTrans
                 NumRecs = FramDataSet.Tables("AEQ").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    AEQ.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep, AEQ) " & _
-                       "VALUES(" & FramDataSet.Tables("AEQ").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("AEQ").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("AEQ").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("AEQ").Rows(RecNum)(3) & "," & _
+                    AEQ.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep, AEQ) " &
+                       "VALUES(" & FramDataSet.Tables("AEQ").Rows(RecNum)(0) & "," &
+                        FramDataSet.Tables("AEQ").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("AEQ").Rows(RecNum)(2) & "," &
+                        FramDataSet.Tables("AEQ").Rows(RecNum)(3) & "," &
                        FramDataSet.Tables("AEQ").Rows(RecNum)(4) & ")"
                     AEQ.ExecuteNonQuery()
                 Next
@@ -3101,13 +3104,13 @@ SkipSR:
             BaseExploitationRate.Transaction = BaseExploitationRateTrans
             NumRecs = FramDataSet.Tables("BaseExploitationRate").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                BaseExploitationRate.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SublegalEncounterRate) " & _
-                   "VALUES(" & FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(0) & "," & _
-                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(1) & "," & _
-                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(2) & "," & _
-                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(3) & "," & _
-                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(4) & "," & _
-                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(5) & "," & _
+                BaseExploitationRate.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SublegalEncounterRate) " &
+                   "VALUES(" & FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(3) & "," &
+                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(4) & "," &
+                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(5) & "," &
                    FramDataSet.Tables("BaseExploitationRate").Rows(RecNum)(6) & ")"
 
                 BaseExploitationRate.ExecuteNonQuery()
@@ -3138,11 +3141,11 @@ SkipSR:
                 ChinookBaseEncounterAdjustment.Transaction = ChinookBaseEncounterAdjustmentTrans
                 NumRecs = FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    ChinookBaseEncounterAdjustment.CommandText = "INSERT INTO ChinookBaseEncounterAdjustment (FisheryID,Time1Adjustment,Time2Adjustment,Time3Adjustment,Time4Adjustment) " & _
-                       "VALUES(" & FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(3) & "," & _
+                    ChinookBaseEncounterAdjustment.CommandText = "INSERT INTO ChinookBaseEncounterAdjustment (FisheryID,Time1Adjustment,Time2Adjustment,Time3Adjustment,Time4Adjustment) " &
+                       "VALUES(" & FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(0) & "," &
+                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(2) & "," &
+                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(3) & "," &
                        FramDataSet.Tables("ChinookBaseEncounterAdjustment").Rows(RecNum)(4) & ")"
 
                     ChinookBaseEncounterAdjustment.ExecuteNonQuery()
@@ -3153,7 +3156,7 @@ SkipSR:
 
             'ChinookBaseSizeLimit
             If SpeciesName = "CHINOOK" Then
-                
+
                 'Dim ChinookBaseSizeLimitTrans As OleDb.OleDbTransaction
                 'Dim ChinookBaseSizeLimit As New OleDbCommand
                 'TransDB.Open()
@@ -3165,7 +3168,7 @@ SkipSR:
                 CmdStr = "SELECT * FROM ChinookBaseSizeLimit;"
 
                 'Test of TransferDatabase contains BaseID field
-                
+
                 ''Dim ChinookBaseSizeLimitTDBcm As New OleDb.OleDbCommand(CmdStr, TransDB)
                 Dim ChinookBaseSizeLimitTDBIDDA As New System.Data.OleDb.OleDbDataAdapter(CmdStr, TransDB)
                 ''ChinookBaseSizeLimitTDBIDDA.SelectCommand = ChinookBaseSizeLimitTDBcm
@@ -3210,12 +3213,12 @@ SkipSR:
                         Exit Sub
                     Else 'TransferDB has BaseID field
                         For RecNum = 0 To NumRecs - 1
-                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID, FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                               "VALUES(" & TransferBaseID & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & "," & _
+                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID, FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                               "VALUES(" & TransferBaseID & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & "," &
                                 FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(5) & ")"
                             ChinookBaseSizeLimit.ExecuteNonQuery()
                         Next
@@ -3223,22 +3226,22 @@ SkipSR:
                 Else 'FRAMDB does not have BaseID field
                     If TransferDataSet.Tables("ChinookBaseSizeLimit").Columns.IndexOf("BasePeriodID") = -1 Then
                         For RecNum = 0 To NumRecs - 1
-                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                               "VALUES(" & FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
+                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                               "VALUES(" & FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & ")"
                             ChinookBaseSizeLimit.ExecuteNonQuery()
                         Next
                     Else 'TransferDB has BaseID field
                         For RecNum = 0 To NumRecs - 1
-                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                               "VALUES(" & TransferBaseID & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
+                            ChinookBaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                               "VALUES(" & TransferBaseID & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
                                FramDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & ")"
                             ChinookBaseSizeLimit.ExecuteNonQuery()
                         Next
@@ -3271,11 +3274,11 @@ SkipSR:
                 EncounterRateAdjustment.Transaction = EncounterRateAdjustmentTrans
                 NumRecs = FramDataSet.Tables("EncounterRateAdjustment").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    EncounterRateAdjustment.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " & _
-                       "VALUES(" & FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(2) & "," & _
-                    FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(3) & "," & _
+                    EncounterRateAdjustment.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " &
+                       "VALUES(" & FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(0) & "," &
+                        FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(3) & "," &
                        FramDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(4) & ")"
 
                     EncounterRateAdjustment.ExecuteNonQuery()
@@ -3307,11 +3310,11 @@ SkipSR:
                 Fishery.Transaction = FisheryTrans
                 NumRecs = FramDataSet.Tables("Fishery").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    Fishery.CommandText = "INSERT INTO Fishery (Species,VersionNumber,FisheryID,FisheryName,FisheryTitle) " & _
-                       "VALUES(" & Chr(34) & FramDataSet.Tables("Fishery").Rows(RecNum)(0) & Chr(34) & "," & _
-                        FramDataSet.Tables("Fishery").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("Fishery").Rows(RecNum)(2) & "," & _
-                        Chr(34) & FramDataSet.Tables("Fishery").Rows(RecNum)(3) & Chr(34) & "," & _
+                    Fishery.CommandText = "INSERT INTO Fishery (Species,VersionNumber,FisheryID,FisheryName,FisheryTitle) " &
+                       "VALUES(" & Chr(34) & FramDataSet.Tables("Fishery").Rows(RecNum)(0) & Chr(34) & "," &
+                        FramDataSet.Tables("Fishery").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("Fishery").Rows(RecNum)(2) & "," &
+                        Chr(34) & FramDataSet.Tables("Fishery").Rows(RecNum)(3) & Chr(34) & "," &
                        Chr(34) & FramDataSet.Tables("Fishery").Rows(RecNum)(4) & Chr(34) & ")"
 
                     Fishery.ExecuteNonQuery()
@@ -3341,9 +3344,9 @@ SkipSR:
                 FisheryModelStockProportion.Transaction = FisheryModelStockProportionTrans
                 NumRecs = FramDataSet.Tables("FisheryModelStockProportion").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    FisheryModelStockProportion.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " & _
-                       "VALUES(" & FramDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(1) & "," & _
+                    FisheryModelStockProportion.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " &
+                       "VALUES(" & FramDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(0) & "," &
+                        FramDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(1) & "," &
                        FramDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(2) & ")"
 
                     FisheryModelStockProportion.ExecuteNonQuery()
@@ -3373,22 +3376,22 @@ SkipSR:
                 Growth.Transaction = GrowthTrans
                 NumRecs = FramDataSet.Tables("Growth").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    Growth.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " & _
-                       "VALUES(" & FramDataSet.Tables("Growth").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("Growth").Rows(RecNum)(1) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(2) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(3) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(4) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(5) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(6) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(7) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(8) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(9) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(10) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(11) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(12) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(13) & "," & _
-                     FramDataSet.Tables("Growth").Rows(RecNum)(14) & "," & _
+                    Growth.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " &
+                       "VALUES(" & FramDataSet.Tables("Growth").Rows(RecNum)(0) & "," &
+                        FramDataSet.Tables("Growth").Rows(RecNum)(1) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(2) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(3) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(4) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(5) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(6) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(7) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(8) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(9) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(10) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(11) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(12) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(13) & "," &
+                     FramDataSet.Tables("Growth").Rows(RecNum)(14) & "," &
                        FramDataSet.Tables("Growth").Rows(RecNum)(15) & ")"
 
                     Growth.ExecuteNonQuery()
@@ -3398,300 +3401,300 @@ SkipSR:
             End If
 
 
-                'IncidentalRate
-                CmdStr = "SELECT * FROM IncidentalRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-                Dim IncidentalRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                Dim IncidentalRateIDDA As New System.Data.OleDb.OleDbDataAdapter
-                IncidentalRateIDDA.SelectCommand = IncidentalRatecm
-                Dim IncidentalRatecb As New OleDb.OleDbCommandBuilder
-                IncidentalRatecb = New OleDb.OleDbCommandBuilder(IncidentalRateIDDA)
-                If FramDataSet.Tables.Contains("IncidentalRate") Then
-                    FramDataSet.Tables("IncidentalRate").Clear()
-                End If
-                IncidentalRateIDDA.Fill(FramDataSet, "IncidentalRate")
-                Dim NumIncidentalRate As Integer
-                NumIncidentalRate = FramDataSet.Tables("IncidentalRate").Rows.Count
+            'IncidentalRate
+            CmdStr = "SELECT * FROM IncidentalRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim IncidentalRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim IncidentalRateIDDA As New System.Data.OleDb.OleDbDataAdapter
+            IncidentalRateIDDA.SelectCommand = IncidentalRatecm
+            Dim IncidentalRatecb As New OleDb.OleDbCommandBuilder
+            IncidentalRatecb = New OleDb.OleDbCommandBuilder(IncidentalRateIDDA)
+            If FramDataSet.Tables.Contains("IncidentalRate") Then
+                FramDataSet.Tables("IncidentalRate").Clear()
+            End If
+            IncidentalRateIDDA.Fill(FramDataSet, "IncidentalRate")
+            Dim NumIncidentalRate As Integer
+            NumIncidentalRate = FramDataSet.Tables("IncidentalRate").Rows.Count
 
-                Dim IncidentalRateTrans As OleDb.OleDbTransaction
-                Dim IncidentalRate As New OleDbCommand
+            Dim IncidentalRateTrans As OleDb.OleDbTransaction
+            Dim IncidentalRate As New OleDbCommand
+            TransDB.Open()
+            IncidentalRateTrans = TransDB.BeginTransaction
+            IncidentalRate.Connection = TransDB
+            IncidentalRate.Transaction = IncidentalRateTrans
+            NumRecs = FramDataSet.Tables("IncidentalRate").Rows.Count
+            For RecNum = 0 To NumRecs - 1
+                IncidentalRate.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " &
+                   "VALUES(" & FramDataSet.Tables("IncidentalRate").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("IncidentalRate").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("IncidentalRate").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("IncidentalRate").Rows(RecNum)(3) & ")"
+
+                IncidentalRate.ExecuteNonQuery()
+            Next
+            IncidentalRateTrans.Commit()
+            TransDB.Close()
+
+            'MaturationRate
+
+            CmdStr = "SELECT * FROM MaturationRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim MaturationRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim MaturationRateIDDA As New System.Data.OleDb.OleDbDataAdapter
+            MaturationRateIDDA.SelectCommand = MaturationRatecm
+            Dim MaturationRatecb As New OleDb.OleDbCommandBuilder
+            MaturationRatecb = New OleDb.OleDbCommandBuilder(MaturationRateIDDA)
+            If FramDataSet.Tables.Contains("MaturationRate") Then
+                FramDataSet.Tables("MaturationRate").Clear()
+            End If
+            MaturationRateIDDA.Fill(FramDataSet, "MaturationRate")
+            Dim NumMaturationRate As Integer
+            NumMaturationRate = FramDataSet.Tables("MaturationRate").Rows.Count
+
+            Dim MaturationRateTrans As OleDb.OleDbTransaction
+            Dim MaturationRate As New OleDbCommand
+            TransDB.Open()
+            MaturationRateTrans = TransDB.BeginTransaction
+            MaturationRate.Connection = TransDB
+            MaturationRate.Transaction = MaturationRateTrans
+            NumRecs = FramDataSet.Tables("MaturationRate").Rows.Count
+            For RecNum = 0 To NumRecs - 1
+                MaturationRate.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " &
+                   "VALUES(" & FramDataSet.Tables("MaturationRate").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("MaturationRate").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("MaturationRate").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("MaturationRate").Rows(RecNum)(3) & "," &
+                    FramDataSet.Tables("MaturationRate").Rows(RecNum)(4) & ")"
+
+                MaturationRate.ExecuteNonQuery()
+            Next
+            MaturationRateTrans.Commit()
+            TransDB.Close()
+
+            'NaturalMortality
+            CmdStr = "SELECT * FROM NaturalMortality WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim NaturalMortalitycm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim NaturalMortalityIDDA As New System.Data.OleDb.OleDbDataAdapter
+            NaturalMortalityIDDA.SelectCommand = NaturalMortalitycm
+            Dim NaturalMortalitycb As New OleDb.OleDbCommandBuilder
+            NaturalMortalitycb = New OleDb.OleDbCommandBuilder(NaturalMortalityIDDA)
+            If FramDataSet.Tables.Contains("NaturalMortality") Then
+                FramDataSet.Tables("NaturalMortality").Clear()
+            End If
+            NaturalMortalityIDDA.Fill(FramDataSet, "NaturalMortality")
+            Dim NumNaturalMortality As Integer
+            NumNaturalMortality = FramDataSet.Tables("NaturalMortality").Rows.Count
+
+            Dim NaturalMortalityTrans As OleDb.OleDbTransaction
+            Dim NaturalMortality As New OleDbCommand
+            TransDB.Open()
+            NaturalMortalityTrans = TransDB.BeginTransaction
+            NaturalMortality.Connection = TransDB
+            NaturalMortality.Transaction = NaturalMortalityTrans
+            NumRecs = FramDataSet.Tables("NaturalMortality").Rows.Count
+            For RecNum = 0 To NumRecs - 1
+                NaturalMortality.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " &
+                   "VALUES(" & FramDataSet.Tables("NaturalMortality").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("NaturalMortality").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("NaturalMortality").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("NaturalMortality").Rows(RecNum)(3) & ")"
+
+                NaturalMortality.ExecuteNonQuery()
+            Next
+            NaturalMortalityTrans.Commit()
+            TransDB.Close()
+
+            'ShakerMortRate
+            CmdStr = "SELECT * FROM ShakerMortRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim ShakerMortRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim ShakerMortRateIDDA As New System.Data.OleDb.OleDbDataAdapter
+            ShakerMortRateIDDA.SelectCommand = ShakerMortRatecm
+            Dim ShakerMortRatecb As New OleDb.OleDbCommandBuilder
+            ShakerMortRatecb = New OleDb.OleDbCommandBuilder(ShakerMortRateIDDA)
+            If FramDataSet.Tables.Contains("ShakerMortRate") Then
+                FramDataSet.Tables("ShakerMortRate").Clear()
+            End If
+            ShakerMortRateIDDA.Fill(FramDataSet, "ShakerMortRate")
+            Dim NumShakerMortRate As Integer
+            NumShakerMortRate = FramDataSet.Tables("ShakerMortRate").Rows.Count
+
+            Dim ShakerMortRateTrans As OleDb.OleDbTransaction
+            Dim ShakerMortRate As New OleDbCommand
+            TransDB.Open()
+            ShakerMortRateTrans = TransDB.BeginTransaction
+            ShakerMortRate.Connection = TransDB
+            ShakerMortRate.Transaction = ShakerMortRateTrans
+            NumRecs = FramDataSet.Tables("ShakerMortRate").Rows.Count
+            For RecNum = 0 To NumRecs - 1
+                ShakerMortRate.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " &
+                   "VALUES(" & FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(3) & ")"
+
+                ShakerMortRate.ExecuteNonQuery()
+            Next
+            ShakerMortRateTrans.Commit()
+            TransDB.Close()
+
+            'Stock
+            If SpeciesName = "CHINOOK" Then
+                CmdStr = "SELECT * FROM Stock"
+                Dim Stockcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+                Dim StockIDDA As New System.Data.OleDb.OleDbDataAdapter
+                StockIDDA.SelectCommand = Stockcm
+                Dim Stockcb As New OleDb.OleDbCommandBuilder
+                Stockcb = New OleDb.OleDbCommandBuilder(StockIDDA)
+                If FramDataSet.Tables.Contains("Stock") Then
+                    FramDataSet.Tables("Stock").Clear()
+                End If
+                StockIDDA.Fill(FramDataSet, "Stock")
+                Dim NumStock As Integer
+                NumStock = FramDataSet.Tables("Stock").Rows.Count
+
+                Dim StockTrans As OleDb.OleDbTransaction
+                Dim Stock As New OleDbCommand
                 TransDB.Open()
-                IncidentalRateTrans = TransDB.BeginTransaction
-                IncidentalRate.Connection = TransDB
-                IncidentalRate.Transaction = IncidentalRateTrans
-                NumRecs = FramDataSet.Tables("IncidentalRate").Rows.Count
+                StockTrans = TransDB.BeginTransaction
+                Stock.Connection = TransDB
+                Stock.Transaction = StockTrans
+                NumRecs = FramDataSet.Tables("Stock").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    IncidentalRate.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " & _
-                       "VALUES(" & FramDataSet.Tables("IncidentalRate").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("IncidentalRate").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("IncidentalRate").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("IncidentalRate").Rows(RecNum)(3) & ")"
+                    Stock.CommandText = "INSERT INTO Stock (Species,StockVersion,StockID,ProductionRegionNumber,ManagementUnitNumber,StockName,StockLongName) " &
+                       "VALUES(" & Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(0) & Chr(34) & "," &
+                        FramDataSet.Tables("Stock").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("Stock").Rows(RecNum)(2) & "," &
+                        FramDataSet.Tables("Stock").Rows(RecNum)(3) & "," &
+                        FramDataSet.Tables("Stock").Rows(RecNum)(4) & "," &
+                        Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(5) & Chr(34) & "," &
+                       Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(6) & Chr(34) & ")"
 
-                    IncidentalRate.ExecuteNonQuery()
+                    Stock.ExecuteNonQuery()
                 Next
-                IncidentalRateTrans.Commit()
+                StockTrans.Commit()
                 TransDB.Close()
+            End If
 
-                'MaturationRate
+            'TerminalFisheryFlag
+            CmdStr = "SELECT * FROM TerminalFisheryFlag WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim TerminalFisheryFlagcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim TerminalFisheryFlagIDDA As New System.Data.OleDb.OleDbDataAdapter
+            TerminalFisheryFlagIDDA.SelectCommand = TerminalFisheryFlagcm
+            Dim TerminalFisheryFlagcb As New OleDb.OleDbCommandBuilder
+            TerminalFisheryFlagcb = New OleDb.OleDbCommandBuilder(TerminalFisheryFlagIDDA)
+            If FramDataSet.Tables.Contains("TerminalFisheryFlag") Then
+                FramDataSet.Tables("TerminalFisheryFlag").Clear()
+            End If
+            TerminalFisheryFlagIDDA.Fill(FramDataSet, "TerminalFisheryFlag")
+            Dim NumTerminalFisheryFlag As Integer
+            NumTerminalFisheryFlag = FramDataSet.Tables("TerminalFisheryFlag").Rows.Count
 
-                CmdStr = "SELECT * FROM MaturationRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-                Dim MaturationRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                Dim MaturationRateIDDA As New System.Data.OleDb.OleDbDataAdapter
-                MaturationRateIDDA.SelectCommand = MaturationRatecm
-                Dim MaturationRatecb As New OleDb.OleDbCommandBuilder
-                MaturationRatecb = New OleDb.OleDbCommandBuilder(MaturationRateIDDA)
-                If FramDataSet.Tables.Contains("MaturationRate") Then
-                    FramDataSet.Tables("MaturationRate").Clear()
+            Dim TerminalFisheryFlagTrans As OleDb.OleDbTransaction
+            Dim TerminalFisheryFlag As New OleDbCommand
+            TransDB.Open()
+            TerminalFisheryFlagTrans = TransDB.BeginTransaction
+            TerminalFisheryFlag.Connection = TransDB
+            TerminalFisheryFlag.Transaction = TerminalFisheryFlagTrans
+            NumRecs = FramDataSet.Tables("TerminalFisheryFlag").Rows.Count
+            For RecNum = 0 To NumRecs - 1
+                TerminalFisheryFlag.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " &
+                   "VALUES(" & FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(0) & "," &
+                    FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(1) & "," &
+                    FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(2) & "," &
+                    FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(3) & ")"
+
+                TerminalFisheryFlag.ExecuteNonQuery()
+            Next
+            TerminalFisheryFlagTrans.Commit()
+            TransDB.Close()
+
+            'TimeStep
+            If SpeciesName = "CHINOOK" Then
+                CmdStr = "SELECT * FROM TimeStep"
+                Dim TimeStepcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+                Dim TimeStepIDDA As New System.Data.OleDb.OleDbDataAdapter
+                TimeStepIDDA.SelectCommand = TimeStepcm
+                Dim TimeStepcb As New OleDb.OleDbCommandBuilder
+                TimeStepcb = New OleDb.OleDbCommandBuilder(TimeStepIDDA)
+                If FramDataSet.Tables.Contains("TimeStep") Then
+                    FramDataSet.Tables("TimeStep").Clear()
                 End If
-                MaturationRateIDDA.Fill(FramDataSet, "MaturationRate")
-                Dim NumMaturationRate As Integer
-                NumMaturationRate = FramDataSet.Tables("MaturationRate").Rows.Count
+                TimeStepIDDA.Fill(FramDataSet, "TimeStep")
+                Dim NumTimeStep As Integer
+                NumTimeStep = FramDataSet.Tables("TimeStep").Rows.Count
 
-                Dim MaturationRateTrans As OleDb.OleDbTransaction
-                Dim MaturationRate As New OleDbCommand
+                Dim TimeStepTrans As OleDb.OleDbTransaction
+                Dim TimeStep As New OleDbCommand
                 TransDB.Open()
-                MaturationRateTrans = TransDB.BeginTransaction
-                MaturationRate.Connection = TransDB
-                MaturationRate.Transaction = MaturationRateTrans
-                NumRecs = FramDataSet.Tables("MaturationRate").Rows.Count
+                TimeStepTrans = TransDB.BeginTransaction
+                TimeStep.Connection = TransDB
+                TimeStep.Transaction = TimeStepTrans
+                NumRecs = FramDataSet.Tables("TimeStep").Rows.Count
                 For RecNum = 0 To NumRecs - 1
-                    MaturationRate.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " & _
-                       "VALUES(" & FramDataSet.Tables("MaturationRate").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("MaturationRate").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("MaturationRate").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("MaturationRate").Rows(RecNum)(3) & "," & _
-                        FramDataSet.Tables("MaturationRate").Rows(RecNum)(4) & ")"
+                    TimeStep.CommandText = "INSERT INTO TimeStep (Species,VersionNumber,TimeStepID,TimeStepName,TimeStepTitle) " &
+                       "VALUES(" & Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(0) & Chr(34) & "," &
+                        FramDataSet.Tables("TimeStep").Rows(RecNum)(1) & "," &
+                        FramDataSet.Tables("TimeStep").Rows(RecNum)(2) & "," &
+                        Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(3) & Chr(34) & "," &
+                        Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(4) & Chr(34) & ")"
 
-                    MaturationRate.ExecuteNonQuery()
+                    TimeStep.ExecuteNonQuery()
                 Next
-                MaturationRateTrans.Commit()
+                TimeStepTrans.Commit()
                 TransDB.Close()
-
-                'NaturalMortality
-                CmdStr = "SELECT * FROM NaturalMortality WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-                Dim NaturalMortalitycm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                Dim NaturalMortalityIDDA As New System.Data.OleDb.OleDbDataAdapter
-                NaturalMortalityIDDA.SelectCommand = NaturalMortalitycm
-                Dim NaturalMortalitycb As New OleDb.OleDbCommandBuilder
-                NaturalMortalitycb = New OleDb.OleDbCommandBuilder(NaturalMortalityIDDA)
-                If FramDataSet.Tables.Contains("NaturalMortality") Then
-                    FramDataSet.Tables("NaturalMortality").Clear()
-                End If
-                NaturalMortalityIDDA.Fill(FramDataSet, "NaturalMortality")
-                Dim NumNaturalMortality As Integer
-                NumNaturalMortality = FramDataSet.Tables("NaturalMortality").Rows.Count
-
-                Dim NaturalMortalityTrans As OleDb.OleDbTransaction
-                Dim NaturalMortality As New OleDbCommand
-                TransDB.Open()
-                NaturalMortalityTrans = TransDB.BeginTransaction
-                NaturalMortality.Connection = TransDB
-                NaturalMortality.Transaction = NaturalMortalityTrans
-                NumRecs = FramDataSet.Tables("NaturalMortality").Rows.Count
-                For RecNum = 0 To NumRecs - 1
-                    NaturalMortality.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " & _
-                       "VALUES(" & FramDataSet.Tables("NaturalMortality").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("NaturalMortality").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("NaturalMortality").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("NaturalMortality").Rows(RecNum)(3) & ")"
-
-                    NaturalMortality.ExecuteNonQuery()
-                Next
-                NaturalMortalityTrans.Commit()
-                TransDB.Close()
-
-                'ShakerMortRate
-                CmdStr = "SELECT * FROM ShakerMortRate WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-                Dim ShakerMortRatecm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                Dim ShakerMortRateIDDA As New System.Data.OleDb.OleDbDataAdapter
-                ShakerMortRateIDDA.SelectCommand = ShakerMortRatecm
-                Dim ShakerMortRatecb As New OleDb.OleDbCommandBuilder
-                ShakerMortRatecb = New OleDb.OleDbCommandBuilder(ShakerMortRateIDDA)
-                If FramDataSet.Tables.Contains("ShakerMortRate") Then
-                    FramDataSet.Tables("ShakerMortRate").Clear()
-                End If
-                ShakerMortRateIDDA.Fill(FramDataSet, "ShakerMortRate")
-                Dim NumShakerMortRate As Integer
-                NumShakerMortRate = FramDataSet.Tables("ShakerMortRate").Rows.Count
-
-                Dim ShakerMortRateTrans As OleDb.OleDbTransaction
-                Dim ShakerMortRate As New OleDbCommand
-                TransDB.Open()
-                ShakerMortRateTrans = TransDB.BeginTransaction
-                ShakerMortRate.Connection = TransDB
-                ShakerMortRate.Transaction = ShakerMortRateTrans
-                NumRecs = FramDataSet.Tables("ShakerMortRate").Rows.Count
-                For RecNum = 0 To NumRecs - 1
-                    ShakerMortRate.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " & _
-                       "VALUES(" & FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("ShakerMortRate").Rows(RecNum)(3) & ")"
-
-                    ShakerMortRate.ExecuteNonQuery()
-                Next
-                ShakerMortRateTrans.Commit()
-                TransDB.Close()
-
-                'Stock
-                If SpeciesName = "CHINOOK" Then
-                    CmdStr = "SELECT * FROM Stock"
-                    Dim Stockcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                    Dim StockIDDA As New System.Data.OleDb.OleDbDataAdapter
-                    StockIDDA.SelectCommand = Stockcm
-                    Dim Stockcb As New OleDb.OleDbCommandBuilder
-                    Stockcb = New OleDb.OleDbCommandBuilder(StockIDDA)
-                    If FramDataSet.Tables.Contains("Stock") Then
-                        FramDataSet.Tables("Stock").Clear()
-                    End If
-                    StockIDDA.Fill(FramDataSet, "Stock")
-                    Dim NumStock As Integer
-                    NumStock = FramDataSet.Tables("Stock").Rows.Count
-
-                    Dim StockTrans As OleDb.OleDbTransaction
-                    Dim Stock As New OleDbCommand
-                    TransDB.Open()
-                    StockTrans = TransDB.BeginTransaction
-                    Stock.Connection = TransDB
-                    Stock.Transaction = StockTrans
-                    NumRecs = FramDataSet.Tables("Stock").Rows.Count
-                    For RecNum = 0 To NumRecs - 1
-                        Stock.CommandText = "INSERT INTO Stock (Species,StockVersion,StockID,ProductionRegionNumber,ManagementUnitNumber,StockName,StockLongName) " & _
-                           "VALUES(" & Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(0) & Chr(34) & "," & _
-                            FramDataSet.Tables("Stock").Rows(RecNum)(1) & "," & _
-                            FramDataSet.Tables("Stock").Rows(RecNum)(2) & "," & _
-                            FramDataSet.Tables("Stock").Rows(RecNum)(3) & "," & _
-                            FramDataSet.Tables("Stock").Rows(RecNum)(4) & "," & _
-                            Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(5) & Chr(34) & "," & _
-                           Chr(34) & FramDataSet.Tables("Stock").Rows(RecNum)(6) & Chr(34) & ")"
-
-                        Stock.ExecuteNonQuery()
-                    Next
-                    StockTrans.Commit()
-                    TransDB.Close()
-                End If
-
-                'TerminalFisheryFlag
-                CmdStr = "SELECT * FROM TerminalFisheryFlag WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-                Dim TerminalFisheryFlagcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                Dim TerminalFisheryFlagIDDA As New System.Data.OleDb.OleDbDataAdapter
-                TerminalFisheryFlagIDDA.SelectCommand = TerminalFisheryFlagcm
-                Dim TerminalFisheryFlagcb As New OleDb.OleDbCommandBuilder
-                TerminalFisheryFlagcb = New OleDb.OleDbCommandBuilder(TerminalFisheryFlagIDDA)
-                If FramDataSet.Tables.Contains("TerminalFisheryFlag") Then
-                    FramDataSet.Tables("TerminalFisheryFlag").Clear()
-                End If
-                TerminalFisheryFlagIDDA.Fill(FramDataSet, "TerminalFisheryFlag")
-                Dim NumTerminalFisheryFlag As Integer
-                NumTerminalFisheryFlag = FramDataSet.Tables("TerminalFisheryFlag").Rows.Count
-
-                Dim TerminalFisheryFlagTrans As OleDb.OleDbTransaction
-                Dim TerminalFisheryFlag As New OleDbCommand
-                TransDB.Open()
-                TerminalFisheryFlagTrans = TransDB.BeginTransaction
-                TerminalFisheryFlag.Connection = TransDB
-                TerminalFisheryFlag.Transaction = TerminalFisheryFlagTrans
-                NumRecs = FramDataSet.Tables("TerminalFisheryFlag").Rows.Count
-                For RecNum = 0 To NumRecs - 1
-                    TerminalFisheryFlag.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " & _
-                       "VALUES(" & FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(0) & "," & _
-                        FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(1) & "," & _
-                        FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(2) & "," & _
-                        FramDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(3) & ")"
-
-                    TerminalFisheryFlag.ExecuteNonQuery()
-                Next
-                TerminalFisheryFlagTrans.Commit()
-                TransDB.Close()
-
-                'TimeStep
-                If SpeciesName = "CHINOOK" Then
-                    CmdStr = "SELECT * FROM TimeStep"
-                    Dim TimeStepcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-                    Dim TimeStepIDDA As New System.Data.OleDb.OleDbDataAdapter
-                    TimeStepIDDA.SelectCommand = TimeStepcm
-                    Dim TimeStepcb As New OleDb.OleDbCommandBuilder
-                    TimeStepcb = New OleDb.OleDbCommandBuilder(TimeStepIDDA)
-                    If FramDataSet.Tables.Contains("TimeStep") Then
-                        FramDataSet.Tables("TimeStep").Clear()
-                    End If
-                    TimeStepIDDA.Fill(FramDataSet, "TimeStep")
-                    Dim NumTimeStep As Integer
-                    NumTimeStep = FramDataSet.Tables("TimeStep").Rows.Count
-
-                    Dim TimeStepTrans As OleDb.OleDbTransaction
-                    Dim TimeStep As New OleDbCommand
-                    TransDB.Open()
-                    TimeStepTrans = TransDB.BeginTransaction
-                    TimeStep.Connection = TransDB
-                    TimeStep.Transaction = TimeStepTrans
-                    NumRecs = FramDataSet.Tables("TimeStep").Rows.Count
-                    For RecNum = 0 To NumRecs - 1
-                        TimeStep.CommandText = "INSERT INTO TimeStep (Species,VersionNumber,TimeStepID,TimeStepName,TimeStepTitle) " & _
-                           "VALUES(" & Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(0) & Chr(34) & "," & _
-                            FramDataSet.Tables("TimeStep").Rows(RecNum)(1) & "," & _
-                            FramDataSet.Tables("TimeStep").Rows(RecNum)(2) & "," & _
-                            Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(3) & Chr(34) & "," & _
-                            Chr(34) & FramDataSet.Tables("TimeStep").Rows(RecNum)(4) & Chr(34) & ")"
-
-                        TimeStep.ExecuteNonQuery()
-                    Next
-                    TimeStepTrans.Commit()
-                    TransDB.Close()
-                End If
+            End If
         Next
     End Sub
-   Sub TransferModelRunTables()
+    Sub TransferModelRunTables()
 
-      Dim CmdStr As String
-      Dim TransID, RecNum, NumRecs, TransferBaseID As Integer
+        Dim CmdStr As String
+        Dim TransID, RecNum, NumRecs, TransferBaseID As Integer
 
-      'Loop through User Selected RunID Transfers
-      For TransID = 0 To NumTransferID - 1
+        'Loop through User Selected RunID Transfers
+        For TransID = 0 To NumTransferID - 1
 
-         'RunIDTransfer(TransID)
+            'RunIDTransfer(TransID)
 
-         '- Transfer RunID Record
+            '- Transfer RunID Record
 
-         CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDTransfer(TransID).ToString & ";"
-         Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim RunIDDA As New System.Data.OleDb.OleDbDataAdapter
-         RunIDDA.SelectCommand = RIDcm
-         Dim RIDcb As New OleDb.OleDbCommandBuilder
-         RIDcb = New OleDb.OleDbCommandBuilder(RunIDDA)
-         If TransferDataSet.Tables.Contains("RunID") Then
-            TransferDataSet.Tables("RunID").Clear()
-         End If
-         RunIDDA.Fill(TransferDataSet, "RunID")
-         Dim NumRID As Integer
-         NumRID = TransferDataSet.Tables("RunID").Rows.Count
-         If NumRID <> 1 Then
-            MsgBox("ERROR in RunID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
-         End If
-         SelectSpeciesName = TransferDataSet.Tables("RunID").Rows(0)(2)
-         Dim RIDTrans As OleDb.OleDbTransaction
-         Dim RID As New OleDbCommand
-         TransDB.Open()
-         RIDTrans = TransDB.BeginTransaction
-         RID.Connection = TransDB
-         RID.Transaction = RIDTrans
+            CmdStr = "SELECT * FROM RunID WHERE RunID = " & RunIDTransfer(TransID).ToString & ";"
+            Dim RIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim RunIDDA As New System.Data.OleDb.OleDbDataAdapter
+            RunIDDA.SelectCommand = RIDcm
+            Dim RIDcb As New OleDb.OleDbCommandBuilder
+            RIDcb = New OleDb.OleDbCommandBuilder(RunIDDA)
+            If TransferDataSet.Tables.Contains("RunID") Then
+                TransferDataSet.Tables("RunID").Clear()
+            End If
+            RunIDDA.Fill(TransferDataSet, "RunID")
+            Dim NumRID As Integer
+            NumRID = TransferDataSet.Tables("RunID").Rows.Count
+            If NumRID <> 1 Then
+                MsgBox("ERROR in RunID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
+            End If
+            SelectSpeciesName = TransferDataSet.Tables("RunID").Rows(0)(2)
+            Dim RIDTrans As OleDb.OleDbTransaction
+            Dim RID As New OleDbCommand
+            TransDB.Open()
+            RIDTrans = TransDB.BeginTransaction
+            RID.Connection = TransDB
+            RID.Transaction = RIDTrans
             RecNum = 0
-         TransferBaseID = TransferDataSet.Tables("RunID").Rows(RecNum)(5)
-            RID.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " & _
-            "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(2) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(3) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(4) & Chr(34) & "," & _
-            TransferDataSet.Tables("RunID").Rows(RecNum)(5).ToString & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(6) & Chr(34) & "," & _
-            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(7) & Chr(35) & "," & _
-            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(8) & Chr(35) & "," & _
-            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(9) & Chr(35) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(10) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(11) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(12) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(13) & Chr(34) & "," & _
+            TransferBaseID = TransferDataSet.Tables("RunID").Rows(RecNum)(5)
+            RID.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " &
+            "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(2) & Chr(34) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(3) & Chr(34) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(4) & Chr(34) & "," &
+            TransferDataSet.Tables("RunID").Rows(RecNum)(5).ToString & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(6) & Chr(34) & "," &
+            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(7) & Chr(35) & "," &
+            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(8) & Chr(35) & "," &
+            Chr(35) & TransferDataSet.Tables("RunID").Rows(RecNum)(9) & Chr(35) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(10) & Chr(34) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(11) & Chr(34) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(12) & Chr(34) & "," &
+            Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(13) & Chr(34) & "," &
             Chr(34) & TransferDataSet.Tables("RunID").Rows(RecNum)(14) & Chr(34) & ")"
-             
+
 
 
             Try
@@ -3701,86 +3704,86 @@ SkipSR:
                 GoTo ExitTransfer
             End Try
 
-         RIDTrans.Commit()
-         TransDB.Close()
+            RIDTrans.Commit()
+            TransDB.Close()
 
-         '- Transfer BaseID Record
+            '- Transfer BaseID Record
 
-         CmdStr = "SELECT * FROM BaseID WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
-         Dim BIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
-         Dim BaseIDDA As New System.Data.OleDb.OleDbDataAdapter
-         BaseIDDA.SelectCommand = BIDcm
-         Dim BIDcb As New OleDb.OleDbCommandBuilder
-         BIDcb = New OleDb.OleDbCommandBuilder(BaseIDDA)
-         If TransferDataSet.Tables.Contains("BaseID") Then
-            TransferDataSet.Tables("BaseID").Clear()
-         End If
-         BaseIDDA.Fill(TransferDataSet, "BaseID")
-         Dim NumBID As Integer
-         NumBID = TransferDataSet.Tables("BaseID").Rows.Count
-         If NumBID <> 1 Then
-            MsgBox("ERROR in BaseID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
-         End If
-         Dim BIDTrans As OleDb.OleDbTransaction
-         Dim BID As New OleDbCommand
-         TransDB.Open()
-         BIDTrans = TransDB.BeginTransaction
-         BID.Connection = TransDB
-         BID.Transaction = BIDTrans
-         RecNum = 0
-         BID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " & _
-            "VALUES(" & TransferDataSet.Tables("BaseID").Rows(RecNum)(1) & "," & _
-            Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(2) & Chr(34) & "," & _
-            Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(3) & Chr(34) & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(4).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(5).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(6).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(7).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(8).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(9).ToString & "," & _
-            Chr(35) & TransferDataSet.Tables("BaseID").Rows(RecNum)(10) & Chr(35) & "," & _
-            Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(11) & Chr(34) & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(12).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(13).ToString & "," & _
-            TransferDataSet.Tables("BaseID").Rows(RecNum)(14).ToString & ")"
-         BID.ExecuteNonQuery()
-         BIDTrans.Commit()
-         TransDB.Close()
+            CmdStr = "SELECT * FROM BaseID WHERE BasePeriodID = " & TransferBaseID.ToString & ";"
+            Dim BIDcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            Dim BaseIDDA As New System.Data.OleDb.OleDbDataAdapter
+            BaseIDDA.SelectCommand = BIDcm
+            Dim BIDcb As New OleDb.OleDbCommandBuilder
+            BIDcb = New OleDb.OleDbCommandBuilder(BaseIDDA)
+            If TransferDataSet.Tables.Contains("BaseID") Then
+                TransferDataSet.Tables("BaseID").Clear()
+            End If
+            BaseIDDA.Fill(TransferDataSet, "BaseID")
+            Dim NumBID As Integer
+            NumBID = TransferDataSet.Tables("BaseID").Rows.Count
+            If NumBID <> 1 Then
+                MsgBox("ERROR in BaseID Table of Database ... Duplicate Record", MsgBoxStyle.OkOnly)
+            End If
+            Dim BIDTrans As OleDb.OleDbTransaction
+            Dim BID As New OleDbCommand
+            TransDB.Open()
+            BIDTrans = TransDB.BeginTransaction
+            BID.Connection = TransDB
+            BID.Transaction = BIDTrans
+            RecNum = 0
+            BID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " &
+               "VALUES(" & TransferDataSet.Tables("BaseID").Rows(RecNum)(1) & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(2) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(3) & Chr(34) & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(4).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(5).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(6).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(7).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(8).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(9).ToString & "," &
+               Chr(35) & TransferDataSet.Tables("BaseID").Rows(RecNum)(10) & Chr(35) & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(RecNum)(11) & Chr(34) & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(12).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(13).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(RecNum)(14).ToString & ")"
+            BID.ExecuteNonQuery()
+            BIDTrans.Commit()
+            TransDB.Close()
 
-         '- Transfer Backwards FRAM Table
+            '- Transfer Backwards FRAM Table
 
-         CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDTransfer(TransID).ToString & " ORDER BY StockID;"
-         Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
+            CmdStr = "SELECT * FROM BackwardsFRAM WHERE RunID = " & RunIDTransfer(TransID).ToString & " ORDER BY StockID;"
+            Dim BFcm As New OleDb.OleDbCommand(CmdStr, FramDB)
             Dim BFDA As New System.Data.OleDb.OleDbDataAdapter
             Dim i As Integer
-         BFDA.SelectCommand = BFcm
-         Dim BFcb As New OleDb.OleDbCommandBuilder
-         BFcb = New OleDb.OleDbCommandBuilder(BFDA)
-         If TransferDataSet.Tables.Contains("BackwardsFRAM") Then
-            TransferDataSet.Tables("BackwardsFRAM").Clear()
-         End If
-         BFDA.Fill(TransferDataSet, "BackwardsFRAM")
-         NumRecs = TransferDataSet.Tables("BackwardsFRAM").Rows.Count
-         If NumRecs = 0 Then
-            GoTo SkipBF
-         End If
-         Dim BFTrans As OleDb.OleDbTransaction
-         Dim BFC As New OleDbCommand
-         TransDB.Open()
-         BFTrans = TransDB.BeginTransaction
-         BFC.Connection = TransDB
+            BFDA.SelectCommand = BFcm
+            Dim BFcb As New OleDb.OleDbCommandBuilder
+            BFcb = New OleDb.OleDbCommandBuilder(BFDA)
+            If TransferDataSet.Tables.Contains("BackwardsFRAM") Then
+                TransferDataSet.Tables("BackwardsFRAM").Clear()
+            End If
+            BFDA.Fill(TransferDataSet, "BackwardsFRAM")
+            NumRecs = TransferDataSet.Tables("BackwardsFRAM").Rows.Count
+            If NumRecs = 0 Then
+                GoTo SkipBF
+            End If
+            Dim BFTrans As OleDb.OleDbTransaction
+            Dim BFC As New OleDbCommand
+            TransDB.Open()
+            BFTrans = TransDB.BeginTransaction
+            BFC.Connection = TransDB
             BFC.Transaction = BFTrans
 
             i = FramDataSet.Tables("BackwardsFRAM").Columns.IndexOf("Comment")
             For RecNum = 0 To NumRecs - 1
                 If i <> -1 Then
-                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " & _
-                    "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & "," & _
+                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " &
+                    "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & "," &
                     Chr(34) & TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(6) & Chr(34) & ")"
                     Try
                         BFC.ExecuteNonQuery()
@@ -3789,12 +3792,12 @@ SkipSR:
                         GoTo ExitTransfer
                     End Try
                 Else
-                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                    "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," & _
-                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," & _
+                    BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                    "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," &
+                    TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," &
                     TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & ")"
                     BFC.ExecuteNonQuery()
                 End If
@@ -3821,7 +3824,7 @@ SkipBF:
             For Each column In TransferDataSet.Tables("FisheryScalers").Columns
                 If (column.ColumnName) = "MSFFisheryScaleFactor" Then GoTo FoundNewColumn
             Next
-            MsgBox("ERROR - You have an Old Format NewModelRunTransfer.Mdb Database" & vbCrLf & _
+            MsgBox("ERROR - You have an Old Format NewModelRunTransfer.Mdb Database" & vbCrLf &
                      "You need to get the New Format Database to do Model Run Transfers", MsgBoxStyle.OkOnly)
             Exit Sub
 FoundNewColumn:
@@ -3842,19 +3845,19 @@ FoundNewColumn:
             For RecNum = 0 To NumRecs - 1
                 '- MarkSelectiveFlag currently not used ... placeholder after Quota
                 If i <> -1 Then
-                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " & _
-                     "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & "," & _
+                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " &
+                     "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & "," &
                      Chr(34) & TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(13) & Chr(34) & ")"
                     Try
                         FSC.ExecuteNonQuery()
@@ -3863,18 +3866,18 @@ FoundNewColumn:
                         GoTo ExitTransfer
                     End Try
                 Else
-                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                     "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
-                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," & _
+                    FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                     "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
+                     TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," &
                      TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & ")"
                     FSC.ExecuteNonQuery()
                 End If
@@ -3909,15 +3912,15 @@ SkipFS:
             NRC.Transaction = NRTrans
             If i <> -1 Then
                 For RecNum = 0 To NumRecs - 1
-                    NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " & _
-                       "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & "," & _
+                    NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " &
+                       "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & "," &
                      Chr(34) & TransferDataSet.Tables("NonRetention").Rows(RecNum)(9) & Chr(34) & ")"
 
                     Try
@@ -3929,14 +3932,14 @@ SkipFS:
                 Next
             Else
                 For RecNum = 0 To NumRecs - 1
-                    NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " & _
-                       "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," & _
+                    NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " &
+                       "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," &
                        TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & ")"
                     NRC.ExecuteNonQuery()
                 Next
@@ -3965,11 +3968,11 @@ SkipNR:
             SFRC.Connection = TransDB
             SFRC.Transaction = SFRTrans
             For RecNum = 0 To NumRecs - 1
-                SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " & _
-                 "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(1).ToString & "," & _
-                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(2).ToString & "," & _
-                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(3).ToString & "," & _
+                SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " &
+                 "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(1).ToString & "," &
+                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(2).ToString & "," &
+                 TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(3).ToString & "," &
                  TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(4).ToString & ")"
                 SFRC.ExecuteNonQuery()
             Next
@@ -4003,9 +4006,9 @@ SkipSFR:
             PSCC.Connection = TransDB
             PSCC.Transaction = PSCTrans
             For RecNum = 0 To NumRecs - 1
-                PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " & _
-                 "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                 TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(1).ToString & "," & _
+                PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " &
+                 "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                 TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(1).ToString & "," &
                  TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(2).ToString & ")"
                 PSCC.ExecuteNonQuery()
             Next
@@ -4039,11 +4042,11 @@ SkipPSCER:
             SLC.Connection = TransDB
             SLC.Transaction = SLTrans
             For RecNum = 0 To NumRecs - 1
-                SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " & _
-                 "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(2).ToString & "," & _
-                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(3).ToString & "," & _
-                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(4).ToString & "," & _
+                SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " &
+                 "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(2).ToString & "," &
+                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(3).ToString & "," &
+                 TransferDataSet.Tables("SizeLimits").Rows(RecNum)(4).ToString & "," &
                  TransferDataSet.Tables("SizeLimits").Rows(RecNum)(5).ToString & ")"
                 SLC.ExecuteNonQuery()
             Next
@@ -4076,11 +4079,11 @@ SkipSL:
             SRC.Connection = TransDB
             SRC.Transaction = SRTrans
             For RecNum = 0 To NumRecs - 1
-                SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " & _
-                 "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(2).ToString & "," & _
-                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(3).ToString & "," & _
-                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(4).ToString & "," & _
+                SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " &
+                 "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(2).ToString & "," &
+                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(3).ToString & "," &
+                 TransferDataSet.Tables("StockRecruit").Rows(RecNum)(4).ToString & "," &
                  TransferDataSet.Tables("StockRecruit").Rows(RecNum)(5).ToString & ")"
                 SRC.ExecuteNonQuery()
             Next
@@ -4109,15 +4112,15 @@ SkipSR:
             COHC.Connection = TransDB
             COHC.Transaction = COHTrans
             For RecNum = 0 To NumRecs - 1
-                COHC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " & _
-                "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(2).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(3).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(4).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(5).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(6).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(7).ToString & "," & _
-                TransferDataSet.Tables("Cohort").Rows(RecNum)(8).ToString & "," & _
+                COHC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " &
+                "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(2).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(3).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(4).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(5).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(6).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(7).ToString & "," &
+                TransferDataSet.Tables("Cohort").Rows(RecNum)(8).ToString & "," &
                 TransferDataSet.Tables("Cohort").Rows(RecNum)(9).ToString & ")"
                 COHC.ExecuteNonQuery()
             Next
@@ -4145,11 +4148,11 @@ SkipSR:
             ESCC.Connection = TransDB
             ESCC.Transaction = ESCTrans
             For RecNum = 0 To NumRecs - 1
-                ESCC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " & _
-                "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                TransferDataSet.Tables("Escapement").Rows(RecNum)(2).ToString & "," & _
-                TransferDataSet.Tables("Escapement").Rows(RecNum)(3).ToString & "," & _
-                TransferDataSet.Tables("Escapement").Rows(RecNum)(4).ToString & "," & _
+                ESCC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " &
+                "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                TransferDataSet.Tables("Escapement").Rows(RecNum)(2).ToString & "," &
+                TransferDataSet.Tables("Escapement").Rows(RecNum)(3).ToString & "," &
+                TransferDataSet.Tables("Escapement").Rows(RecNum)(4).ToString & "," &
                 TransferDataSet.Tables("Escapement").Rows(RecNum)(5).ToString & ")"
                 ESCC.ExecuteNonQuery()
             Next
@@ -4177,15 +4180,15 @@ SkipSR:
             FMC.Connection = TransDB
             FMC.Transaction = FMTrans
             For RecNum = 0 To NumRecs - 1
-                FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " & _
-                   "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(6).ToString & "," & _
-                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," & _
+                FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " &
+                   "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(6).ToString & "," &
+                   TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," &
                    TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(8).ToString & ")"
                 FMC.ExecuteNonQuery()
             Next
@@ -4213,21 +4216,21 @@ SkipSR:
             MRTC.Connection = TransDB
             MRTC.Transaction = MRTTrans
             For RecNum = 0 To NumRecs - 1
-                MRTC.CommandText = "INSERT INTO Mortality (RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " & _
-                   "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(9).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(12).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(13).ToString & "," & _
-                   TransferDataSet.Tables("Mortality").Rows(RecNum)(14).ToString & "," & _
+                MRTC.CommandText = "INSERT INTO Mortality (RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " &
+                   "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(9).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(12).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(13).ToString & "," &
+                   TransferDataSet.Tables("Mortality").Rows(RecNum)(14).ToString & "," &
                    TransferDataSet.Tables("Mortality").Rows(RecNum)(15).ToString & ")"
                 MRTC.ExecuteNonQuery()
             Next
@@ -4262,14 +4265,14 @@ SkipSR:
             SLRatC.Connection = TransDB
             SLRatC.Transaction = SLRatTrans
             For RecNum = 0 To NumRecs - 1
-                SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment, UpdateWhen, UpdateBy) " & _
-                    "VALUES(" & RunIDTransfer(TransID).ToString & "," & _
-                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(1).ToString & "," & _
-                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(2).ToString & "," & _
-                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(3).ToString & "," & _
-                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(4).ToString & "," & _
-                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(5).ToString & "," & _
-                    "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(6).ToString & "'" & "," & _
+                SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment, UpdateWhen, UpdateBy) " &
+                    "VALUES(" & RunIDTransfer(TransID).ToString & "," &
+                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(1).ToString & "," &
+                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(2).ToString & "," &
+                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(3).ToString & "," &
+                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(4).ToString & "," &
+                    TransferDataSet.Tables("SLRatio").Rows(RecNum)(5).ToString & "," &
+                    "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(6).ToString & "'" & "," &
                     "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(7).ToString & "'" & ")"
                 SLRatC.ExecuteNonQuery()
             Next
@@ -4296,7 +4299,7 @@ ExitTransfer:
         Dim CmdStr As String
         Dim RecNum, NumRecs, TransID, NewRunID, OldRunID As Integer
 
-        
+
         ' terminate transfer if FRAMDB does not contain BaseID field in ChinookBaseSizeLimit table, but TransferDB has this field
         CmdStr = "SELECT * FROM ChinookBaseSizeLimit;"
         Dim BaseSizeLimcm As New OleDb.OleDbCommand(CmdStr, TransBP)
@@ -4372,20 +4375,20 @@ ExitTransfer:
             BaseID.Transaction = BaseIDTrans
             RecNum = 0
 
-            BaseID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " & _
-               "VALUES(" & NewBasePeriodID & "," & _
-               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(2) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(3) & Chr(34) & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(4).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(5).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(6).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(7).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(8).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(9).ToString & "," & _
-               Chr(35) & TransferDataSet.Tables("BaseID").Rows(i)(10) & Chr(35) & "," & _
-               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(11) & Chr(34) & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(12).ToString & "," & _
-               TransferDataSet.Tables("BaseID").Rows(i)(13).ToString & "," & _
+            BaseID.CommandText = "INSERT INTO BaseID (BasePeriodID,BasePeriodName,SpeciesName,NumStocks,NumFisheries,NumTimeSteps,NumAges,MinAge,MaxAge,DateCreated,BaseComments,StockVersion,FisheryVersion,TimeStepVersion) " &
+               "VALUES(" & NewBasePeriodID & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(2) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(3) & Chr(34) & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(4).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(5).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(6).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(7).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(8).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(9).ToString & "," &
+               Chr(35) & TransferDataSet.Tables("BaseID").Rows(i)(10) & Chr(35) & "," &
+               Chr(34) & TransferDataSet.Tables("BaseID").Rows(i)(11) & Chr(34) & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(12).ToString & "," &
+               TransferDataSet.Tables("BaseID").Rows(i)(13).ToString & "," &
                TransferDataSet.Tables("BaseID").Rows(i)(14).ToString & ")"
             BaseID.ExecuteNonQuery()
             BaseIDTrans.Commit()
@@ -4404,7 +4407,7 @@ ExitTransfer:
             CmdStr = "SELECT * FROM ChinookBaseSizeLimit;"
             Dim BaseSizeLimcm20 As New OleDb.OleDbCommand(CmdStr, TransBP)
             Dim BaseSizeLimIDDA20 As New System.Data.OleDb.OleDbDataAdapter
-            
+
             BaseSizeLimIDDA20.SelectCommand = BaseSizeLimcm
             Dim BaseSizeLimcb20 As New OleDb.OleDbCommandBuilder
             BaseSizeLimcb20 = New OleDb.OleDbCommandBuilder(BaseSizeLimIDDA)
@@ -4446,11 +4449,11 @@ ExitTransfer:
             If BPSL_No_ID = True Then 'FRAM BPSL table does not contain BPID
                 If TransferDataSet.Tables("ChinookBaseSizeLimit").Columns.IndexOf("BasePeriodID") = -1 Then 'TransferDB contains BPID
                     For RecNum = 0 To NumRecs - 1
-                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                          "VALUES(" & TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
+                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                          "VALUES(" & TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
                             TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & ")"
                         BaseSizeLimit.ExecuteNonQuery()
                     Next
@@ -4460,21 +4463,21 @@ ExitTransfer:
                 'TransferDB does not have BaseID field, add BaseID to FRAMDB 
                 For RecNum = 0 To NumRecs - 1
                     If TransferDataSet.Tables("ChinookBaseSizeLimit").Columns.IndexOf("BasePeriodID") = -1 Then
-                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                          "VALUES(" & NewBasePeriodID & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
+                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                          "VALUES(" & NewBasePeriodID & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(0) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
                             TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & ")"
 
                     Else
-                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " & _
-                          "VALUES(" & NewBasePeriodID & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," & _
-                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & "," & _
+                        BaseSizeLimit.CommandText = "INSERT INTO ChinookBaseSizeLimit (BasePeriodID,FisheryID,Time1SizeLimit,Time2SizeLimit,Time3SizeLimit,Time4SizeLimit) " &
+                          "VALUES(" & NewBasePeriodID & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(1) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(2) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(3) & "," &
+                            TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(4) & "," &
                             TransferDataSet.Tables("ChinookBaseSizeLimit").Rows(RecNum)(5) & ")"
                     End If
                     BaseSizeLimit.ExecuteNonQuery()
@@ -4515,10 +4518,10 @@ ExitTransfer:
             NumRecs = TransferDataSet.Tables("BaseCohort").Rows.Count
             For RecNum = 0 To NumRecs - 1
 
-                BaseCohort.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("BaseCohort").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("BaseCohort").Rows(RecNum)(2) & "," & _
+                BaseCohort.CommandText = "INSERT INTO BaseCohort (BasePeriodID,StockID,Age,BaseCohortSize) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("BaseCohort").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("BaseCohort").Rows(RecNum)(2) & "," &
                    TransferDataSet.Tables("BaseCohort").Rows(RecNum)(3) & ")"
 
                 BaseCohort.ExecuteNonQuery()
@@ -4550,13 +4553,13 @@ ExitTransfer:
             BaseExploitationRate.Transaction = BaseExploitationRateTrans
             NumRecs = TransferDataSet.Tables("BaseExploitationRate").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                BaseExploitationRate.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SublegalEncounterRate) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(2) & "," & _
-                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(3) & "," & _
-                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(4) & "," & _
-                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(5) & "," & _
+                BaseExploitationRate.CommandText = "INSERT INTO BaseExploitationRate (BasePeriodID,StockID,Age,FisheryID,TimeStep,ExploitationRate,SublegalEncounterRate) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(2) & "," &
+                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(3) & "," &
+                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(4) & "," &
+                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(5) & "," &
                    TransferDataSet.Tables("BaseExploitationRate").Rows(RecNum)(6) & ")"
 
                 BaseExploitationRate.ExecuteNonQuery()
@@ -4588,11 +4591,11 @@ ExitTransfer:
             EncounterRateAdjustment.Transaction = EncounterRateAdjustmentTrans
             NumRecs = TransferDataSet.Tables("EncounterRateAdjustment").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                EncounterRateAdjustment.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(2) & "," & _
-                TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(3) & "," & _
+                EncounterRateAdjustment.CommandText = "INSERT INTO EncounterRateAdjustment (BasePeriodID,Age,FisheryID,TimeStep,EncounterRateAdjustment) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(2) & "," &
+                TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(3) & "," &
                    TransferDataSet.Tables("EncounterRateAdjustment").Rows(RecNum)(4) & ")"
 
                 EncounterRateAdjustment.ExecuteNonQuery()
@@ -4624,9 +4627,9 @@ ExitTransfer:
             FisheryModelStockProportion.Transaction = FisheryModelStockProportionTrans
             NumRecs = TransferDataSet.Tables("FisheryModelStockProportion").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                FisheryModelStockProportion.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(1) & "," & _
+                FisheryModelStockProportion.CommandText = "INSERT INTO FisheryModelStockProportion (BasePeriodID,FisheryID,ModelStockProportion) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(1) & "," &
                    TransferDataSet.Tables("FisheryModelStockProportion").Rows(RecNum)(2) & ")"
                 FisheryModelStockProportion.ExecuteNonQuery()
             Next
@@ -4657,11 +4660,11 @@ ExitTransfer:
             AEQ.Transaction = AEQTrans
             NumRecs = TransferDataSet.Tables("AEQ").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                AEQ.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep,AEQ) " & _
-                  "VALUES(" & NewBasePeriodID & "," & _
-                   TransferDataSet.Tables("AEQ").Rows(RecNum)(1) & "," & _
-                   TransferDataSet.Tables("AEQ").Rows(RecNum)(2) & "," & _
-                  TransferDataSet.Tables("AEQ").Rows(RecNum)(3) & "," & _
+                AEQ.CommandText = "INSERT INTO AEQ (BasePeriodID,StockID,Age,TimeStep,AEQ) " &
+                  "VALUES(" & NewBasePeriodID & "," &
+                   TransferDataSet.Tables("AEQ").Rows(RecNum)(1) & "," &
+                   TransferDataSet.Tables("AEQ").Rows(RecNum)(2) & "," &
+                  TransferDataSet.Tables("AEQ").Rows(RecNum)(3) & "," &
                   TransferDataSet.Tables("AEQ").Rows(RecNum)(4) & ")"
                 AEQ.ExecuteNonQuery()
             Next
@@ -4692,22 +4695,22 @@ ExitTransfer:
             Growth.Transaction = GrowthTrans
             NumRecs = TransferDataSet.Tables("Growth").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                Growth.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("Growth").Rows(RecNum)(1) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(2) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(3) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(4) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(5) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(6) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(7) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(8) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(9) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(10) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(11) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(12) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(13) & "," & _
-                 TransferDataSet.Tables("Growth").Rows(RecNum)(14) & "," & _
+                Growth.CommandText = "INSERT INTO Growth (BasePeriodID,StockID,LImmature,KImmature,TImmature,CV2Immature,CV3Immature,CV4Immature,CV5Immature,LMature,KMature,TMature,CV2Mature,CV3Mature,CV4Mature,CV5Mature) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("Growth").Rows(RecNum)(1) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(2) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(3) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(4) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(5) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(6) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(7) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(8) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(9) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(10) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(11) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(12) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(13) & "," &
+                 TransferDataSet.Tables("Growth").Rows(RecNum)(14) & "," &
                    TransferDataSet.Tables("Growth").Rows(RecNum)(15) & ")"
                 Growth.ExecuteNonQuery()
             Next
@@ -4738,10 +4741,10 @@ ExitTransfer:
             IncidentalRate.Transaction = IncidentalRateTrans
             NumRecs = TransferDataSet.Tables("IncidentalRate").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                IncidentalRate.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("IncidentalRate").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("IncidentalRate").Rows(RecNum)(2) & "," & _
+                IncidentalRate.CommandText = "INSERT INTO IncidentalRate (BasePeriodID,FisheryID,TimeStep,IncidentalRate) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("IncidentalRate").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("IncidentalRate").Rows(RecNum)(2) & "," &
                     TransferDataSet.Tables("IncidentalRate").Rows(RecNum)(3) & ")"
 
                 IncidentalRate.ExecuteNonQuery()
@@ -4773,11 +4776,11 @@ ExitTransfer:
             MaturationRate.Transaction = MaturationRateTrans
             NumRecs = TransferDataSet.Tables("MaturationRate").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                MaturationRate.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(2) & "," & _
-                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(3) & "," & _
+                MaturationRate.CommandText = "INSERT INTO MaturationRate (BasePeriodID,StockID,Age,TimeStep,MaturationRate) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(2) & "," &
+                    TransferDataSet.Tables("MaturationRate").Rows(RecNum)(3) & "," &
                     TransferDataSet.Tables("MaturationRate").Rows(RecNum)(4) & ")"
 
                 MaturationRate.ExecuteNonQuery()
@@ -4809,10 +4812,10 @@ ExitTransfer:
             NaturalMortality.Transaction = NaturalMortalityTrans
             NumRecs = TransferDataSet.Tables("NaturalMortality").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                NaturalMortality.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("NaturalMortality").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("NaturalMortality").Rows(RecNum)(2) & "," & _
+                NaturalMortality.CommandText = "INSERT INTO NaturalMortality (BasePeriodID,Age,TimeStep,NaturalMortalityRate) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("NaturalMortality").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("NaturalMortality").Rows(RecNum)(2) & "," &
                     TransferDataSet.Tables("NaturalMortality").Rows(RecNum)(3) & ")"
 
                 NaturalMortality.ExecuteNonQuery()
@@ -4844,10 +4847,10 @@ ExitTransfer:
             ShakerMortRate.Transaction = ShakerMortRateTrans
             NumRecs = TransferDataSet.Tables("ShakerMortRate").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                ShakerMortRate.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " & _
-                  "VALUES(" & NewBasePeriodID & "," & _
-                   TransferDataSet.Tables("ShakerMortRate").Rows(RecNum)(1) & "," & _
-                   TransferDataSet.Tables("ShakerMortRate").Rows(RecNum)(2) & "," & _
+                ShakerMortRate.CommandText = "INSERT INTO ShakerMortRate (BasePeriodID,FisheryID,TimeStep,ShakerMortRate) " &
+                  "VALUES(" & NewBasePeriodID & "," &
+                   TransferDataSet.Tables("ShakerMortRate").Rows(RecNum)(1) & "," &
+                   TransferDataSet.Tables("ShakerMortRate").Rows(RecNum)(2) & "," &
                    TransferDataSet.Tables("ShakerMortRate").Rows(RecNum)(3) & ")"
                 ShakerMortRate.ExecuteNonQuery()
             Next
@@ -4878,10 +4881,10 @@ ExitTransfer:
             TerminalFisheryFlag.Transaction = TerminalFisheryFlagTrans
             NumRecs = TransferDataSet.Tables("TerminalFisheryFlag").Rows.Count
             For RecNum = 0 To NumRecs - 1
-                TerminalFisheryFlag.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " & _
-                   "VALUES(" & NewBasePeriodID & "," & _
-                    TransferDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(1) & "," & _
-                    TransferDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(2) & "," & _
+                TerminalFisheryFlag.CommandText = "INSERT INTO TerminalFisheryFlag (BasePeriodID,FisheryID,TimeStep,TerminalFlag) " &
+                   "VALUES(" & NewBasePeriodID & "," &
+                    TransferDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(1) & "," &
+                    TransferDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(2) & "," &
                     TransferDataSet.Tables("TerminalFisheryFlag").Rows(RecNum)(3) & ")"
                 TerminalFisheryFlag.ExecuteNonQuery()
             Next
@@ -4937,13 +4940,13 @@ ExitTransfer:
             NumRecs = TransferDataSet.Tables("Stock").Rows.Count
 
             For RecNum = 0 To NumRecs - 1
-                Stock.CommandText = "INSERT INTO Stock (Species,StockVersion,StockID,ProductionRegionNumber,ManagementUnitNumber,StockName,StockLongName) " & _
-               "VALUES(" & Chr(34) & TransferDataSet.Tables("Stock").Rows(RecNum)(0) & Chr(34) & "," & _
-                TransferDataSet.Tables("Stock").Rows(RecNum)(1) & "," & _
-                TransferDataSet.Tables("Stock").Rows(RecNum)(2) & "," & _
-                TransferDataSet.Tables("Stock").Rows(RecNum)(3) & "," & _
-                TransferDataSet.Tables("Stock").Rows(RecNum)(4) & "," & _
-                Chr(34) & TransferDataSet.Tables("Stock").Rows(RecNum)(5) & Chr(34) & "," & _
+                Stock.CommandText = "INSERT INTO Stock (Species,StockVersion,StockID,ProductionRegionNumber,ManagementUnitNumber,StockName,StockLongName) " &
+               "VALUES(" & Chr(34) & TransferDataSet.Tables("Stock").Rows(RecNum)(0) & Chr(34) & "," &
+                TransferDataSet.Tables("Stock").Rows(RecNum)(1) & "," &
+                TransferDataSet.Tables("Stock").Rows(RecNum)(2) & "," &
+                TransferDataSet.Tables("Stock").Rows(RecNum)(3) & "," &
+                TransferDataSet.Tables("Stock").Rows(RecNum)(4) & "," &
+                Chr(34) & TransferDataSet.Tables("Stock").Rows(RecNum)(5) & Chr(34) & "," &
                Chr(34) & TransferDataSet.Tables("Stock").Rows(RecNum)(6) & Chr(34) & ")"
                 Stock.ExecuteNonQuery()
             Next
@@ -4993,11 +4996,11 @@ ExitTransfer:
             NumRecs = TransferDataSet.Tables("Fishery").Rows.Count
 
             For RecNum = 0 To NumRecs - 1
-                Fishery.CommandText = "INSERT INTO Fishery (Species,VersionNumber,FisheryID,FisheryName,FisheryTitle) " & _
-               "VALUES(" & Chr(34) & TransferDataSet.Tables("Fishery").Rows(RecNum)(0) & Chr(34) & "," & _
-                TransferDataSet.Tables("Fishery").Rows(RecNum)(1) & "," & _
-                TransferDataSet.Tables("Fishery").Rows(RecNum)(2) & "," & _
-                Chr(34) & TransferDataSet.Tables("Fishery").Rows(RecNum)(3) & Chr(34) & "," & _
+                Fishery.CommandText = "INSERT INTO Fishery (Species,VersionNumber,FisheryID,FisheryName,FisheryTitle) " &
+               "VALUES(" & Chr(34) & TransferDataSet.Tables("Fishery").Rows(RecNum)(0) & Chr(34) & "," &
+                TransferDataSet.Tables("Fishery").Rows(RecNum)(1) & "," &
+                TransferDataSet.Tables("Fishery").Rows(RecNum)(2) & "," &
+                Chr(34) & TransferDataSet.Tables("Fishery").Rows(RecNum)(3) & Chr(34) & "," &
                Chr(34) & TransferDataSet.Tables("Fishery").Rows(RecNum)(4) & Chr(34) & ")"
                 If TransferDataSet.Tables("Fishery").Rows(RecNum)(2) <> 74 Then
                     Fishery.ExecuteNonQuery()
@@ -5049,11 +5052,11 @@ ExitTransfer:
             NumRecs = TransferDataSet.Tables("TimeStep").Rows.Count
 
             For RecNum = 0 To NumRecs - 1
-                TimeStep.CommandText = "INSERT INTO TimeStep (Species,VersionNumber,TimeStepID,TimeStepName,TimeStepTitle) " & _
-               "VALUES(" & Chr(34) & TransferDataSet.Tables("TimeStep").Rows(RecNum)(0) & Chr(34) & "," & _
-                TransferDataSet.Tables("TimeStep").Rows(RecNum)(1) & "," & _
-                TransferDataSet.Tables("TimeStep").Rows(RecNum)(2) & "," & _
-                Chr(34) & TransferDataSet.Tables("TimeStep").Rows(RecNum)(3) & Chr(34) & "," & _
+                TimeStep.CommandText = "INSERT INTO TimeStep (Species,VersionNumber,TimeStepID,TimeStepName,TimeStepTitle) " &
+               "VALUES(" & Chr(34) & TransferDataSet.Tables("TimeStep").Rows(RecNum)(0) & Chr(34) & "," &
+                TransferDataSet.Tables("TimeStep").Rows(RecNum)(1) & "," &
+                TransferDataSet.Tables("TimeStep").Rows(RecNum)(2) & "," &
+                Chr(34) & TransferDataSet.Tables("TimeStep").Rows(RecNum)(3) & Chr(34) & "," &
                 Chr(34) & TransferDataSet.Tables("TimeStep").Rows(RecNum)(4) & Chr(34) & ")"
                 TimeStep.ExecuteNonQuery()
             Next
@@ -5325,7 +5328,7 @@ ExitTransfer:
             'the database does not require unique base period names so several different base periods while containing unique IDs can have
             'dublicate names. 
             If drd2.Read() = False Then
-                MsgBox("Can't find Matching BasePeriodName = '" & TransBaseIDName & "' in FramVS Database" & vbCrLf & _
+                MsgBox("Can't find Matching BasePeriodName = '" & TransBaseIDName & "' in FramVS Database" & vbCrLf &
                 "Please Read Corresponding Base file for this Model Run Transfer", MsgBoxStyle.OkOnly)
             Else
                 '    TransBaseID = drd2.GetInt32(1)
@@ -5370,7 +5373,7 @@ ExitTransfer:
             RID.Transaction = RIDTrans
 
             RecNum = 0
-            
+
             Dim x As Integer = 1
             'add RunYear and RunType to dataset if missing for compatibility with old Transferfiles AHB 11/22/2017
             x = TransferDataSet.Tables("RunID").Columns.IndexOf("RunYear")
@@ -5398,20 +5401,20 @@ ExitTransfer:
                 TransferDataSet.Tables("RunID").Columns.Add("FRAMVersion", GetType(String))
             End If
 
-            RID.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " & _
-               "VALUES(" & NewRunID.ToString & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(2) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(3) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(4) & Chr(34) & "," & _
-               TransBaseID.ToString & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(6) & Chr(34) & "," & _
-               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(7) & Chr(35) & "," & _
-               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(8) & Chr(35) & "," & _
-               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(9) & Chr(35) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(10) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(11) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(12) & Chr(34) & "," & _
-               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(13) & Chr(34) & "," & _
+            RID.CommandText = "INSERT INTO RunID (RunID,SpeciesName,RunName,RunTitle,BasePeriodID,RunComments,CreationDate,ModifyInputDate,RunTimeDate,RunYear,RunType,TAMMName,CoastalIterations,FRAMVersion) " &
+               "VALUES(" & NewRunID.ToString & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(2) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(3) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(4) & Chr(34) & "," &
+               TransBaseID.ToString & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(6) & Chr(34) & "," &
+               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(7) & Chr(35) & "," &
+               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(8) & Chr(35) & "," &
+               Chr(35) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(9) & Chr(35) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(10) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(11) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(12) & Chr(34) & "," &
+               Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(13) & Chr(34) & "," &
                Chr(34) & TransferDataSet.Tables("RunID").Rows(TransID - 1)(14) & Chr(34) & ")"
             RID.ExecuteNonQuery()
             RIDTrans.Commit()
@@ -5454,25 +5457,25 @@ ExitTransfer:
                 If j = -1 Then 'Comment column does not exist
                     '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                     If OldRunID = TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(0) Then
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," &
                         TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & ")"
                         BFC.ExecuteNonQuery()
                     End If
                 Else 'comment column exists in TransferDB
 
                     If OldRunID = TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(0) Then
-                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " & _
-                        "VALUES(" & NewRunID.ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," & _
-                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & "," & _
+                        BFC.CommandText = "INSERT INTO BackwardsFRAM (RunID,StockID,TargetEscAge3,TargetEscAge4,TargetEscAge5,TargetFlag,Comment) " &
+                        "VALUES(" & NewRunID.ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(1).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(2).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(3).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(4).ToString & "," &
+                        TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(5).ToString & "," &
                         Chr(34) & TransferDataSet.Tables("BackwardsFRAM").Rows(RecNum)(6).ToString & Chr(34) & ")"
                         BFC.ExecuteNonQuery()
                     End If
@@ -5528,28 +5531,28 @@ SkipBF:
                     'FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MarkSelectiveFlag,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
                     '- Put MSFScaler & Quota in correct field depending on FisheryFlag
                     If TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4) > 6 Then
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                           "VALUES(" & NewRunID.ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & ", 0, 0," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                           "VALUES(" & NewRunID.ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & ", 0, 0," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
                            TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & ")"
                     Else
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                           "VALUES(" & NewRunID.ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & ", 0, 0," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                           "VALUES(" & NewRunID.ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & ", 0, 0," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                           TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
                            TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & ")"
                     End If
                     FSC.ExecuteNonQuery()
@@ -5574,34 +5577,34 @@ FoundNewColumn:
                 If OldRunID = TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(1) Then
 
                     If j <> -1 Then
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " & _
-                                                 "VALUES(" & NewRunID.ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," & _
-                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate,Comment) " &
+                                                 "VALUES(" & NewRunID.ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," &
+                        TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & "," &
                         Chr(34) & TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(13).ToString & Chr(34) & ")"
                         FSC.ExecuteNonQuery()
                     Else
-                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " & _
-                         "VALUES(" & NewRunID.ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," & _
-                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," & _
+                        FSC.CommandText = "INSERT INTO FisheryScalers (RunID,FisheryID,TimeStep,FisheryFlag,FisheryScaleFactor,Quota,MSFFisheryScaleFactor,MSFQuota,MarkReleaseRate,MarkMisIDRate,UnMarkMisIDRate,MarkIncidentalRate) " &
+                         "VALUES(" & NewRunID.ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(2).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(3).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(4).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(5).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(6).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(7).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(8).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(9).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(10).ToString & "," &
+                         TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(11).ToString & "," &
                          TransferDataSet.Tables("FisheryScalers").Rows(RecNum)(12).ToString & ")"
                         FSC.ExecuteNonQuery()
                     End If
@@ -5648,28 +5651,28 @@ SkipFS:
                     If j = -1 Then
                         '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
 
-                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " & _
-                       "VALUES(" & NewRunID.ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," & _
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4) " &
+                       "VALUES(" & NewRunID.ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," &
                        TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & ")"
                         NRC.ExecuteNonQuery()
 
 
                     Else 'comment column exists
-                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " & _
-                          "VALUES(" & NewRunID.ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," & _
-                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & "," & _
+                        NRC.CommandText = "INSERT INTO NonRetention (RunID,FisheryID,TimeStep,NonRetentionFlag,CNRInput1,CNRInput2,CNRInput3,CNRInput4,Comment) " &
+                          "VALUES(" & NewRunID.ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(2).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(3).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(4).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(5).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(6).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(7).ToString & "," &
+                          TransferDataSet.Tables("NonRetention").Rows(RecNum)(8).ToString & "," &
                             Chr(34) & TransferDataSet.Tables("NonRetention").Rows(RecNum)(9).ToString & Chr(34) & ")"
 
                         NRC.ExecuteNonQuery()
@@ -5691,11 +5694,11 @@ SkipNR:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(0) Then
-                    SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " & _
-                     "VALUES(" & NewRunID.ToString & "," & _
-                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(1).ToString & "," & _
-                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(2).ToString & "," & _
-                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(3).ToString & "," & _
+                    SFRC.CommandText = "INSERT INTO StockFisheryRateScaler (RunID,StockID,FisheryID,TimeStep,StockFisheryRateScaler) " &
+                     "VALUES(" & NewRunID.ToString & "," &
+                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(1).ToString & "," &
+                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(2).ToString & "," &
+                     TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(3).ToString & "," &
                      TransferDataSet.Tables("StockFisheryRateScaler").Rows(RecNum)(4).ToString & ")"
                     SFRC.ExecuteNonQuery()
                 End If
@@ -5717,9 +5720,9 @@ SkipSFR:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(0) Then
-                    PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " & _
-                     "VALUES(" & NewRunID.ToString & "," & _
-                     TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(1).ToString & "," & _
+                    PSCC.CommandText = "INSERT INTO PSCMaxER (RunID,PSCStockID,PSCMaxER) " &
+                     "VALUES(" & NewRunID.ToString & "," &
+                     TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(1).ToString & "," &
                      TransferDataSet.Tables("PSCMaxER").Rows(RecNum)(2).ToString & ")"
                     PSCC.ExecuteNonQuery()
                 End If
@@ -5740,11 +5743,11 @@ SkipPSCER:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("SizeLimits").Rows(RecNum)(1) Then
-                    SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " & _
-                     "VALUES(" & NewRunID.ToString & "," & _
-                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(2).ToString & "," & _
-                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(3).ToString & "," & _
-                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(4).ToString & "," & _
+                    SLC.CommandText = "INSERT INTO SizeLimits (RunID,FisheryID,TimeStep,MinimumSize,MaximumSize) " &
+                     "VALUES(" & NewRunID.ToString & "," &
+                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(2).ToString & "," &
+                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(3).ToString & "," &
+                     TransferDataSet.Tables("SizeLimits").Rows(RecNum)(4).ToString & "," &
                      TransferDataSet.Tables("SizeLimits").Rows(RecNum)(5).ToString & ")"
                     SLC.ExecuteNonQuery()
                 End If
@@ -5764,11 +5767,11 @@ SkipSL:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("StockRecruit").Rows(RecNum)(1) Then
-                    SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " & _
-                     "VALUES(" & NewRunID.ToString & "," & _
-                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(2).ToString & "," & _
-                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(3).ToString & "," & _
-                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(4).ToString & "," & _
+                    SRC.CommandText = "INSERT INTO StockRecruit (RunID,StockID,Age,RecruitScaleFactor,RecruitCohortSize) " &
+                     "VALUES(" & NewRunID.ToString & "," &
+                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(2).ToString & "," &
+                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(3).ToString & "," &
+                     TransferDataSet.Tables("StockRecruit").Rows(RecNum)(4).ToString & "," &
                      TransferDataSet.Tables("StockRecruit").Rows(RecNum)(5).ToString & ")"
                     SRC.ExecuteNonQuery()
                 End If
@@ -5788,15 +5791,15 @@ SkipSR:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("Cohort").Rows(RecNum)(1) Then
-                    COHC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " & _
-                       "VALUES(" & NewRunID.ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(7).ToString & "," & _
-                       TransferDataSet.Tables("Cohort").Rows(RecNum)(8).ToString & "," & _
+                    COHC.CommandText = "INSERT INTO Cohort (RunID,StockID,Age,TimeStep,Cohort,MatureCohort,StartCohort,WorkingCohort,MidCohort) " &
+                       "VALUES(" & NewRunID.ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(7).ToString & "," &
+                       TransferDataSet.Tables("Cohort").Rows(RecNum)(8).ToString & "," &
                        TransferDataSet.Tables("Cohort").Rows(RecNum)(9).ToString & ")"
                     COHC.ExecuteNonQuery()
                 End If
@@ -5815,11 +5818,11 @@ SkipSR:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("Escapement").Rows(RecNum)(1) Then
-                    ESCC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " & _
-                       "VALUES(" & NewRunID.ToString & "," & _
-                       TransferDataSet.Tables("Escapement").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("Escapement").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("Escapement").Rows(RecNum)(4).ToString & "," & _
+                    ESCC.CommandText = "INSERT INTO Escapement (RunID,StockID,Age,TimeStep,Escapement) " &
+                       "VALUES(" & NewRunID.ToString & "," &
+                       TransferDataSet.Tables("Escapement").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("Escapement").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("Escapement").Rows(RecNum)(4).ToString & "," &
                        TransferDataSet.Tables("Escapement").Rows(RecNum)(5).ToString & ")"
                     ESCC.ExecuteNonQuery()
                 End If
@@ -5843,15 +5846,15 @@ SkipSR:
                     For RecNum = 0 To NumRecs - 1
                         '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                         If OldRunID = TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(0) Then
-                            FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " & _
-                               "VALUES(" & NewRunID.ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," & _
-                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(8).ToString & "," & _
+                            FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " &
+                               "VALUES(" & NewRunID.ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," &
+                               TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(8).ToString & "," &
                                TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(9).ToString & ")"
                             FMC.ExecuteNonQuery()
                         End If
@@ -5868,15 +5871,15 @@ SkipSR:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(0) Then
-                    FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " & _
-                       "VALUES(" & NewRunID.ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," & _
+                    FMC.CommandText = "INSERT INTO FisheryMortality (RunID,FisheryID,TimeStep,TotalLandedCatch,TotalUnMarkedCatch,TotalNonRetention,TotalShakers,TotalDropOff,TotalEncounters) " &
+                       "VALUES(" & NewRunID.ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(1).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(7).ToString & "," &
                        TransferDataSet.Tables("FisheryMortality").Rows(RecNum)(8).ToString & ")"
                     FMC.ExecuteNonQuery()
                 End If
@@ -5903,28 +5906,28 @@ CommitTFM:
                         If OldRunID = TransferDataSet.Tables("Mortality").Rows(RecNum)(1) Then
                             '- Check if "Old" LegalShaker is Non-Zero (ie MSF) and put other values into "New" fields
                             If TransferDataSet.Tables("Mortality").Rows(RecNum)(9) > 0 Then
-                                MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " & _
-                                   "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & ",0,0,0,0,0," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," & _
+                                MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " &
+                                   "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & ",0,0,0,0,0," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," &
                                    TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & ")"
                             Else
-                                MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " & _
-                                   "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," & _
-                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," & _
+                                MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " &
+                                   "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," &
+                                   TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," &
                                    TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & ",0,0,0,0,0)"
                             End If
                             MRTC.ExecuteNonQuery()
@@ -5942,21 +5945,21 @@ CommitTFM:
             For RecNum = 0 To NumRecs - 1
                 '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                 If OldRunID = TransferDataSet.Tables("Mortality").Rows(RecNum)(1) Then
-                    MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " & _
-                       "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(9).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(12).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(13).ToString & "," & _
-                       TransferDataSet.Tables("Mortality").Rows(RecNum)(14).ToString & "," & _
+                    MRTC.CommandText = "INSERT INTO Mortality (PrimaryKey,RunID,StockID,Age,FisheryID,TimeStep,LandedCatch,NonRetention,Shaker,DropOff,Encounter,MSFLandedCatch,MSFNonRetention,MSFShaker,MSFDropOff,MSFEncounter) " &
+                       "VALUES(" & (RecNum + 1).ToString & "," & NewRunID.ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(2).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(3).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(4).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(5).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(6).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(7).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(8).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(9).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(10).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(11).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(12).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(13).ToString & "," &
+                       TransferDataSet.Tables("Mortality").Rows(RecNum)(14).ToString & "," &
                        TransferDataSet.Tables("Mortality").Rows(RecNum)(15).ToString & ")"
                     MRTC.ExecuteNonQuery()
                 End If
@@ -5987,14 +5990,14 @@ CommitMorts:
                 For RecNum = 0 To NumRecs - 1
                     '- Check to see if record matches OldRunID being Tranferred in this RunID Loop
                     If OldRunID = TransferDataSet.Tables("SLRatio").Rows(RecNum)(0) Then
-                        SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment, UpdateWhen, UpdateBy) " & _
-                         "VALUES(" & NewRunID.ToString & "," & _
-                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(1).ToString & "," & _
-                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(2).ToString & "," & _
-                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(3).ToString & "," & _
-                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(4).ToString & "," & _
-                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(5).ToString & "," & _
-                         "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(6).ToString & "'" & "," & _
+                        SLRatC.CommandText = "INSERT INTO SLRatio (RunID,FisheryID,Age,TimeStep,TargetRatio,RunEncounterRateAdjustment, UpdateWhen, UpdateBy) " &
+                         "VALUES(" & NewRunID.ToString & "," &
+                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(1).ToString & "," &
+                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(2).ToString & "," &
+                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(3).ToString & "," &
+                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(4).ToString & "," &
+                         TransferDataSet.Tables("SLRatio").Rows(RecNum)(5).ToString & "," &
+                         "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(6).ToString & "'" & "," &
                          "'" & TransferDataSet.Tables("SLRatio").Rows(RecNum)(7).ToString & "'" & ")"
                         SLRatC.ExecuteNonQuery()
                     End If
@@ -6009,6 +6012,34 @@ SkipSLRat:
             'End of RunID Transfer Loop
         Next
 
+    End Sub
+
+    Sub CompactDatabase()
+        'figure out database filepath, make a temp file name
+        Dim connectionString As String = FramDB.ConnectionString
+        Dim filePath As String = connectionString.Replace("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=", "")
+        Dim tempPath As String = Regex.Replace(filePath, "\.mdb$", "_temp.mdb")
+
+        ' clear out file if it exists
+        If File.Exists(tempPath) Then
+            File.Delete(tempPath)
+        End If
+
+        Dim jro As New JetEngine()
+
+        ' Define connection strings
+        Dim sourceConn As String = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & filePath
+        Dim destConn As String = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & tempPath & ";Jet OLEDB:Engine Type=5"
+
+        ' Compact the database
+        jro.CompactDatabase(sourceConn, destConn)
+
+        ' Release COM object
+        System.Runtime.InteropServices.Marshal.ReleaseComObject(jro)
+
+        ' Replace original file with compacted version
+        File.Delete(filePath)
+        File.Move(tempPath, filePath)
     End Sub
 
 End Module

@@ -196,8 +196,8 @@ TryDBAgain:
       End If
       Me.Visible = False
       FVS_RunModel.ShowDialog()
-      Me.BringToFront()
-   End Sub
+        'Me.BringToFront()
+    End Sub
 
    Private Sub FramUtilButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FramUtilButton.Click
       If FVSdatabasename = "" Then

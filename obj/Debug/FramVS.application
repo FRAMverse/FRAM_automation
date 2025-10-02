@@ -3,15 +3,18 @@
   <assemblyIdentity name="FramVS.application" version="1.0.0.4" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <description asmv2:publisher="FramVS" asmv2:product="FramVS" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <deployment install="true" mapFileExtensions="true" />
+  <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
+    <framework targetVersion="4.8" profile="Full" supportedRuntime="4.0.30319" />
+  </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="FramVS.exe.manifest" size="5193">
+    <dependentAssembly dependencyType="install" codebase="FramVS.exe.manifest" size="5285">
       <assemblyIdentity name="FramVS.exe" version="1.0.0.4" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="x86" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>bRK3b+Tut7WTYKx1NHxAfuQaLmo=</dsig:DigestValue>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>QgwYDaCUenazBYZbGe5b9ZjS+N52YfUvPVhWPIDOzuc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
